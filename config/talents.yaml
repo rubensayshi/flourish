@@ -1,0 +1,131 @@
+# Restoration Druid talent configuration
+# skip: true = exclude from analysis
+# multiplier: fraction of healing attributable to this talent
+
+# === Spec talents (analyze) ===
+
+soul_of_the_forest:
+  skip: false
+  multiplier: 0.6
+
+cenarion_ward:
+  skip: false
+
+cultivation:
+  skip: false
+
+incarnation_tree_of_life:
+  skip: false
+
+inner_peace:
+  skip: false
+
+flourish:
+  skip: false
+
+germination:
+  skip: false
+
+photosynthesis:
+  skip: false
+
+spring_blossoms:
+  skip: false
+
+abundance:
+  skip: false
+
+nourish:
+  skip: false
+
+overgrowth:
+  skip: false
+
+adaptive_swarm:
+  skip: false
+
+unbridled_swarm:
+  skip: false
+
+convoke_the_spirits:
+  skip: false
+
+grove_guardians:
+  skip: false
+
+power_of_the_archdruid:
+  skip: false
+
+reforestation:
+  skip: false
+
+verdancy:
+  skip: false
+
+harmonious_blooming:
+  skip: false
+
+dreamstate:
+  skip: false
+
+cenarius_guidance:
+  skip: false
+
+luxuriant_soil:
+  skip: false
+
+# === Always-take / base talents (skip) ===
+
+lifebloom:
+  skip: true
+  skip_reason: "always take"
+
+swiftmend:
+  skip: true
+  skip_reason: "always take"
+
+wild_growth:
+  skip: true
+  skip_reason: "always take"
+
+rejuvenation:
+  skip: true
+  skip_reason: "always take"
+
+tranquility:
+  skip: true
+  skip_reason: "always take"
+
+efflorescence:
+  skip: true
+  skip_reason: "always take"
+
+regrowth:
+  skip: true
+  skip_reason: "always take"
+
+# === Non-healing utility (skip) ===
+
+natures_swiftness:
+  skip: true
+  skip_reason: "utility"
+
+ironbark:
+  skip: true
+  skip_reason: "damage reduction, not healing"
+
+omen_of_clarity:
+  skip: true
+  skip_reason: "mana savings, not direct healing"
+
+innervate:
+  skip: true
+  skip_reason: "mana savings, not direct healing"
+
+natures_vigil:
+  skip: true
+  skip_reason: "passive, not a talent choice"
+
+verdant_infusion:
+  skip: true
+  skip_reason: "utility extension, not direct healing"
