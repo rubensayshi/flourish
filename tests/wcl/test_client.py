@@ -58,3 +58,52 @@ def test_get_events_paginates():
     events = client.get_events("abc", 1, [1], 0, 10000)
     assert len(events) == 2
     assert mock_http.post.call_count == 2
+
+
+def test_get_events_multiple_source_ids():
+    """Events are fetched for each source ID (player + pets) and sorted by timestamp."""
+    client = WCLClient("test_id", "test_secret")
+    client._token = "fake_token"
+
+    mock_http = MagicMock()
+    # Player events
+    player_resp = MagicMock()
+    player_resp.json.return_value = {
+        "data": {
+            "reportData": {
+                "report": {
+                    "events": {
+                        "data": [
+                            {"type": "heal", "timestamp": 100},
+                            {"type": "heal", "timestamp": 300},
+                        ],
+                        "nextPageTimestamp": None,
+                    }
+                }
+            }
+        }
+    }
+    # Pet events
+    pet_resp = MagicMock()
+    pet_resp.json.return_value = {
+        "data": {
+            "reportData": {
+                "report": {
+                    "events": {
+                        "data": [
+                            {"type": "heal", "timestamp": 200},
+                        ],
+                        "nextPageTimestamp": None,
+                    }
+                }
+            }
+        }
+    }
+    mock_http.post.side_effect = [player_resp, pet_resp]
+    client._http = mock_http
+
+    events = client.get_events("abc", 1, [10, 42], 0, 10000)
+    assert len(events) == 3
+    # Events should be sorted by timestamp
+    assert [e["timestamp"] for e in events] == [100, 200, 300]
+    assert mock_http.post.call_count == 2
