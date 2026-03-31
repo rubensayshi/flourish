@@ -100,3 +100,40 @@ class BountifulBloomAttributor(StaticBuffAttributor):
     name = "Bounteous Bloom"
     spell_ids = {422090}  # Nourish (from treants)
     multiplier = 0.3
+
+
+class UnstoppableGrowthAttributor(StaticBuffAttributor):
+    """Unstoppable Growth: WG healing falls off 30% less per rank (2 ranks).
+    Net effect: ~27.7% more total WG healing."""
+    name = "Unstoppable Growth"
+    spell_ids = {48438}  # Wild Growth
+    multiplier = 0.277
+
+
+class IntensityAttributor(TalentAttributor):
+    """Intensity: Regrowth crits at 260% instead of 200%.
+    On Regrowth crits, attribute the bonus: amount - amount / 1.3"""
+    name = "Intensity"
+
+    REGROWTH_IDS = {8936, 1264664}  # Regrowth + Rampant Growth Regrowth
+
+    def process_heal(self, event: HealEvent, hot_tracker: HotTracker, buff_tracker: BuffTracker) -> float:
+        if event.ability_id in self.REGROWTH_IDS and event.hit_type == 2:  # 2 = crit
+            return event.amount - event.amount / 1.3
+        return 0.0
+
+
+class LivelinessAttributor(StaticBuffAttributor):
+    """Liveliness: HoTs heal 5% faster = ~5% more total HoT healing."""
+    name = "Liveliness"
+    spell_ids = {774, 155777, 8936, 1264664, 48438, 33763, 33778, 1244341}
+    # Rejuv, Germination, Regrowth, Rampant Growth RG, WG, LB tick, LB bloom, Everbloom
+    multiplier = 0.05
+
+
+class RegenesisAttributor(StaticBuffAttributor):
+    """Regenesis: Rejuv and Tranq healing +up to 30% on low health.
+    Approximate as flat 15% (configurable)."""
+    name = "Regenesis"
+    spell_ids = {774, 155777, 157982, 1264659}  # Rejuv, Germination, Tranquility, Flourish Tranq
+    multiplier = 0.15

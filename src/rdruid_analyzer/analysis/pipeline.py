@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 
 from rdruid_analyzer.models.events import (
     parse_event,
+    CombatantInfoEvent,
     HealEvent,
     ApplyBuffEvent,
     RefreshBuffEvent,
@@ -18,6 +19,7 @@ class AnalysisResults:
     wasted: int = 0
     talent_healing: dict[str, float] = field(default_factory=dict)
     fight_duration_ms: int = 0
+    combatant_info: CombatantInfoEvent | None = None
 
 
 class Pipeline:
@@ -38,6 +40,13 @@ class Pipeline:
             results.fight_duration_ms = events[-1].timestamp - events[0].timestamp
 
         for event in events:
+            # Store combatant info and notify attributors
+            if isinstance(event, CombatantInfoEvent):
+                results.combatant_info = event
+                for attr in self.attributors:
+                    attr.set_combatant_info(event)
+                continue
+
             # Update trackers
             if isinstance(event, (ApplyBuffEvent, RefreshBuffEvent, RemoveBuffEvent)):
                 self.hot_tracker.process(event)

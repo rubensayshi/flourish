@@ -39,6 +39,15 @@ class HealEvent(BaseEvent):
 
 
 @dataclass
+class CombatantInfoEvent(BaseEvent):
+    talent_nodes: set[int]  # set of nodeIDs from talentTree
+    crit_spell: float
+    haste_spell: float
+    mastery: float
+    spec_id: int
+
+
+@dataclass
 class ApplyBuffEvent(BaseEvent):
     target_id: int
     ability_id: int
@@ -67,6 +76,21 @@ EVENT_TYPE_MAP = {
 
 def parse_event(raw: dict) -> BaseEvent | None:
     event_type = raw.get("type")
+
+    if event_type == "combatantinfo":
+        talent_tree = raw.get("talentTree", [])
+        talent_nodes = {t["nodeID"] for t in talent_tree}
+        return CombatantInfoEvent(
+            timestamp=raw["timestamp"],
+            source_id=raw.get("sourceID", 0),
+            type="combatantinfo",
+            talent_nodes=talent_nodes,
+            crit_spell=raw.get("critSpell", 0),
+            haste_spell=raw.get("hasteSpell", 0),
+            mastery=raw.get("mastery", 0),
+            spec_id=raw.get("specID", 0),
+        )
+
     cls = EVENT_TYPE_MAP.get(event_type)
     if cls is None:
         return None

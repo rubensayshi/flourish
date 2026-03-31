@@ -23,6 +23,7 @@ from rdruid_analyzer.analysis.talents.direct_spells import (
     RampantGrowthAttributor,
     ImprovedSwiftmendAttributor,
     FlourishAttributor,
+    BurstingGrowthAttributor,
 )
 from rdruid_analyzer.analysis.talents.buff_multipliers import (
     WildSynthesisAttributor,
@@ -33,6 +34,10 @@ from rdruid_analyzer.analysis.talents.buff_multipliers import (
     GrovesInspirationAttributor,
     CenariusMightAttributor,
     BountifulBloomAttributor,
+    UnstoppableGrowthAttributor,
+    IntensityAttributor,
+    LivelinessAttributor,
+    RegenesisAttributor,
 )
 from rdruid_analyzer.output.table import render_results
 
@@ -73,6 +78,11 @@ def build_attributors(config: dict) -> list:
         GrovesInspirationAttributor(),
         CenariusMightAttributor(),
         BountifulBloomAttributor(),
+        UnstoppableGrowthAttributor(),
+        IntensityAttributor(),
+        LivelinessAttributor(),
+        RegenesisAttributor(),
+        BurstingGrowthAttributor(),
     ]
     active = []
     for a in all_attributors:

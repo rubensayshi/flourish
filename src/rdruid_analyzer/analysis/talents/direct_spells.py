@@ -70,3 +70,9 @@ class FlourishAttributor(DirectSpellAttributor):
     appear under a different spell ID."""
     name = "Flourish"
     spell_ids = {1264659}  # Tranquility (Flourish-modified)
+
+
+class BurstingGrowthAttributor(DirectSpellAttributor):
+    """Bursting Growth: AoE heal when Symbiotic Blooms expire or Rejuv on bloom target."""
+    name = "Bursting Growth"
+    spell_ids = {440120}

@@ -47,7 +47,7 @@ def test_parse_applybuff_event():
 
 
 def test_parse_unknown_event_returns_none():
-    raw = {"timestamp": 1000, "type": "combatantinfo", "sourceID": 1}
+    raw = {"timestamp": 1000, "type": "totally_unknown", "sourceID": 1}
     event = parse_event(raw)
     assert event is None
 

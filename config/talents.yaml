@@ -1,4 +1,4 @@
-# Restoration Druid talent configuration
+# Restoration Druid talent configuration (Midnight S1 / 12.0.1)
 # skip: true = exclude from analysis
 # multiplier: fraction of healing attributable to this talent
 
@@ -8,9 +8,6 @@ soul_of_the_forest:
   skip: false
   multiplier: 0.6
 
-cenarion_ward:
-  skip: false
-
 cultivation:
   skip: false
 
@@ -18,33 +15,20 @@ incarnation_tree_of_life:
   skip: false
 
 inner_peace:
-  skip: false
+  skip: true
+  skip_reason: "CD reduction only"
 
 flourish:
   skip: false
 
 germination:
-  skip: false
+  skip: true
+  skip_reason: "always take"
 
 photosynthesis:
   skip: false
 
-spring_blossoms:
-  skip: false
-
 abundance:
-  skip: false
-
-nourish:
-  skip: false
-
-overgrowth:
-  skip: false
-
-adaptive_swarm:
-  skip: false
-
-unbridled_swarm:
   skip: false
 
 convoke_the_spirits:
@@ -63,15 +47,162 @@ verdancy:
   skip: false
 
 harmonious_blooming:
-  skip: false
-
-dreamstate:
-  skip: false
+  skip: true
+  skip_reason: "mastery scaling, too complex for now"
 
 cenarius_guidance:
+  skip: true
+  skip_reason: "always take if ToL/Convoke taken"
+
+improved_regrowth:
+  skip: true
+  skip_reason: "always take for pathing"
+
+thriving_growth:
   skip: false
 
-luxuriant_soil:
+prosperity:
+  skip: false
+
+natures_splendor:
+  skip: true
+  skip_reason: "always take for utility"
+
+improved_wild_growth:
+  skip: false
+
+stonebark:
+  skip: true
+  skip_reason: "never taken, improved_ironbark always preferred"
+
+rampant_growth:
+  skip: false
+
+regenesis:
+  skip: false
+
+wild_synthesis:
+  skip: false
+
+unstoppable_growth:
+  skip: false
+
+improved_swiftmend:
+  skip: false
+
+regenerative_heartwood:
+  skip: false
+
+yseras_gift:
+  skip: false
+
+call_of_the_elder_druid:
+  skip: true
+  skip_reason: "skip"
+
+intensity:
+  skip: false
+
+liveliness:
+  skip: false
+
+waking_dream:
+  skip: true
+  skip_reason: "skip for now"
+
+embrace_of_the_dream:
+  skip: false
+
+natures_bounty:
+  skip: false
+
+dream_of_cenarius:
+  skip: true
+  skip_reason: "damage-to-healing, niche"
+
+thriving_vegetation:
+  skip: false
+
+nurturing_dormancy:
+  skip: false
+
+everbloom:
+  skip: false
+
+lifetreading:
+  skip: false
+
+renewing_surge:
+  skip: false
+
+# === Wildstalker hero talents ===
+
+wildstalkers_power:
+  skip: false
+
+patient_custodian:
+  skip: false
+
+vigorous_creepers:
+  skip: false
+
+bursting_growth:
+  skip: false
+
+rampancy:
+  skip: false
+
+resilient_flourishing:
+  skip: false
+
+root_network:
+  skip: false
+
+twin_sprouts:
+  skip: false
+
+implant:
+  skip: false
+
+green_thumb:
+  skip: false
+
+# === Keeper of the Grove hero talents ===
+
+dream_surge:
+  skip: false
+
+treants_of_the_moon:
+  skip: false
+
+blooming_infusion:
+  skip: false
+
+harmony_of_the_grove:
+  skip: false
+
+power_of_nature:
+  skip: false
+
+durability_of_nature:
+  skip: false
+
+bounteous_bloom:
+  skip: false
+
+early_spring:
+  skip: false
+
+power_of_the_dream:
+  skip: false
+
+control_of_the_dream:
+  skip: false
+
+groves_inspiration:
+  skip: false
+
+cenarius_might:
   skip: false
 
 # === Always-take / base talents (skip) ===
@@ -122,10 +253,74 @@ innervate:
   skip: true
   skip_reason: "mana savings, not direct healing"
 
-natures_vigil:
-  skip: true
-  skip_reason: "passive, not a talent choice"
-
 verdant_infusion:
   skip: true
   skip_reason: "utility extension, not direct healing"
+
+passing_seasons:
+  skip: true
+  skip_reason: "cooldown reduction, not direct healing"
+
+improved_ironbark:
+  skip: true
+  skip_reason: "always take for utility"
+
+tranquil_mind:
+  skip: true
+  skip_reason: "mana savings (Clearcasting), not direct healing"
+
+master_shapeshifter:
+  skip: true
+  skip_reason: "mana generation / damage, not direct healing"
+
+protective_growth:
+  skip: true
+  skip_reason: "self damage reduction, not healing"
+
+hunt_beneath_the_open_skies:
+  skip: true
+  skip_reason: "damage / Cat Form, not healing"
+
+strategic_infusion:
+  skip: true
+  skip_reason: "crit from Prowl / minor periodic crit"
+
+lethal_preservation:
+  skip: true
+  skip_reason: "minor self-heal on dispel, utility"
+
+entangling_vortex:
+  skip: true
+  skip_reason: "CC utility, not healing"
+
+flower_walk:
+  skip: true
+  skip_reason: "minor movement healing, utility"
+
+bond_with_nature:
+  skip: true
+  skip_reason: "self damage reduction, not healing"
+
+harmonious_constitution:
+  skip: true
+  skip_reason: "self-heal boost, not group healing"
+
+expansiveness:
+  skip: true
+  skip_reason: "mana increase, not direct healing"
+
+sylvan_beckoning:
+  skip: true
+  skip_reason: "damage / astral, not healing"
+
+dryads_dance:
+  skip: true
+  skip_reason: "astral power generation, not healing"
+
+potent_enchantments:
+  skip: true
+  skip_reason: "damage only, not healing"
+
+spirit_of_the_thicket:
+  skip: true
+  skip_reason: "damage only, not healing"
