@@ -43,6 +43,14 @@ from rdruid_analyzer.analysis.talents.tree_of_life import TreeOfLifeAttributor
 from rdruid_analyzer.analysis.talents.convoke import ConvokeAttributor
 from rdruid_analyzer.analysis.talents.improved_wild_growth import ImprovedWildGrowthAttributor
 from rdruid_analyzer.analysis.talents.reforestation import ReforestationAttributor
+from rdruid_analyzer.analysis.talents.wildstalker import (
+    VigorousCreepersAttributor,
+    ImplantAttributor,
+    RootNetworkAttributor,
+)
+from rdruid_analyzer.analysis.talents.abundance import AbundanceAttributor
+from rdruid_analyzer.analysis.talents.photosynthesis import PhotosynthesisAttributor
+from rdruid_analyzer.analysis.talents.nurturing_dormancy import NurturingDormancyAttributor
 from rdruid_analyzer.output.table import render_results
 
 app = typer.Typer()
@@ -91,6 +99,12 @@ def build_attributors(config: dict) -> list:
         ConvokeAttributor(),
         ImprovedWildGrowthAttributor(),
         ReforestationAttributor(),
+        VigorousCreepersAttributor(),
+        ImplantAttributor(),
+        RootNetworkAttributor(),
+        AbundanceAttributor(),
+        PhotosynthesisAttributor(),
+        NurturingDormancyAttributor(),
     ]
     active = []
     for a in all_attributors:
