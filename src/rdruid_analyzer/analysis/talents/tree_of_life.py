@@ -17,9 +17,11 @@ class TreeOfLifeAttributor(TalentAttributor):
     name = "Incarnation: Tree of Life"
 
     def __init__(self):
+        super().__init__()
         self._tol_active = False
         self._wg_buffer: list[HealEvent] = []
         self._buffer_start = 0
+        self._deferred_wg_healing = 0.0
 
     def _base_wg_targets(self) -> int:
         return 7 if self.has_talent(IWG_NODE) else 5
@@ -33,7 +35,6 @@ class TreeOfLifeAttributor(TalentAttributor):
         # 10% base buff on all ticks
         base_buff = total_healing - total_healing / 1.1
         # Extra target attribution: 2 extra targets on top of base
-        extra_targets = 2
         if targets > base_targets:
             extra_share = total_healing * (targets - base_targets) / targets
         else:
@@ -46,23 +47,20 @@ class TreeOfLifeAttributor(TalentAttributor):
             self._tol_active = True
         elif isinstance(event, RemoveBuffEvent) and event.ability_id == TOL_BUFF:
             self._tol_active = False
+            # Flush pending WG buffer when ToL ends
+            self._deferred_wg_healing += self._flush_wg_buffer()
 
     def process_heal(self, event: HealEvent, hot_tracker: HotTracker, buff_tracker: BuffTracker) -> float:
         if not self._tol_active:
-            # Flush any pending WG buffer before returning
-            flushed = self._flush_wg_buffer()
-            return flushed
+            return 0.0
 
         if event.ability_id in REJUV_IDS:
             return event.amount - event.amount / 1.5
 
         if event.ability_id == WILD_GROWTH:
-            # Buffer WG ticks and flush when window expires
+            flushed = 0.0
             if self._wg_buffer and event.timestamp - self._buffer_start > TICK_WINDOW_MS:
                 flushed = self._flush_wg_buffer()
-            else:
-                flushed = 0.0
-
             if not self._wg_buffer:
                 self._buffer_start = event.timestamp
             self._wg_buffer.append(event)
@@ -70,3 +68,6 @@ class TreeOfLifeAttributor(TalentAttributor):
 
         # All other heals: +10%
         return event.amount - event.amount / 1.1
+
+    def finalize(self) -> float:
+        return self._deferred_wg_healing + self._flush_wg_buffer()

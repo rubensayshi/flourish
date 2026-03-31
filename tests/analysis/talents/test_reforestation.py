@@ -88,3 +88,46 @@ def test_reforestation_triggers_again_at_8th():
     results = pipeline.run(events)
     # +10% = 1000
     assert results.talent_healing["Reforestation"] == pytest.approx(1000.0)
+
+
+TOL_BUFF = 33891
+
+
+def make_applybuff(ts, ability, target=1):
+    return {"timestamp": ts, "type": "applybuff", "sourceID": 1, "targetID": target, "abilityGameID": ability}
+
+
+def make_removebuff(ts, ability, target=1):
+    return {"timestamp": ts, "type": "removebuff", "sourceID": 1, "targetID": target, "abilityGameID": ability}
+
+
+def test_reforestation_no_trigger_during_real_tol():
+    """Reforestation should NOT trigger if real ToL is already active."""
+    events = [
+        make_applybuff(50, TOL_BUFF),  # Real ToL active
+        make_cast(100, SWIFTMEND),
+        make_cast(200, SWIFTMEND),
+        make_cast(300, SWIFTMEND),
+        make_cast(400, SWIFTMEND),  # 4th SM — but real ToL is active, so no Reforestation trigger
+        make_removebuff(450, TOL_BUFF),
+        make_heal(500, 8936, 11000),  # After real ToL ends — should not be attributed
+    ]
+    pipeline = Pipeline(attributors=[ReforestationAttributor()])
+    results = pipeline.run(events)
+    assert results.talent_healing["Reforestation"] == 0.0
+
+
+def test_reforestation_no_attribution_during_real_tol():
+    """Even if Reforestation window is active, real ToL takes priority."""
+    events = [
+        make_cast(100, SWIFTMEND),
+        make_cast(200, SWIFTMEND),
+        make_cast(300, SWIFTMEND),
+        make_cast(400, SWIFTMEND),  # Triggers Reforestation ToL (no real ToL active)
+        make_applybuff(500, TOL_BUFF),  # Real ToL activates during Reforestation window
+        make_heal(600, 8936, 11000),  # During real ToL — Reforestation should NOT claim this
+        make_removebuff(700, TOL_BUFF),
+    ]
+    pipeline = Pipeline(attributors=[ReforestationAttributor()])
+    results = pipeline.run(events)
+    assert results.talent_healing["Reforestation"] == 0.0

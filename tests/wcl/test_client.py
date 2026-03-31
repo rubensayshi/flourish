@@ -55,6 +55,6 @@ def test_get_events_paginates():
     mock_http.post.side_effect = [page1, page2]
     client._http = mock_http
 
-    events = client.get_events("abc", 1, 1, 0, 10000)
+    events = client.get_events("abc", 1, [1], 0, 10000)
     assert len(events) == 2
     assert mock_http.post.call_count == 2

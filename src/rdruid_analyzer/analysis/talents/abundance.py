@@ -8,6 +8,10 @@ GERMINATION_REJUV = 155777
 REGROWTH_IDS = {8936, 1264664}  # Regrowth + Rampant Growth Regrowth
 ABUNDANCE_CRIT_PER_REJUV = 0.08  # 8% crit per active Rejuv
 
+# WoW Midnight (12.0.x): ~660 crit rating = 1% crit at max level
+# This is approximate and varies slightly with level/expansion
+CRIT_RATING_PER_PERCENT = 700.0
+
 
 class AbundanceAttributor(TalentAttributor):
     """Abundance: +8% Regrowth crit per active Rejuv, up to 96%.
@@ -31,9 +35,8 @@ class AbundanceAttributor(TalentAttributor):
 
         # Get base crit from combatant info
         base_crit = 0.0
-        if hasattr(self, "combatant_info") and self.combatant_info:
-            # critSpell is in rating, roughly /700 for percentage at this level
-            base_crit = self.combatant_info.crit_spell / 700.0
+        if self.combatant_info:
+            base_crit = self.combatant_info.crit_spell / CRIT_RATING_PER_PERCENT
         base_crit = max(base_crit, 0.05)  # minimum 5% base crit
 
         total_crit = base_crit + abundance_crit

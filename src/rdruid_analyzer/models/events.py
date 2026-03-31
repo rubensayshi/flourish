@@ -22,11 +22,12 @@ class HealEvent(BaseEvent):
     ability_id: int
     amount: int
     overheal: int
+    absorb: int  # healing absorbed by shields
     hit_type: int  # 1=normal, 2=crit
 
     @property
     def raw_heal(self) -> int:
-        return self.amount + self.overheal
+        return self.amount + self.overheal + self.absorb
 
     @property
     def overheal_pct(self) -> float:
@@ -108,6 +109,7 @@ def parse_event(raw: dict) -> BaseEvent | None:
             ability_id=raw.get("abilityGameID", 0),
             amount=raw.get("amount", 0),
             overheal=raw.get("overheal", 0),
+            absorb=raw.get("absorb", 0),
             hit_type=raw.get("hitType", 1),
         )
 

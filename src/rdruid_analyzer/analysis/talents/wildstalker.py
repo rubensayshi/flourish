@@ -33,6 +33,7 @@ class ImplantAttributor(TalentAttributor):
     name = "Implant"
 
     def __init__(self):
+        super().__init__()
         self._recent_casts: list[tuple[int, int]] = []  # (timestamp, target_id)
 
     def process_event(self, event, hot_tracker: HotTracker, buff_tracker: BuffTracker):

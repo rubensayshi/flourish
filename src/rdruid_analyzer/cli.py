@@ -61,12 +61,18 @@ DRUID_CLASS = "Druid"
 
 def get_wcl_client() -> WCLClient:
     load_dotenv()
-    client_id = os.environ["WCL_CLIENT_ID"]
-    client_secret = os.environ["WCL_CLIENT_SECRET"]
+    client_id = os.environ.get("WCL_CLIENT_ID")
+    client_secret = os.environ.get("WCL_CLIENT_SECRET")
+    if not client_id or not client_secret:
+        console.print("[red]Error:[/] WCL_CLIENT_ID and WCL_CLIENT_SECRET must be set in .env")
+        raise typer.Exit(1)
     return WCLClient(client_id, client_secret)
 
 
 def build_attributors(config: dict) -> list:
+    convoke_cfg = config.get("convoke_the_spirits")
+    convoke_ratio = convoke_cfg.multiplier if convoke_cfg and convoke_cfg.multiplier is not None else 0.7
+
     all_attributors = [
         SoulOfTheForestAttributor(),
         EverbloomAttributor(),
@@ -96,7 +102,7 @@ def build_attributors(config: dict) -> list:
         RegenesisAttributor(),
         BurstingGrowthAttributor(),
         TreeOfLifeAttributor(),
-        ConvokeAttributor(),
+        ConvokeAttributor(healing_ratio=convoke_ratio),
         ImprovedWildGrowthAttributor(),
         ReforestationAttributor(),
         VigorousCreepersAttributor(),
@@ -143,8 +149,8 @@ def analyze(
     selected_fight = next(f for f in report["fights"] if f["id"] == fight)
 
     # Select player
-    actors = report["masterData"]["actors"]
-    druids = [a for a in actors if a.get("subType") == DRUID_CLASS]
+    all_actors = report["masterData"]["actors"]
+    druids = [a for a in all_actors if a.get("subType") == DRUID_CLASS]
     if player is None:
         if len(druids) == 1:
             selected_player = druids[0]
@@ -158,6 +164,10 @@ def analyze(
     else:
         selected_player = next(d for d in druids if d["name"].lower() == player.lower())
 
+    # Build source IDs: player + their pets (e.g., Grove Guardian treants)
+    pet_ids = [a["id"] for a in all_actors if a.get("petOwner") == selected_player["id"]]
+    source_ids = [selected_player["id"]] + pet_ids
+
     # Fetch events
     console.print(
         f"\nFetching events for [bold]{selected_player['name']}[/] "
@@ -166,7 +176,7 @@ def analyze(
     raw_events = client.get_events(
         report_code,
         selected_fight["id"],
-        selected_player["id"],
+        source_ids,
         selected_fight["startTime"],
         selected_fight["endTime"],
     )

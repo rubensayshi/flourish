@@ -70,3 +70,25 @@ def test_heal_event_not_wasted():
     }
     event = parse_event(raw)
     assert not event.is_wasted  # 1000/5000 = 20% < 50%
+
+
+def test_heal_event_absorb_included_in_raw_heal():
+    raw = {
+        "timestamp": 1000, "type": "heal", "sourceID": 1,
+        "targetID": 2, "abilityGameID": 774,
+        "amount": 5000, "overheal": 1000, "absorb": 500, "hitType": 1,
+    }
+    event = parse_event(raw)
+    assert event.absorb == 500
+    assert event.raw_heal == 6500  # 5000 + 1000 + 500
+
+
+def test_heal_event_absorb_defaults_to_zero():
+    raw = {
+        "timestamp": 1000, "type": "heal", "sourceID": 1,
+        "targetID": 2, "abilityGameID": 774,
+        "amount": 5000, "overheal": 1000, "hitType": 1,
+    }
+    event = parse_event(raw)
+    assert event.absorb == 0
+    assert event.raw_heal == 6000

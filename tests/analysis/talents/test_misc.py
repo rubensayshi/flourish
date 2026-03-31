@@ -185,3 +185,27 @@ class TestNurturingDormancy:
         pipeline = Pipeline(attributors=[NurturingDormancyAttributor()])
         results = pipeline.run(events)
         assert results.talent_healing["Nurturing Dormancy"] == 0.0
+
+    def test_refresh_resets_base_duration(self):
+        """After refresh, elapsed time should be measured from the refresh, not original apply."""
+        events = [
+            make_apply(0, REJUV),
+            make_refresh(10000, REJUV),  # Refresh at 10s
+            make_heal(21000, REJUV, 5000),  # 11s after refresh — past base 12s? No, 11 < 12
+        ]
+        pipeline = Pipeline(attributors=[NurturingDormancyAttributor()])
+        results = pipeline.run(events)
+        # 21000 - 10000 = 11000ms < 12000ms base — should NOT be attributed
+        assert results.talent_healing["Nurturing Dormancy"] == 0.0
+
+    def test_refresh_then_tick_past_base_attributed(self):
+        """Tick past base duration measured from refresh IS attributed."""
+        events = [
+            make_apply(0, REJUV),
+            make_refresh(5000, REJUV),  # Refresh at 5s
+            make_heal(18000, REJUV, 5000),  # 13s after refresh — past 12s base
+        ]
+        pipeline = Pipeline(attributors=[NurturingDormancyAttributor()])
+        results = pipeline.run(events)
+        # 18000 - 5000 = 13000ms > 12000ms — attributed
+        assert results.talent_healing["Nurturing Dormancy"] == pytest.approx(5000.0)

@@ -57,3 +57,34 @@ def test_convoke_custom_ratio():
     pipeline = Pipeline(attributors=[ConvokeAttributor(healing_ratio=0.5)])
     results = pipeline.run(events)
     assert results.talent_healing["Convoke the Spirits"] == pytest.approx(5000.0)
+
+
+def make_applybuff(ts, ability, target=2):
+    return {"timestamp": ts, "type": "applybuff", "sourceID": 1, "targetID": target, "abilityGameID": ability}
+
+
+def test_convoke_tags_hot_applied_during_channel():
+    """HoT applied during Convoke channel is tagged; ticks after channel are attributed."""
+    events = [
+        make_cast(1000, CONVOKE),
+        make_applybuff(1200, 774, target=5),      # Rejuv applied during channel
+        make_heal(1500, 774, 3000, target=5),      # Tick during channel — tagged HoT
+        make_heal(6000, 774, 3000, target=5),      # Tick AFTER channel — still attributed via tag
+    ]
+    pipeline = Pipeline(attributors=[ConvokeAttributor()])
+    results = pipeline.run(events)
+    # Both ticks attributed at 70%: 2 * 3000 * 0.7 = 4200
+    assert results.talent_healing["Convoke the Spirits"] == pytest.approx(4200.0)
+
+
+def test_convoke_preexisting_hot_not_attributed():
+    """Pre-existing HoT ticks during Convoke channel should NOT be attributed."""
+    events = [
+        make_applybuff(100, 774, target=5),        # Rejuv applied before Convoke
+        make_cast(1000, CONVOKE),
+        make_heal(1500, 774, 10000, target=5),     # Tick during channel — but HoT existed before
+    ]
+    pipeline = Pipeline(attributors=[ConvokeAttributor()])
+    results = pipeline.run(events)
+    # HoT was tracked (not None) but NOT tagged by Convoke — should be 0
+    assert results.talent_healing["Convoke the Spirits"] == 0.0

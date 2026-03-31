@@ -72,12 +72,38 @@ def test_tol_wg_base_buff():
         make_applybuff(100, TOL_BUFF),
         # Single WG tick on one target
         make_heal(200, 48438, 10000, target=2),
-        # Force flush by ending ToL
+        # Force flush by ending ToL (buffer flushes in process_event + finalize)
         make_removebuff(500, TOL_BUFF),
-        # Need a non-WG heal after removebuff to flush the buffer
-        make_heal(600, 8936, 0, target=2),
     ]
     pipeline = Pipeline(attributors=[TreeOfLifeAttributor()])
     results = pipeline.run(events)
     # 10% buff = 10000 - 10000/1.1 ~= 909.09
+    assert results.talent_healing["Incarnation: Tree of Life"] == pytest.approx(909.09, rel=0.01)
+
+
+def test_tol_no_attribution_on_unrelated_event_after_deactivation():
+    """After ToL deactivates, unrelated heals should not get WG buffer attribution."""
+    events = [
+        make_applybuff(100, TOL_BUFF),
+        make_heal(200, 48438, 10000, target=2),
+        make_removebuff(500, TOL_BUFF),
+        # Unrelated heal after ToL — should NOT get WG buffer leaked onto it
+        make_heal(600, 8936, 5000, target=2),
+    ]
+    pipeline = Pipeline(attributors=[TreeOfLifeAttributor()])
+    results = pipeline.run(events)
+    # Only the WG buff: ~909.09, the Regrowth heal should contribute 0
+    assert results.talent_healing["Incarnation: Tree of Life"] == pytest.approx(909.09, rel=0.01)
+
+
+def test_tol_wg_buffer_flushed_at_fight_end():
+    """WG buffer should flush via finalize() even if ToL is still active at fight end."""
+    events = [
+        make_applybuff(100, TOL_BUFF),
+        make_heal(200, 48438, 10000, target=2),
+        # No removebuff — fight ends while ToL is still active
+    ]
+    pipeline = Pipeline(attributors=[TreeOfLifeAttributor()])
+    results = pipeline.run(events)
+    # Buffer should flush via finalize: 10% buff = ~909.09
     assert results.talent_healing["Incarnation: Tree of Life"] == pytest.approx(909.09, rel=0.01)

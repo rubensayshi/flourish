@@ -19,8 +19,9 @@ class NurturingDormancyAttributor(TalentAttributor):
         hot = hot_tracker.get(event.target_id, REJUV)
         if not hot:
             return 0.0
-        # Check if this tick is past the base duration
-        elapsed = event.timestamp - hot.applied_at
+        # Use the most recent application/refresh as the base
+        base_time = hot.last_refresh if hot.last_refresh > 0 else hot.applied_at
+        elapsed = event.timestamp - base_time
         if elapsed > BASE_REJUV_DURATION_MS:
             return float(event.amount)
         return 0.0

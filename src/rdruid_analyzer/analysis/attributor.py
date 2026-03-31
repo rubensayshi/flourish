@@ -8,13 +8,16 @@ from rdruid_analyzer.tracking.buff_tracker import BuffTracker
 class TalentAttributor:
     name: str = "Unknown"
 
+    def __init__(self):
+        self.combatant_info: CombatantInfoEvent | None = None
+
     def set_combatant_info(self, info: CombatantInfoEvent):
         """Called once at fight start with player's talent/stat info."""
         self.combatant_info = info
 
     def has_talent(self, node_id: int) -> bool:
         """Check if a specific talent node is active."""
-        if hasattr(self, "combatant_info") and self.combatant_info:
+        if self.combatant_info:
             return node_id in self.combatant_info.talent_nodes
         return False
 

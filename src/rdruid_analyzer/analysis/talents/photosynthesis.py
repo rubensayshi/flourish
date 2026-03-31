@@ -15,6 +15,7 @@ class PhotosynthesisAttributor(TalentAttributor):
     name = "Photosynthesis"
 
     def __init__(self):
+        super().__init__()
         self._bloom_events: list[tuple[int, int, float]] = []  # (timestamp, target_id, amount)
         self._explained_blooms: set[tuple[int, int]] = set()  # (timestamp, target_id)
 

@@ -13,12 +13,13 @@ query($code: String!) {
                 encounterID
             }
             masterData {
-                actors(type: "Player") {
+                actors {
                     id
                     name
                     type
                     subType
                     server
+                    petOwner
                 }
             }
         }
@@ -27,13 +28,14 @@ query($code: String!) {
 """
 
 EVENTS_QUERY = """
-query($code: String!, $startTime: Float!, $endTime: Float!, $sourceID: Int!) {
+query($code: String!, $startTime: Float!, $endTime: Float!, $sourceID: Int!, $fightIDs: [Int!]) {
     reportData {
         report(code: $code) {
             events(
                 startTime: $startTime,
                 endTime: $endTime,
                 sourceID: $sourceID,
+                fightIDs: $fightIDs,
                 dataType: All,
                 limit: 10000
             ) {

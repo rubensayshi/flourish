@@ -1,5 +1,5 @@
 from rdruid_analyzer.analysis.attributor import TalentAttributor
-from rdruid_analyzer.models.events import HealEvent
+from rdruid_analyzer.models.events import HealEvent, CastEvent
 from rdruid_analyzer.tracking.hot_tracker import HotTracker
 from rdruid_analyzer.tracking.buff_tracker import BuffTracker
 
@@ -55,6 +55,7 @@ class HarmonyOfTheGroveAttributor(TalentAttributor):
     name = "Harmony of the Grove"
 
     def __init__(self):
+        super().__init__()
         self._guardian_count = 0
         self._guardian_despawn_times: list[int] = []
 
@@ -64,13 +65,12 @@ class HarmonyOfTheGroveAttributor(TalentAttributor):
             self._guardian_despawn_times = [t for t in self._guardian_despawn_times if t > event.timestamp]
             self._guardian_count = len(self._guardian_despawn_times)
 
-        # Track guardian summons via the summon event type or cast events
-        # WCL summon events have type "summon" with abilityGameID for the guardian
-        from rdruid_analyzer.models.events import CastEvent
+        # Track guardian summons via cast events
         if isinstance(event, CastEvent) and event.ability_id in (18562, 48438):
-            # Swiftmend or Wild Growth summons a guardian (Grove Guardians talent)
-            self._guardian_despawn_times.append(event.timestamp + 8000)
-            self._guardian_count = len([t for t in self._guardian_despawn_times if t > event.timestamp])
+            # Only count if Grove Guardians talent is taken
+            if self.has_talent(82043):
+                self._guardian_despawn_times.append(event.timestamp + 8000)
+                self._guardian_count = len([t for t in self._guardian_despawn_times if t > event.timestamp])
 
     def process_heal(self, event: HealEvent, hot_tracker: HotTracker, buff_tracker: BuffTracker) -> float:
         if self._guardian_count <= 0:

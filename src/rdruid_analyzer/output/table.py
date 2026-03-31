@@ -35,8 +35,20 @@ def render_results(results: AnalysisResults, fight_name: str = "", player_name: 
 
     table.add_section()
     table.add_row("Wasted (>50% OH)", format_healing(results.wasted), "—", "—", style="dim")
-    unattributed = results.total_healing - sum(a for a in results.talent_healing.values() if a > 0) - results.wasted
-    table.add_row("Unattributed", format_healing(max(0, unattributed)), "—", "—", style="dim")
+    total_attributed = sum(a for a in results.talent_healing.values() if a > 0)
+    unattributed = results.total_healing - total_attributed - results.wasted
+    if unattributed > 0:
+        table.add_row("Unattributed", format_healing(unattributed), "—", "—", style="dim")
+    else:
+        table.add_row("Unattributed", "—", "—", "—", style="dim")
 
     console.print(table)
+
+    if total_attributed > results.total_healing:
+        console.print(
+            "\n[dim]Note: Talents can overlap (multiple talents buff the same heal).[/]"
+            "\n[dim]Total attributed may exceed total healing. Each value answers:[/]"
+            '\n[dim]"How much healing would I lose dropping this talent?"[/]'
+        )
+
     return console.export_text()

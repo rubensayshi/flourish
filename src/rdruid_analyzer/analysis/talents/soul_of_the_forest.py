@@ -14,6 +14,7 @@ class SoulOfTheForestAttributor(TalentAttributor):
     name = "Soul of the Forest"
 
     def __init__(self):
+        super().__init__()
         self._sotf_ready = False
 
     def process_event(self, event, hot_tracker: HotTracker, buff_tracker: BuffTracker):
@@ -32,6 +33,9 @@ class SoulOfTheForestAttributor(TalentAttributor):
             return 0.0
 
         hot = hot_tracker.get(event.target_id, event.ability_id)
+        # NOTE: SotF tag persists through Rejuv refresh. This may or may not be
+        # correct — if the game resets the buff on refresh, we're over-attributing.
+        # See docs/ingame-testing.md for verification plan.
         if not hot or SOTF_TAG not in hot.tags:
             return 0.0
 

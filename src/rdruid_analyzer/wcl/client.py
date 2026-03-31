@@ -44,25 +44,28 @@ class WCLClient:
         self,
         code: str,
         fight_id: int,
-        source_id: int,
+        source_ids: list[int],
         start_time: float,
         end_time: float,
     ) -> list[dict]:
         all_events = []
-        current_start = start_time
 
-        while current_start is not None:
-            data = self._query(
-                EVENTS_QUERY,
-                {
-                    "code": code,
-                    "startTime": current_start,
-                    "endTime": end_time,
-                    "sourceID": source_id,
-                },
-            )
-            events_data = data["reportData"]["report"]["events"]
-            all_events.extend(events_data["data"])
-            current_start = events_data.get("nextPageTimestamp")
+        for source_id in source_ids:
+            current_start = start_time
+            while current_start is not None:
+                data = self._query(
+                    EVENTS_QUERY,
+                    {
+                        "code": code,
+                        "startTime": current_start,
+                        "endTime": end_time,
+                        "sourceID": source_id,
+                        "fightIDs": [fight_id],
+                    },
+                )
+                events_data = data["reportData"]["report"]["events"]
+                all_events.extend(events_data["data"])
+                current_start = events_data.get("nextPageTimestamp")
 
+        all_events.sort(key=lambda e: e["timestamp"])
         return all_events
