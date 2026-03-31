@@ -25,3 +25,7 @@ class TalentAttributor:
     def process_heal(self, event: HealEvent, hot_tracker: HotTracker, buff_tracker: BuffTracker) -> float:
         """Called for non-wasted heal events. Return attributed healing amount."""
         return 0.0
+
+    def finalize(self) -> float:
+        """Called after all events processed. Return any additional attributed healing."""
+        return 0.0

@@ -39,6 +39,10 @@ from rdruid_analyzer.analysis.talents.buff_multipliers import (
     LivelinessAttributor,
     RegenesisAttributor,
 )
+from rdruid_analyzer.analysis.talents.tree_of_life import TreeOfLifeAttributor
+from rdruid_analyzer.analysis.talents.convoke import ConvokeAttributor
+from rdruid_analyzer.analysis.talents.improved_wild_growth import ImprovedWildGrowthAttributor
+from rdruid_analyzer.analysis.talents.reforestation import ReforestationAttributor
 from rdruid_analyzer.output.table import render_results
 
 app = typer.Typer()
@@ -83,6 +87,10 @@ def build_attributors(config: dict) -> list:
         LivelinessAttributor(),
         RegenesisAttributor(),
         BurstingGrowthAttributor(),
+        TreeOfLifeAttributor(),
+        ConvokeAttributor(),
+        ImprovedWildGrowthAttributor(),
+        ReforestationAttributor(),
     ]
     active = []
     for a in all_attributors:
