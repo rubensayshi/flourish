@@ -21,11 +21,11 @@ from rdruid_analyzer.analysis.talents.direct_spells import (
     YserasGiftAttributor,
     EmbraceOfTheDreamAttributor,
     RampantGrowthAttributor,
-    ImprovedSwiftmendAttributor,
     FlourishAttributor,
     BurstingGrowthAttributor,
 )
 from rdruid_analyzer.analysis.talents.buff_multipliers import (
+    ImprovedSwiftmendAttributor,
     WildSynthesisAttributor,
     WildstalkersPowerAttributor,
     PatientCustodianAttributor,

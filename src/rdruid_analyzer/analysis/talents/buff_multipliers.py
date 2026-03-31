@@ -17,11 +17,19 @@ class StaticBuffAttributor(TalentAttributor):
         return 0.0
 
 
+class ImprovedSwiftmendAttributor(StaticBuffAttributor):
+    """Improved Swiftmend: Swiftmend healing increased by 30%."""
+    name = "Improved Swiftmend"
+    talent_node_id = 103873
+    spell_ids = {18562}  # Swiftmend
+    multiplier = 0.3
+
+
 class WildSynthesisAttributor(StaticBuffAttributor):
     """Wild Synthesis: Grove Guardians, Efflorescence, and summons heal 30% more."""
     name = "Wild Synthesis"
     talent_node_id = 94535
-    spell_ids = {422090, 81269, 434141}  # Nourish, Efflorescence, Dream Bloom
+    spell_ids = {422090, 142421, 81269, 434141}  # Nourish, Treant heal, Efflorescence, Dream Bloom
     multiplier = 0.3
 
 
@@ -90,8 +98,8 @@ class GrovesInspirationAttributor(StaticBuffAttributor):
     name = "Grove's Inspiration"
     talent_node_id = 94595
     talent_id = 122201
-    spell_ids = {8936, 1264664, 48438, 18562, 142421}
-    # Regrowth, Rampant Growth Regrowth, Wild Growth, Swiftmend, Improved Swiftmend
+    spell_ids = {8936, 1264664, 48438, 18562}
+    # Regrowth, Rampant Growth Regrowth, Wild Growth, Swiftmend
     multiplier = 0.09
 
 
@@ -99,7 +107,7 @@ class CenariusMightAttributor(StaticBuffAttributor):
     """Cenarius' Might: Swiftmend healing increased by 20%."""
     name = "Cenarius' Might"
     talent_node_id = 94604
-    spell_ids = {18562, 142421}  # Swiftmend + Improved Swiftmend
+    spell_ids = {18562}  # Swiftmend
     multiplier = 0.2
 
 
@@ -108,7 +116,7 @@ class BountifulBloomAttributor(StaticBuffAttributor):
     name = "Bounteous Bloom"
     talent_node_id = 94591
     talent_id = 122196
-    spell_ids = {422090}  # Nourish (from treants)
+    spell_ids = {422090, 142421}  # Nourish + direct heal (from treants)
     multiplier = 0.3
 
 

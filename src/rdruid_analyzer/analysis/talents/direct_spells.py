@@ -69,13 +69,6 @@ class RampantGrowthAttributor(DirectSpellAttributor):
     spell_ids = {1264664}  # Regrowth (from Rampant Growth)
 
 
-class ImprovedSwiftmendAttributor(DirectSpellAttributor):
-    """Improved Swiftmend: +30% Swiftmend healing.
-    WCL logs the bonus portion under a separate spell ID."""
-    name = "Improved Swiftmend"
-    talent_node_id = 103873
-    spell_ids = {142421}  # Swiftmend (bonus from Improved Swiftmend)
-
 
 class FlourishAttributor(DirectSpellAttributor):
     """Flourish: Tranquility extends HoTs. The extended Tranq ticks
