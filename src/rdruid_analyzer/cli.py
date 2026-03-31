@@ -14,7 +14,7 @@ from rdruid_analyzer.output.table import render_results
 app = typer.Typer()
 console = Console()
 
-RESTO_DRUID_SPEC = "Restoration"
+DRUID_CLASS = "Druid"
 
 
 def get_wcl_client() -> WCLClient:
@@ -41,7 +41,7 @@ def build_attributors(config: dict) -> list:
 
 @app.command()
 def analyze(
-    report_code: str,
+    report_code: str = typer.Argument(help="WarcraftLogs report code"),
     fight: int | None = typer.Option(None, help="Fight ID"),
     player: str | None = typer.Option(None, help="Player name"),
     config_path: str = typer.Option("config/talents.yaml", help="Talent config path"),
@@ -67,7 +67,7 @@ def analyze(
 
     # Select player
     actors = report["masterData"]["actors"]
-    druids = [a for a in actors if a.get("subType") == RESTO_DRUID_SPEC]
+    druids = [a for a in actors if a.get("subType") == DRUID_CLASS]
     if player is None:
         if len(druids) == 1:
             selected_player = druids[0]
