@@ -1,0 +1,68 @@
+import httpx
+
+from rdruid_analyzer.wcl.queries import EVENTS_QUERY, FIGHTS_QUERY
+
+WCL_OAUTH_URL = "https://www.warcraftlogs.com/oauth/token"
+WCL_API_URL = "https://www.warcraftlogs.com/api/v2/client"
+
+
+class WCLClient:
+    def __init__(self, client_id: str, client_secret: str):
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self._token: str | None = None
+        self._http = httpx.Client(timeout=30)
+
+    def _authenticate(self):
+        resp = self._http.post(
+            WCL_OAUTH_URL,
+            auth=(self.client_id, self.client_secret),
+            data={"grant_type": "client_credentials"},
+        )
+        resp.raise_for_status()
+        self._token = resp.json()["access_token"]
+
+    def _query(self, query: str, variables: dict) -> dict:
+        if not self._token:
+            self._authenticate()
+        resp = self._http.post(
+            WCL_API_URL,
+            headers={"Authorization": f"Bearer {self._token}"},
+            json={"query": query, "variables": variables},
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        if "errors" in data:
+            raise RuntimeError(f"WCL API errors: {data['errors']}")
+        return data["data"]
+
+    def get_report(self, code: str) -> dict:
+        data = self._query(FIGHTS_QUERY, {"code": code})
+        return data["reportData"]["report"]
+
+    def get_events(
+        self,
+        code: str,
+        fight_id: int,
+        source_id: int,
+        start_time: float,
+        end_time: float,
+    ) -> list[dict]:
+        all_events = []
+        current_start = start_time
+
+        while current_start is not None:
+            data = self._query(
+                EVENTS_QUERY,
+                {
+                    "code": code,
+                    "startTime": current_start,
+                    "endTime": end_time,
+                    "sourceID": source_id,
+                },
+            )
+            events_data = data["reportData"]["report"]["events"]
+            all_events.extend(events_data["data"])
+            current_start = events_data.get("nextPageTimestamp")
+
+        return all_events
