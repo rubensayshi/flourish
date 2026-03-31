@@ -9,6 +9,18 @@ from rdruid_analyzer.wcl.client import WCLClient
 from rdruid_analyzer.models.config import load_config
 from rdruid_analyzer.analysis.pipeline import Pipeline
 from rdruid_analyzer.analysis.talents.soul_of_the_forest import SoulOfTheForestAttributor
+from rdruid_analyzer.analysis.talents.direct_spells import (
+    EverbloomAttributor,
+    GroveGuardiansAttributor,
+    DreamSurgeAttributor,
+    EfflorescenceAttributor,
+    VerdancyAttributor,
+    NaturesBountyAttributor,
+    RegenerativeHeartwoodAttributor,
+    CultivationAttributor,
+    YserasGiftAttributor,
+    EmbraceOfTheDreamAttributor,
+)
 from rdruid_analyzer.output.table import render_results
 
 app = typer.Typer()
@@ -27,7 +39,16 @@ def get_wcl_client() -> WCLClient:
 def build_attributors(config: dict) -> list:
     all_attributors = [
         SoulOfTheForestAttributor(),
-        # Add more as implemented...
+        EverbloomAttributor(),
+        GroveGuardiansAttributor(),
+        DreamSurgeAttributor(),
+        EfflorescenceAttributor(),
+        VerdancyAttributor(),
+        NaturesBountyAttributor(),
+        RegenerativeHeartwoodAttributor(),
+        CultivationAttributor(),
+        YserasGiftAttributor(),
+        EmbraceOfTheDreamAttributor(),
     ]
     active = []
     for a in all_attributors:
