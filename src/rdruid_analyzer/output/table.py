@@ -2,6 +2,26 @@ from rich.console import Console
 from rich.table import Table
 from rdruid_analyzer.analysis.pipeline import AnalysisResults
 
+# Hero tree talent names (from Blizzard Game Data API)
+HERO_TREES: dict[str, set[str]] = {
+    "Wildstalker": {
+        "Wildstalker's Power", "Patient Custodian", "Vigorous Creepers",
+        "Bursting Growth", "Rampancy", "Resilient Flourishing", "Root Network",
+        "Twin Sprouts", "Implant", "Green Thumb", "Thriving Growth",
+        "Entangling Vortex", "Flower Walk", "Strategic Infusion",
+        "Lethal Preservation", "Bond with Nature", "Harmonious Constitution",
+        "Hunt Beneath the Open Skies",
+    },
+    "Keeper of the Grove": {
+        "Dream Surge", "Treants of the Moon", "Blooming Infusion",
+        "Harmony of the Grove", "Power of Nature", "Durability of Nature",
+        "Bounteous Bloom", "Early Spring", "Power of the Dream",
+        "Control of the Dream", "Grove's Inspiration", "Cenarius' Might",
+        "Protective Growth", "Expansiveness", "Potent Enchantments",
+        "Spirit of the Thicket", "Dryad's Dance", "Sylvan Beckoning",
+    },
+}
+
 
 def format_healing(amount: float) -> str:
     if amount >= 1_000_000:
@@ -9,6 +29,13 @@ def format_healing(amount: float) -> str:
     if amount >= 1_000:
         return f"{amount / 1_000:.1f}k"
     return str(int(amount))
+
+
+def _hero_tree_for(talent_name: str) -> str | None:
+    for tree, talents in HERO_TREES.items():
+        if talent_name in talents:
+            return tree
+    return None
 
 
 def render_results(results: AnalysisResults, fight_name: str = "", player_name: str = "") -> str:
@@ -25,6 +52,15 @@ def render_results(results: AnalysisResults, fight_name: str = "", player_name: 
     table.add_column("% Total", justify="right")
     table.add_column("HPS", justify="right")
 
+    # Compute hero tree aggregates
+    hero_totals: dict[str, float] = {}
+    for name, amount in results.talent_healing.items():
+        if amount <= 0:
+            continue
+        tree = _hero_tree_for(name)
+        if tree:
+            hero_totals[tree] = hero_totals.get(tree, 0) + amount
+
     sorted_talents = sorted(results.talent_healing.items(), key=lambda x: x[1], reverse=True)
     for name, amount in sorted_talents:
         if amount <= 0:
@@ -32,6 +68,17 @@ def render_results(results: AnalysisResults, fight_name: str = "", player_name: 
         pct = (amount / results.total_healing * 100) if results.total_healing > 0 else 0
         hps = amount / duration_sec
         table.add_row(name, format_healing(amount), f"{pct:.1f}%", format_healing(hps))
+
+    # Hero tree aggregate rows
+    if hero_totals:
+        table.add_section()
+        for tree, total in sorted(hero_totals.items(), key=lambda x: x[1], reverse=True):
+            pct = (total / results.total_healing * 100) if results.total_healing > 0 else 0
+            hps = total / duration_sec
+            table.add_row(
+                f"⮡ {tree} (total)", format_healing(total), f"{pct:.1f}%", format_healing(hps),
+                style="bold",
+            )
 
     table.add_section()
     table.add_row("Wasted (>50% OH)", format_healing(results.wasted), "—", "—", style="dim")
