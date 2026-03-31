@@ -1,0 +1,90 @@
+from dataclasses import dataclass
+
+OVERHEAL_WASTE_THRESHOLD = 0.5
+
+
+@dataclass
+class BaseEvent:
+    timestamp: int
+    source_id: int
+    type: str
+
+
+@dataclass
+class CastEvent(BaseEvent):
+    target_id: int
+    ability_id: int
+
+
+@dataclass
+class HealEvent(BaseEvent):
+    target_id: int
+    ability_id: int
+    amount: int
+    overheal: int
+    hit_type: int  # 1=normal, 2=crit
+
+    @property
+    def raw_heal(self) -> int:
+        return self.amount + self.overheal
+
+    @property
+    def overheal_pct(self) -> float:
+        raw = self.raw_heal
+        return self.overheal / raw if raw > 0 else 0.0
+
+    @property
+    def is_wasted(self) -> bool:
+        return self.overheal_pct > OVERHEAL_WASTE_THRESHOLD
+
+
+@dataclass
+class ApplyBuffEvent(BaseEvent):
+    target_id: int
+    ability_id: int
+
+
+@dataclass
+class RefreshBuffEvent(BaseEvent):
+    target_id: int
+    ability_id: int
+
+
+@dataclass
+class RemoveBuffEvent(BaseEvent):
+    target_id: int
+    ability_id: int
+
+
+EVENT_TYPE_MAP = {
+    "cast": CastEvent,
+    "heal": HealEvent,
+    "applybuff": ApplyBuffEvent,
+    "refreshbuff": RefreshBuffEvent,
+    "removebuff": RemoveBuffEvent,
+}
+
+
+def parse_event(raw: dict) -> BaseEvent | None:
+    event_type = raw.get("type")
+    cls = EVENT_TYPE_MAP.get(event_type)
+    if cls is None:
+        return None
+
+    base = {
+        "timestamp": raw["timestamp"],
+        "source_id": raw.get("sourceID", 0),
+        "type": event_type,
+    }
+
+    if cls is HealEvent:
+        return HealEvent(
+            **base,
+            target_id=raw.get("targetID", 0),
+            ability_id=raw.get("abilityGameID", 0),
+            amount=raw.get("amount", 0),
+            overheal=raw.get("overheal", 0),
+            hit_type=raw.get("hitType", 1),
+        )
+
+    return cls(**base, target_id=raw.get("targetID", 0), ability_id=raw.get("abilityGameID", 0))
