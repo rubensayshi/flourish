@@ -20,6 +20,19 @@ from rdruid_analyzer.analysis.talents.direct_spells import (
     CultivationAttributor,
     YserasGiftAttributor,
     EmbraceOfTheDreamAttributor,
+    RampantGrowthAttributor,
+    ImprovedSwiftmendAttributor,
+    FlourishAttributor,
+)
+from rdruid_analyzer.analysis.talents.buff_multipliers import (
+    WildSynthesisAttributor,
+    WildstalkersPowerAttributor,
+    PatientCustodianAttributor,
+    LifetreadingAttributor,
+    HarmonyOfTheGroveAttributor,
+    GrovesInspirationAttributor,
+    CenariusMightAttributor,
+    BountifulBloomAttributor,
 )
 from rdruid_analyzer.output.table import render_results
 
@@ -49,6 +62,17 @@ def build_attributors(config: dict) -> list:
         CultivationAttributor(),
         YserasGiftAttributor(),
         EmbraceOfTheDreamAttributor(),
+        RampantGrowthAttributor(),
+        ImprovedSwiftmendAttributor(),
+        FlourishAttributor(),
+        WildSynthesisAttributor(),
+        WildstalkersPowerAttributor(),
+        PatientCustodianAttributor(),
+        LifetreadingAttributor(),
+        HarmonyOfTheGroveAttributor(),
+        GrovesInspirationAttributor(),
+        CenariusMightAttributor(),
+        BountifulBloomAttributor(),
     ]
     active = []
     for a in all_attributors:

@@ -49,3 +49,24 @@ class YserasGiftAttributor(DirectSpellAttributor):
 class EmbraceOfTheDreamAttributor(DirectSpellAttributor):
     name = "Embrace of the Dream"
     spell_ids = {392124}
+
+
+class RampantGrowthAttributor(DirectSpellAttributor):
+    """Rampant Growth causes Regrowth to also apply to Lifebloom target.
+    The extra Regrowth has its own spell ID in WCL."""
+    name = "Rampant Growth"
+    spell_ids = {1264664}  # Regrowth (from Rampant Growth)
+
+
+class ImprovedSwiftmendAttributor(DirectSpellAttributor):
+    """Improved Swiftmend: +30% Swiftmend healing.
+    WCL logs the bonus portion under a separate spell ID."""
+    name = "Improved Swiftmend"
+    spell_ids = {142421}  # Swiftmend (bonus from Improved Swiftmend)
+
+
+class FlourishAttributor(DirectSpellAttributor):
+    """Flourish: Tranquility extends HoTs. The extended Tranq ticks
+    appear under a different spell ID."""
+    name = "Flourish"
+    spell_ids = {1264659}  # Tranquility (Flourish-modified)
