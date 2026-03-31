@@ -55,27 +55,27 @@ def test_get_events_paginates():
     mock_http.post.side_effect = [page1, page2]
     client._http = mock_http
 
-    events = client.get_events("abc", 1, [1], 0, 10000)
+    events = client.get_events("abc", 1, 1, 0, 10000)
     assert len(events) == 2
     assert mock_http.post.call_count == 2
 
 
-def test_get_events_multiple_source_ids():
-    """Events are fetched for each source ID (player + pets) and sorted by timestamp."""
+def test_get_events_includes_pet_events():
+    """WCL returns pet events when querying the owner, no separate pet query needed."""
     client = WCLClient("test_id", "test_secret")
     client._token = "fake_token"
 
     mock_http = MagicMock()
-    # Player events
-    player_resp = MagicMock()
-    player_resp.json.return_value = {
+    resp = MagicMock()
+    resp.json.return_value = {
         "data": {
             "reportData": {
                 "report": {
                     "events": {
                         "data": [
-                            {"type": "heal", "timestamp": 100},
-                            {"type": "heal", "timestamp": 300},
+                            {"type": "heal", "timestamp": 100, "sourceID": 3},
+                            {"type": "heal", "timestamp": 200, "sourceID": 10},
+                            {"type": "heal", "timestamp": 300, "sourceID": 3},
                         ],
                         "nextPageTimestamp": None,
                     }
@@ -83,27 +83,10 @@ def test_get_events_multiple_source_ids():
             }
         }
     }
-    # Pet events
-    pet_resp = MagicMock()
-    pet_resp.json.return_value = {
-        "data": {
-            "reportData": {
-                "report": {
-                    "events": {
-                        "data": [
-                            {"type": "heal", "timestamp": 200},
-                        ],
-                        "nextPageTimestamp": None,
-                    }
-                }
-            }
-        }
-    }
-    mock_http.post.side_effect = [player_resp, pet_resp]
+    mock_http.post.side_effect = [resp]
     client._http = mock_http
 
-    events = client.get_events("abc", 1, [10, 42], 0, 10000)
+    events = client.get_events("abc", 1, 3, 0, 10000)
     assert len(events) == 3
-    # Events should be sorted by timestamp
     assert [e["timestamp"] for e in events] == [100, 200, 300]
-    assert mock_http.post.call_count == 2
+    assert mock_http.post.call_count == 1

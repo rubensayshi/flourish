@@ -20,6 +20,7 @@ class StaticBuffAttributor(TalentAttributor):
 class WildSynthesisAttributor(StaticBuffAttributor):
     """Wild Synthesis: Grove Guardians, Efflorescence, and summons heal 30% more."""
     name = "Wild Synthesis"
+    talent_node_id = 94535
     spell_ids = {422090, 81269, 434141}  # Nourish, Efflorescence, Dream Bloom
     multiplier = 0.3
 
@@ -27,6 +28,7 @@ class WildSynthesisAttributor(StaticBuffAttributor):
 class WildstalkersPowerAttributor(StaticBuffAttributor):
     """Wildstalker's Power: Rejuvenation healing increased by 10%."""
     name = "Wildstalker's Power"
+    talent_node_id = 94621
     spell_ids = {774, 155777}  # Rejuvenation + Germination Rejuv
     multiplier = 0.1
 
@@ -35,6 +37,7 @@ class PatientCustodianAttributor(StaticBuffAttributor):
     """Patient Custodian: HoT effects are 6% more effective.
     Applies to all HoTs: Rejuv, Regrowth, Wild Growth, Lifebloom, etc."""
     name = "Patient Custodian"
+    talent_node_id = 94630
     spell_ids = {774, 155777, 8936, 48438, 33763, 33778, 1244341, 1264664}
     # Rejuv, Germination, Regrowth, Wild Growth, Lifebloom tick, Lifebloom bloom, Everbloom, Rampant Growth Regrowth
     multiplier = 0.06
@@ -43,6 +46,7 @@ class PatientCustodianAttributor(StaticBuffAttributor):
 class LifetreadingAttributor(StaticBuffAttributor):
     """Lifetreading: Efflorescence healing increased by 25%."""
     name = "Lifetreading"
+    talent_node_id = 103874
     spell_ids = {81269}  # Efflorescence
     multiplier = 0.25
 
@@ -53,6 +57,7 @@ class HarmonyOfTheGroveAttributor(TalentAttributor):
     For simplicity, we track summon/despawn events. Grove Guardians last 8 sec.
     The buff spell ID in WCL should be 428731."""
     name = "Harmony of the Grove"
+    talent_node_id = 94606
 
     def __init__(self):
         super().__init__()
@@ -83,6 +88,8 @@ class HarmonyOfTheGroveAttributor(TalentAttributor):
 class GrovesInspirationAttributor(StaticBuffAttributor):
     """Grove's Inspiration: Regrowth, Wild Growth, and Swiftmend healing increased by 9%."""
     name = "Grove's Inspiration"
+    talent_node_id = 94595
+    talent_id = 122201
     spell_ids = {8936, 1264664, 48438, 18562, 142421}
     # Regrowth, Rampant Growth Regrowth, Wild Growth, Swiftmend, Improved Swiftmend
     multiplier = 0.09
@@ -91,6 +98,7 @@ class GrovesInspirationAttributor(StaticBuffAttributor):
 class CenariusMightAttributor(StaticBuffAttributor):
     """Cenarius' Might: Swiftmend healing increased by 20%."""
     name = "Cenarius' Might"
+    talent_node_id = 94604
     spell_ids = {18562, 142421}  # Swiftmend + Improved Swiftmend
     multiplier = 0.2
 
@@ -98,6 +106,8 @@ class CenariusMightAttributor(StaticBuffAttributor):
 class BountifulBloomAttributor(StaticBuffAttributor):
     """Bounteous Bloom: Grove Guardians healing increased by 30%."""
     name = "Bounteous Bloom"
+    talent_node_id = 94591
+    talent_id = 122196
     spell_ids = {422090}  # Nourish (from treants)
     multiplier = 0.3
 
@@ -106,6 +116,7 @@ class UnstoppableGrowthAttributor(StaticBuffAttributor):
     """Unstoppable Growth: WG healing falls off 30% less per rank (2 ranks).
     Net effect: ~27.7% more total WG healing."""
     name = "Unstoppable Growth"
+    talent_node_id = 82080
     spell_ids = {48438}  # Wild Growth
     multiplier = 0.277
 
@@ -114,6 +125,7 @@ class IntensityAttributor(TalentAttributor):
     """Intensity: Regrowth crits at 260% instead of 200%.
     On Regrowth crits, attribute the bonus: amount - amount / 1.3"""
     name = "Intensity"
+    talent_node_id = 82052
 
     REGROWTH_IDS = {8936, 1264664}  # Regrowth + Rampant Growth Regrowth
 
@@ -126,6 +138,8 @@ class IntensityAttributor(TalentAttributor):
 class LivelinessAttributor(StaticBuffAttributor):
     """Liveliness: HoTs heal 5% faster = ~5% more total HoT healing."""
     name = "Liveliness"
+    talent_node_id = 82074
+    talent_id = 108135
     spell_ids = {774, 155777, 8936, 1264664, 48438, 33763, 33778, 1244341}
     # Rejuv, Germination, Regrowth, Rampant Growth RG, WG, LB tick, LB bloom, Everbloom
     multiplier = 0.05
@@ -135,5 +149,6 @@ class RegenesisAttributor(StaticBuffAttributor):
     """Regenesis: Rejuv and Tranq healing +up to 30% on low health.
     Approximate as flat 15% (configurable)."""
     name = "Regenesis"
+    talent_node_id = 82062
     spell_ids = {774, 155777, 157982, 1264659}  # Rejuv, Germination, Tranquility, Flourish Tranq
     multiplier = 0.15

@@ -164,11 +164,7 @@ def analyze(
     else:
         selected_player = next(d for d in druids if d["name"].lower() == player.lower())
 
-    # Build source IDs: player + their pets (e.g., Grove Guardian treants)
-    pet_ids = [a["id"] for a in all_actors if a.get("petOwner") == selected_player["id"]]
-    source_ids = [selected_player["id"]] + pet_ids
-
-    # Fetch events
+    # Fetch events (WCL includes pet events automatically when querying owner)
     console.print(
         f"\nFetching events for [bold]{selected_player['name']}[/] "
         f"in [bold]{selected_fight['name']}[/]..."
@@ -176,7 +172,7 @@ def analyze(
     raw_events = client.get_events(
         report_code,
         selected_fight["id"],
-        source_ids,
+        selected_player["id"],
         selected_fight["startTime"],
         selected_fight["endTime"],
     )

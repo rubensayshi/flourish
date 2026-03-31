@@ -12,6 +12,7 @@ SOTF_TAG = "sotf"
 
 class SoulOfTheForestAttributor(TalentAttributor):
     name = "Soul of the Forest"
+    talent_node_id = 82055
 
     def __init__(self):
         super().__init__()

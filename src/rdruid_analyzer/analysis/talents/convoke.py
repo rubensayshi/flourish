@@ -17,6 +17,8 @@ class ConvokeAttributor(TalentAttributor):
     Pre-existing HoT ticks during the channel are NOT attributed."""
 
     name = "Convoke the Spirits"
+    talent_node_id = 82064
+    talent_id = 108124
 
     def __init__(self, healing_ratio: float = DEFAULT_HEALING_RATIO):
         super().__init__()

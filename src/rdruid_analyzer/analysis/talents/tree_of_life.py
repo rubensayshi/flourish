@@ -15,6 +15,8 @@ class TreeOfLifeAttributor(TalentAttributor):
     and adds 2 extra Wild Growth targets."""
 
     name = "Incarnation: Tree of Life"
+    talent_node_id = 82064
+    talent_id = 108125
 
     def __init__(self):
         super().__init__()

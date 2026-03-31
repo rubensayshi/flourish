@@ -13,6 +13,7 @@ class PhotosynthesisAttributor(TalentAttributor):
     Attribution is deferred to finalize() since we need to look ahead."""
 
     name = "Photosynthesis"
+    talent_node_id = 82073
 
     def __init__(self):
         super().__init__()

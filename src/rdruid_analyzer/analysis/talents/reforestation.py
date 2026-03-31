@@ -15,6 +15,7 @@ class ReforestationAttributor(TalentAttributor):
     Does NOT claim credit if a real (player-cast) ToL is already active."""
 
     name = "Reforestation"
+    talent_node_id = 82069
 
     def __init__(self):
         super().__init__()

@@ -63,3 +63,72 @@ def test_combatantinfo_passed_to_attributors():
     assert attr.saw_info
     assert attr.has_talent(82047)
     assert not attr.has_talent(99999)
+
+
+def test_talent_filtering_removes_unselected():
+    """Pipeline filters out attributors whose talent node isn't in the player's loadout."""
+    from rdruid_analyzer.analysis.pipeline import Pipeline
+    from rdruid_analyzer.analysis.attributor import TalentAttributor
+
+    class SelectedAttr(TalentAttributor):
+        name = "Selected"
+        talent_node_id = 82047
+
+    class UnselectedAttr(TalentAttributor):
+        name = "Unselected"
+        talent_node_id = 99999
+
+    class NoNodeAttr(TalentAttributor):
+        name = "NoNode"
+        # talent_node_id = None (default) → always active
+
+    raw_events = [
+        {
+            "timestamp": 1000,
+            "type": "combatantinfo",
+            "sourceID": 3,
+            "talentTree": [{"id": 103098, "rank": 1, "nodeID": 82047}],
+            "critSpell": 256,
+            "hasteSpell": 564,
+            "mastery": 893,
+            "specID": 105,
+        },
+    ]
+    pipeline = Pipeline(attributors=[SelectedAttr(), UnselectedAttr(), NoNodeAttr()])
+    results = pipeline.run(raw_events)
+    assert "Selected" in results.talent_healing
+    assert "Unselected" not in results.talent_healing
+    assert "NoNode" in results.talent_healing
+
+
+def test_choice_node_filtering():
+    """For choice nodes, talent_id disambiguates which pick was made."""
+    from rdruid_analyzer.analysis.pipeline import Pipeline
+    from rdruid_analyzer.analysis.attributor import TalentAttributor
+
+    class ChoiceA(TalentAttributor):
+        name = "Choice A"
+        talent_node_id = 82064
+        talent_id = 108125  # ToL
+
+    class ChoiceB(TalentAttributor):
+        name = "Choice B"
+        talent_node_id = 82064
+        talent_id = 108124  # Convoke
+
+    raw_events = [
+        {
+            "timestamp": 1000,
+            "type": "combatantinfo",
+            "sourceID": 3,
+            "talentTree": [{"id": 108125, "rank": 1, "nodeID": 82064}],  # picked ToL
+            "critSpell": 256,
+            "hasteSpell": 564,
+            "mastery": 893,
+            "specID": 105,
+        },
+    ]
+    pipeline = Pipeline(attributors=[ChoiceA(), ChoiceB()])
+    results = pipeline.run(raw_events)
+    assert "Choice A" in results.talent_healing
+    assert "Choice B" not in results.talent_healing

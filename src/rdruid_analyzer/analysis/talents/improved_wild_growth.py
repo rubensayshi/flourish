@@ -13,6 +13,7 @@ class ImprovedWildGrowthAttributor(TalentAttributor):
     Attributes 2/7 of all WG healing as the extra target share."""
 
     name = "Improved Wild Growth"
+    talent_node_id = 82045
 
     def process_heal(self, event: HealEvent, hot_tracker: HotTracker, buff_tracker: BuffTracker) -> float:
         if event.ability_id != WILD_GROWTH:

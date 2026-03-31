@@ -18,6 +18,7 @@ class AbundanceAttributor(TalentAttributor):
     For Regrowth crits, attribute abundance_crit / total_crit share of the crit bonus."""
 
     name = "Abundance"
+    talent_node_id = 103876
 
     def process_heal(self, event: HealEvent, hot_tracker: HotTracker, buff_tracker: BuffTracker) -> float:
         # Only Regrowth crits

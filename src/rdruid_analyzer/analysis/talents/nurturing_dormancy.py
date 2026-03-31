@@ -12,6 +12,7 @@ class NurturingDormancyAttributor(TalentAttributor):
     Attribute Rejuv ticks past the base 12s duration."""
 
     name = "Nurturing Dormancy"
+    talent_node_id = 82076
 
     def process_heal(self, event: HealEvent, hot_tracker: HotTracker, buff_tracker: BuffTracker) -> float:
         if event.ability_id != REJUV:

@@ -40,11 +40,14 @@ class Pipeline:
             results.fight_duration_ms = events[-1].timestamp - events[0].timestamp
 
         for event in events:
-            # Store combatant info and notify attributors
+            # Store combatant info, notify attributors, filter by talent selection
             if isinstance(event, CombatantInfoEvent):
                 results.combatant_info = event
                 for attr in self.attributors:
                     attr.set_combatant_info(event)
+                if event.talent_nodes:
+                    self.attributors = [a for a in self.attributors if a.is_selected()]
+                    results.talent_healing = {a.name: 0.0 for a in self.attributors}
                 continue
 
             # Update trackers

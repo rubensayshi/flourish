@@ -16,6 +16,7 @@ class VigorousCreepersAttributor(TalentAttributor):
     """Symbiotic Blooms increase healing to affected targets by 20%."""
 
     name = "Vigorous Creepers"
+    talent_node_id = 94627
 
     def process_heal(self, event: HealEvent, hot_tracker: HotTracker, buff_tracker: BuffTracker) -> float:
         # Don't double-count the bloom's own healing ticks
@@ -31,6 +32,8 @@ class ImplantAttributor(TalentAttributor):
     """Implant: SM/WG spawns a Symbiotic Bloom. Attribute bloom healing from those."""
 
     name = "Implant"
+    talent_node_id = 94628
+    talent_id = 122241
 
     def __init__(self):
         super().__init__()
@@ -65,6 +68,8 @@ class RootNetworkAttributor(TalentAttributor):
     """Root Network: +2% healing per active Symbiotic Bloom."""
 
     name = "Root Network"
+    talent_node_id = 94631
+    talent_id = 122245
 
     def process_heal(self, event: HealEvent, hot_tracker: HotTracker, buff_tracker: BuffTracker) -> float:
         bloom_count = len(hot_tracker.get_all_by_spell(SYMBIOTIC_BLOOM))

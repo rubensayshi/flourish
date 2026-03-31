@@ -7,6 +7,8 @@ from rdruid_analyzer.tracking.buff_tracker import BuffTracker
 
 class TalentAttributor:
     name: str = "Unknown"
+    talent_node_id: int | None = None  # Blizzard talent tree nodeID
+    talent_id: int | None = None  # talent ID (for choice-node disambiguation)
 
     def __init__(self):
         self.combatant_info: CombatantInfoEvent | None = None
@@ -14,6 +16,19 @@ class TalentAttributor:
     def set_combatant_info(self, info: CombatantInfoEvent):
         """Called once at fight start with player's talent/stat info."""
         self.combatant_info = info
+
+    def is_selected(self) -> bool:
+        """Check if this talent is in the player's loadout."""
+        if self.combatant_info is None:
+            return True  # no info yet, assume active
+        if self.talent_node_id is None:
+            return True  # no node configured, always active
+        if self.talent_node_id not in self.combatant_info.talent_nodes:
+            return False
+        # For choice nodes, also check talent_id if set
+        if self.talent_id is not None:
+            return self.talent_id in self.combatant_info.talent_ids
+        return True
 
     def has_talent(self, node_id: int) -> bool:
         """Check if a specific talent node is active."""
