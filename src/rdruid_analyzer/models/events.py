@@ -24,6 +24,7 @@ class HealEvent(BaseEvent):
     overheal: int
     absorb: int  # healing absorbed by shields
     hit_type: int  # 1=normal, 2=crit
+    tick: bool = False  # True for periodic (HoT) ticks
 
     @property
     def raw_heal(self) -> int:
@@ -121,6 +122,7 @@ def parse_event(raw: dict) -> BaseEvent | None:
             overheal=raw.get("overheal", 0),
             absorb=raw.get("absorb", 0),
             hit_type=raw.get("hitType", 1),
+            tick=raw.get("tick", False),
         )
 
     return cls(**base, target_id=raw.get("targetID", 0), ability_id=raw.get("abilityGameID", 0))

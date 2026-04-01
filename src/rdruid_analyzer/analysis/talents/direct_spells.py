@@ -1,3 +1,4 @@
+from rdruid_analyzer.analysis.attributor import TalentAttributor
 from rdruid_analyzer.analysis.talents.direct_spell import DirectSpellAttributor
 
 
@@ -63,12 +64,19 @@ class EmbraceOfTheDreamAttributor(DirectSpellAttributor):
     spell_ids = {392124}
 
 
-class RampantGrowthAttributor(DirectSpellAttributor):
-    """Rampant Growth causes Regrowth to also apply to Lifebloom target.
-    The extra Regrowth has its own spell ID in WCL."""
+class RampantGrowthAttributor(TalentAttributor):
+    """Rampant Growth: +100% Regrowth HoT healing.
+    Credits the bonus portion of periodic ticks only (direct heals unaffected).
+    The extra Regrowth on the LB target uses spell 8936 in WCL (indistinguishable)."""
     name = "Rampant Growth"
     talent_node_id = 82058
-    spell_ids = {1264664}  # Regrowth (from Rampant Growth)
+    REGROWTH = 8936
+    MULTIPLIER = 1.0  # +100%
+
+    def process_heal(self, event, hot_tracker, buff_tracker) -> float:
+        if event.ability_id == self.REGROWTH and event.tick:
+            return event.amount - event.amount / (1 + self.MULTIPLIER)
+        return 0.0
 
 
 

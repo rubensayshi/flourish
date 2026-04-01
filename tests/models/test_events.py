@@ -92,3 +92,24 @@ def test_heal_event_absorb_defaults_to_zero():
     event = parse_event(raw)
     assert event.absorb == 0
     assert event.raw_heal == 6000
+
+
+def test_heal_event_tick_parsed():
+    raw = {
+        "timestamp": 1000, "type": "heal", "sourceID": 1,
+        "targetID": 2, "abilityGameID": 774,
+        "amount": 5000, "overheal": 0, "hitType": 1,
+        "tick": True,
+    }
+    event = parse_event(raw)
+    assert event.tick is True
+
+
+def test_heal_event_tick_defaults_to_false():
+    raw = {
+        "timestamp": 1000, "type": "heal", "sourceID": 1,
+        "targetID": 2, "abilityGameID": 774,
+        "amount": 5000, "overheal": 0, "hitType": 1,
+    }
+    event = parse_event(raw)
+    assert event.tick is False
