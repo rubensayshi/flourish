@@ -20,6 +20,24 @@ ON_COOLDOWN_TOLERANCE_MS = 1500
 DRYAD_GAP_THRESHOLD_MS = 2000
 
 
+def compute_effective_cd(
+    has_renewing_surge: bool,
+    has_early_spring: bool,
+    dryad_overlap_ms: float,
+) -> float:
+    """Compute effective SM cooldown in ms given active talents and Dryad overlap."""
+    cd = float(BASE_SM_CD_MS)
+    if has_renewing_surge:
+        cd *= (1 - RENEWING_SURGE_REDUCTION_AVG)
+    if has_early_spring:
+        cd -= EARLY_SPRING_REDUCTION_MS
+    if dryad_overlap_ms > 0:
+        overlap = min(dryad_overlap_ms, cd)
+        remaining = cd - overlap
+        cd = remaining + overlap / DRYADS_DANCE_SPEED_FACTOR
+    return cd
+
+
 class SmCooldownReductionAttributor(TalentAttributor):
     """Attributes healing value of Early Spring + Dryad's Dance SM CD reduction.
 

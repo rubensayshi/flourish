@@ -94,3 +94,34 @@ def test_ignores_player_source_heals():
     ]
     pipeline.run(events)
     assert len(attr._dryad_windows) == 0
+
+
+# --- compute_effective_cd tests ---
+
+from rdruid_analyzer.analysis.talents.sm_cooldown_reduction import compute_effective_cd
+
+
+def test_effective_cd_baseline_with_renewing_surge():
+    cd = compute_effective_cd(has_renewing_surge=True, has_early_spring=False, dryad_overlap_ms=0)
+    assert cd == pytest.approx(12075.0)
+
+
+def test_effective_cd_with_early_spring():
+    cd = compute_effective_cd(has_renewing_surge=True, has_early_spring=True, dryad_overlap_ms=0)
+    assert cd == pytest.approx(11075.0)
+
+
+def test_effective_cd_with_dryad_full_overlap():
+    cd = compute_effective_cd(has_renewing_surge=True, has_early_spring=True, dryad_overlap_ms=11075)
+    assert cd == pytest.approx(8860.0)
+
+
+def test_effective_cd_with_dryad_partial_overlap():
+    cd = compute_effective_cd(has_renewing_surge=True, has_early_spring=True, dryad_overlap_ms=5000)
+    # remaining = 11075 - 5000 = 6075, dryad_wait = 5000/1.25 = 4000, total = 10075
+    assert cd == pytest.approx(10075.0)
+
+
+def test_effective_cd_no_renewing_surge():
+    cd = compute_effective_cd(has_renewing_surge=False, has_early_spring=True, dryad_overlap_ms=0)
+    assert cd == pytest.approx(14000.0)
