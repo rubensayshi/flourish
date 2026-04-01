@@ -38,7 +38,7 @@ cp .env.example .env          # then fill in WCL_CLIENT_ID / WCL_CLIENT_SECRET
 | State tracking     | `tracking/hot_tracker.py`        | Tracks active HoTs per (target, spell) with taggable `HotInstance` |
 | State tracking     | `tracking/buff_tracker.py`       | Tracks active self-buffs by buff_id                        |
 | Attribution        | `analysis/attributor.py`         | `TalentAttributor` ABC: `process_event()` + `process_heal()` |
-| Attribution        | `analysis/talents/`              | One subclass per talent (only `soul_of_the_forest` so far) |
+| Attribution        | `analysis/talents/`              | One subclass per talent                                    |
 | Pipeline           | `analysis/pipeline.py`           | Orchestrates: parse → track → attribute → `AnalysisResults` |
 | Output             | `output/table.py`                | Rich table rendering with HPS and % total                  |
 | CLI                | `cli.py`                         | Typer app; interactive fight/player selection               |

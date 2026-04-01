@@ -9,6 +9,7 @@ Built for WoW Midnight Season 1 (12.0.1).
 ### Prerequisites
 
 - Python 3.12+
+- [uv](https://docs.astral.sh/uv/) package manager
 - A [WarcraftLogs](https://www.warcraftlogs.com) API v2 client (create one at [WCL API Clients](https://www.warcraftlogs.com/api/clients))
 
 ### Install
@@ -16,9 +17,7 @@ Built for WoW Midnight Season 1 (12.0.1).
 ```bash
 git clone <repo-url>
 cd rdruid-talent-analyzer
-python -m venv .venv
-source .venv/bin/activate
-pip install -e ".[dev]"
+uv sync --all-extras
 ```
 
 ### Configure
@@ -35,7 +34,7 @@ WCL_CLIENT_SECRET=your-client-secret
 ### Basic (interactive)
 
 ```bash
-rdruid-analyzer <report-code>
+uv run rdruid-analyzer <report-code>
 ```
 
 The report code is the alphanumeric string from a WarcraftLogs URL:
@@ -46,13 +45,13 @@ You'll be prompted to select a fight and player.
 ### Skip prompts
 
 ```bash
-rdruid-analyzer Aq7RXDt8FHNcQwKk --fight 1 --player Saikó
+uv run rdruid-analyzer Aq7RXDt8FHNcQwKk --fight 1 --player Saikó
 ```
 
 ### Custom config
 
 ```bash
-rdruid-analyzer Aq7RXDt8FHNcQwKk --config-path my-talents.yaml
+uv run rdruid-analyzer Aq7RXDt8FHNcQwKk --config-path my-talents.yaml
 ```
 
 ## Output
@@ -129,10 +128,10 @@ Soul of the Forest, Incarnation: Tree of Life, Convoke the Spirits, Improved Wil
 
 ```bash
 # Run tests
-pytest
+uv run pytest
 
 # Run with verbose output
-pytest -v
+uv run pytest -v
 ```
 
 ## Limitations
