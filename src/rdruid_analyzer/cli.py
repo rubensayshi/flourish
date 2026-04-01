@@ -26,6 +26,7 @@ from rdruid_analyzer.analysis.talents.direct_spells import (
     BurstingGrowthAttributor,
     ThrivingGrowthAttributor,
     SpiritOfTheThicketAttributor,
+    ThrivingVegetationAttributor,
 )
 from rdruid_analyzer.analysis.talents.buff_multipliers import (
     ImprovedSwiftmendAttributor,
@@ -120,6 +121,7 @@ def build_attributors(config: dict) -> list:
         ThrivingGrowthAttributor(),
         SpiritOfTheThicketAttributor(),
         PowerOfNatureAttributor(),
+        ThrivingVegetationAttributor(),
     ]
     active = []
     for a in all_attributors:

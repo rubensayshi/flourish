@@ -95,6 +95,13 @@ class ThrivingGrowthAttributor(DirectSpellAttributor):
     spell_ids = {474760}  # Symbiotic Bloom healing (logged as "Symbiotic Relationship")
 
 
+class ThrivingVegetationAttributor(DirectSpellAttributor):
+    """Thriving Vegetation: Rejuvenation instantly heals for 15/30% of its total periodic effect."""
+    name = "Thriving Vegetation"
+    talent_node_id = 82068
+    spell_ids = {447132}
+
+
 class SpiritOfTheThicketAttributor(DirectSpellAttributor):
     """Spirit of the Thicket: Ironbark summons a Dryad that channels a healing beam.
     The heal comes from a pet source, so we override the pet-source guard."""

@@ -119,8 +119,7 @@ dream_of_cenarius:
   skip_reason: "damage-to-healing, niche"
 
 thriving_vegetation:
-  skip: true
-  skip_reason: "instant heal baked into Rejuv amount, Regrowth duration extension; hard to separate"
+  skip: false
 
 nurturing_dormancy:
   skip: false
