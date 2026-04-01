@@ -1,9 +1,8 @@
 # Restoration Druid Talent Data (Midnight Season 1 / 12.0.1)
 
-Pulled from Blizzard Game Data API (`static-us` namespace).
-
-Note: The spec tree includes hero talent nodes inline (Wildstalker at cols 24-27, Keeper of the Grove at cols 12-15).
-These are also listed separately under Hero Talent Trees below.
+Auto-generated from Blizzard Game Data API (`static-us` namespace, spec ID 105).
+Hero talent descriptions sourced from Wowhead tooltip API (Blizzard API bug: returns wrong spec).
+Regenerate with: `python scripts/fetch_talents.py`
 
 ## Spec Talent Tree
 
@@ -12,27 +11,16 @@ These are also listed separately under Hero Talent Trees below.
 - **Type**: ACTIVE
 - **Talent ID**: 108105, **Spell**: Lifebloom (ID: 33763)
 - **Cast**: Instant
-- Heals the target for 1,715 over 15 sec. When Lifebloom expires, is dispelled, or is refreshed near expiration the target is instantly healed for 849.
+- Heals the target for 1,715 over 15 sec. When Lifebloom expires, is dispelled, or is refreshed near expiration the target is instantly healed for 828.
 
 May be active on one target at a time.
-
-### Thriving Growth — Row 2, Col 26 (node 94626)
-
-- **Type**: PASSIVE
-- **Talent ID**: 122238, **Spell**: Thriving Growth (ID: 439528)
-- **Cast**: Passive
-- Rip and Rake damage has a chance to cause Bloodseeker Vines to grow on the victim, dealing 34 Bleed damage over 6 sec.
-
-Wild Growth, Regrowth, and Efflorescence healing has a chance to cause Symbiotic Blooms to grow on the target, healing for 834 over 6 sec.
-
-Multiple instances of these can overlap.
 
 ### Swiftmend — Row 3, Col 19 (node 82047)
 
 - **Type**: ACTIVE
 - **Talent ID**: 108103, **Spell**: Swiftmend (ID: 18562)
 - **Cast**: Instant
-- Consume a Regrowth, Wild Growth, or Rejuvenation effect to instantly heal an ally for 3,976.
+- Consume a Regrowth, Wild Growth, or Rejuvenation effect to instantly heal an ally for 3,975.
 
 ### Nature's Swiftness — Row 3, Col 20 (node 82050)
 
@@ -49,58 +37,32 @@ Multiple instances of these can overlap.
 - **Cast**: Passive
 - Your healing over time from Lifebloom has a 4% chance to cause a Clearcasting state, making your next Regrowth cost no mana.
 
-### Hunt Beneath the Open Skies — Row 3, Col 24 (node 94629)
+### Verdant Infusion / Prosperity — Row 4, Col 18 (node 82079)
 
-- **Type**: PASSIVE
-- **Talent ID**: 122243, **Spell**: Hunt Beneath the Open Skies (ID: 439868)
+**Choice: Verdant Infusion**
+
+- **Talent ID**: 108142, **Spell**: Verdant Infusion (ID: 392410)
 - **Cast**: Passive
-- Damage and healing while in Cat Form increased by 3%.
-
-Moonfire and Sunfire damage increased by 10%.
-
-### Strategic Infusion — Row 3, Col 25 (node 94623)
-
-- **Type**: PASSIVE
-- **Talent ID**: 122235, **Spell**: Strategic Infusion (ID: 439890)
-- **Cast**: Passive
-- Attacking from Prowl increases the chance for Shred, Rake, and Swipe to critically strike by 8% for 6 sec.
-
-Your periodic heals have a 4% increased chance to critically heal.
-
-### Wildstalker's Power — Row 3, Col 26 (node 94621)
-
-- **Type**: PASSIVE
-- **Talent ID**: 122233, **Spell**: Wildstalker's Power (ID: 439926)
-- **Cast**: Passive
-- Rip and Ferocious Bite damage increased by 5%.
-
-Rejuvenation healing increased by 10%.
-
-### Green Thumb — Row 3, Col 27 (node 109717)
-
-- **Type**: PASSIVE
-- **Talent ID**: 140730, **Spell**: Green Thumb (ID: 1270565)
-- **Cast**: Passive
-- The rate at which Symbiotic Blooms grow is increased by 20%.
-
-### [Choice] Row 4, Col 18 (node 82079)
-
-**Option: Verdant Infusion** (talent 108142, spell 392410: Verdant Infusion)
-- Cast: Passive
 - Swiftmend no longer consumes a heal over time effect, and extends the duration of your heal over time effects on the target by 8 sec.
 
-**Option: Prosperity** (talent 108141, spell 200383: Prosperity)
-- Cast: Passive
+**Choice: Prosperity**
+
+- **Talent ID**: 108141, **Spell**: Prosperity (ID: 200383)
+- **Cast**: Passive
 - Swiftmend now has 2 charges.
 
-### [Choice] Row 4, Col 20 (node 82051)
+### Nature's Splendor / Passing Seasons — Row 4, Col 20 (node 82051)
 
-**Option: Nature's Splendor** (talent 108108, spell 392288: Nature's Splendor)
-- Cast: Passive
+**Choice: Nature's Splendor**
+
+- **Talent ID**: 108108, **Spell**: Nature's Splendor (ID: 392288)
+- **Cast**: Passive
 - The healing bonus to Regrowth from Nature's Swiftness is increased by 35%.
 
-**Option: Passing Seasons** (talent 108107, spell 382550: Passing Seasons)
-- Cast: Passive
+**Choice: Passing Seasons**
+
+- **Talent ID**: 108107, **Spell**: Passing Seasons (ID: 382550)
+- **Cast**: Passive
 - Nature's Swiftness's cooldown is reduced by 12 sec.
 
 ### Improved Regrowth — Row 4, Col 22 (node 82083)
@@ -109,42 +71,6 @@ Rejuvenation healing increased by 10%.
 - **Talent ID**: 108147, **Spell**: Improved Regrowth (ID: 231032)
 - **Cast**: Passive
 - Regrowth's initial heal has a 40% increased chance for a critical effect if the target is already affected by Regrowth.
-
-### Lethal Preservation — Row 4, Col 24 (node 94624)
-
-- **Type**: PASSIVE
-- **Talent ID**: 122236, **Spell**: Lethal Preservation (ID: 455461)
-- **Cast**: Passive
-- When you remove an effect with Soothe or Remove Corruption, gain a combo point and heal for 4% of your maximum health. If you are at full health an injured party or raid member will be healed instead.
-
-### [Choice] Row 4, Col 25 (node 94622)
-
-**Option: Entangling Vortex** (talent 122234, spell 439895: Entangling Vortex)
-- Cast: Passive
-- Enemies pulled into Ursol's Vortex are rooted in place for 3 sec. Damage may cancel the effect.
-
-**Option: Flower Walk** (talent 124755, spell 439901: Flower Walk)
-- Cast: Passive
-- During Barkskin your movement speed is increased by 10% and every second flowers grow beneath your feet that heal up to 3 nearby injured allies for 76.
-
-### [Choice] Row 4, Col 26 (node 94625)
-
-**Option: Bond with Nature** (talent 122237, spell 439929: Bond with Nature)
-- Cast: Passive
-- Healing you receive is increased by 4%.
-
-**Option: Harmonious Constitution** (talent 124754, spell 440116: Harmonious Constitution)
-- Cast: Passive
-- Your Regrowth's healing to yourself is increased by 35%.
-
-### Bursting Growth — Row 4, Col 27 (node 109716)
-
-- **Type**: PASSIVE
-- **Talent ID**: 140729, **Spell**: Bursting Growth (ID: 440120)
-- **Cast**: Passive
-- When Bloodseeker Vines expire or you use Ferocious Bite on their target they explode in thorns, dealing 30 physical damage to nearby enemies. Damage reduced above 5 targets.
-
-When Symbiotic Blooms expire or you cast Rejuvenation on their target flowers grow around their target, healing them and up to 3 nearby allies for 160.
 
 ### Soul of the Forest — Row 5, Col 19 (node 82055)
 
@@ -160,51 +86,12 @@ When Symbiotic Blooms expire or you cast Rejuvenation on their target flowers gr
 - **Cast**: Passive
 - Increases Omen of Clarity's chance to activate Clearcasting to 5% and Clearcasting can stack 1 additional time.
 
-### [Choice] Row 5, Col 24 (node 94631)
-
-**Option: Resilient Flourishing** (talent 122246, spell 439880: Resilient Flourishing)
-- Cast: Passive
-- Bloodseeker Vines and Symbiotic Blooms last 2 additional sec.
-
-When a target afflicted by Bloodseeker Vines dies, the vines jump to a valid nearby target for their remaining duration.
-
-**Option: Root Network** (talent 122245, spell 439882: Root Network)
-- Cast: Passive
-- Each active Bloodseeker Vine increases the damage your abilities deal by 2%.
-
-Each active Symbiotic Bloom increases the healing of your spells by 2%.
-
-### Patient Custodian — Row 5, Col 25 (node 94630)
-
-- **Type**: PASSIVE
-- **Talent ID**: 122244, **Spell**: Patient Custodian (ID: 1270592)
-- **Cast**: Passive
-- Your heal over time effects are 6% more effective.
-
-### [Choice] Row 5, Col 26 (node 94628)
-
-**Option: Twin Sprouts** (talent 122242, spell 440117: Twin Sprouts)
-- Cast: Passive
-- When Bloodseeker Vines or Symbiotic Blooms grow, they have a 30% chance to cause another growth of the same type to immediately grow on a valid nearby target.
-
-**Option: Implant** (talent 122241, spell 440118: Implant)
-- Cast: Passive
-- Casting Swiftmend or Wild Growth causes a Symbiotic Bloom to grow on a target for 6 sec.
-
-### Rampancy — Row 5, Col 27 (node 109715)
-
-- **Type**: PASSIVE
-- **Talent ID**: 140728, **Spell**: Rampancy (ID: 1270586)
-- **Cast**: Passive
-- Symbiotic Blooms have a 20% chance to trigger Bursting Growth every 2 sec at 100% effectiveness.
-
-
 ### Efflorescence — Row 6, Col 18 (node 82057)
 
 - **Type**: ACTIVE
 - **Talent ID**: 108116, **Spell**: Efflorescence (ID: 145205)
 - **Cast**: Instant
-- Grows a healing blossom at the target location, restoring 221 health to three injured allies within 10 yards every 1.8 sec for 30 sec. Limit 1.
+- Grows a healing blossom at the target location, restoring 223 health to three injured allies within 10 yards every 1.8 sec for 30 sec. Limit 1.
 
 ### Tranquility — Row 6, Col 20 (node 82054)
 
@@ -212,7 +99,7 @@ Each active Symbiotic Bloom increases the healing of your spells by 2%.
 - **Talent ID**: 108113, **Spell**: Tranquility (ID: 740)
 - **Cast**: Channeled
 - **Cooldown**: 3 min cooldown
-- Heals all allies within 40 yards for 19,334 over 5.4 sec.
+- Heals all allies within 40 yards for 19,534 over 5.4 sec.
 
 Healing decreased beyond 5 targets.
 
@@ -223,22 +110,6 @@ Healing decreased beyond 5 targets.
 - **Cast**: Instant
 - **Cooldown**: 1.5 min cooldown
 - The target's skin becomes as tough as Ironwood, reducing damage taken by 20% for 12 sec.
-
-### Vigorous Creepers — Row 6, Col 26 (node 94627)
-
-- **Type**: PASSIVE
-- **Talent ID**: 122239, **Spell**: Vigorous Creepers (ID: 440119)
-- **Cast**: Passive
-- Bloodseeker Vines increase the damage your abilities deal to affected enemies by 4%.
-
-Symbiotic Blooms increase the healing your spells do to affected targets by 20%.
-
-### Dream Surge — Row 7, Col 13 (node 94600)
-
-- **Type**: PASSIVE
-- **Talent ID**: 122207, **Spell**: Dream Surge (ID: 433831)
-- **Cast**: Passive
-- When Grove Guardians are summoned, they grow Dream Petals on your target, healing up to 3 nearby allies for 542.
 
 ### Verdancy — Row 7, Col 17 (node 82059)
 
@@ -259,18 +130,22 @@ Symbiotic Blooms increase the healing your spells do to affected targets by 20%.
 - **Type**: PASSIVE
 - **Talent ID**: 122116, **Spell**: Grove Guardians (ID: 1226140)
 - **Cast**: Passive
-- Casting Swiftmend or Wild Growth summons a Treant that casts Nourish on that target or a nearby ally periodically, healing for 229. Lasts 8 sec.
+- Casting Swiftmend or Wild Growth summons a Treant that casts Nourish on that target or a nearby ally periodically, healing for 237. Lasts 8 sec.
 
-### [Choice] Row 7, Col 20 (node 82053)
+### Inner Peace / Flourish — Row 7, Col 20 (node 82053)
 
-**Option: Inner Peace** (talent 108112, spell 197073: Inner Peace)
-- Cast: Passive
+**Choice: Inner Peace**
+
+- **Talent ID**: 108112, **Spell**: Inner Peace (ID: 197073)
+- **Cast**: Passive
 - Reduces the cooldown of Tranquility by 30 sec.
 
 While channeling Tranquility, you take 20% reduced damage and are immune to knockbacks.
 
-**Option: Flourish** (talent 108111, spell 197721: Flourish)
-- Cast: Passive
+**Choice: Flourish**
+
+- **Talent ID**: 108111, **Spell**: Flourish (ID: 197721)
+- **Cast**: Passive
 - Tranquility extends the duration of all of your heal over time effects by 2 sec every 0.9 sec.
 
 ### Cultivation — Row 7, Col 21 (node 82056)
@@ -287,43 +162,19 @@ While channeling Tranquility, you take 20% reduced damage and are immune to knoc
 - **Cast**: Passive
 - Wild Growth heals 2 additional targets.
 
-### [Choice] Row 7, Col 23 (node 82081)
+### Stonebark / Improved Ironbark — Row 7, Col 23 (node 82081)
 
-**Option: Stonebark** (talent 108145, spell 197061: Stonebark)
-- Cast: Passive
+**Choice: Stonebark**
+
+- **Talent ID**: 108145, **Spell**: Stonebark (ID: 197061)
+- **Cast**: Passive
 - Ironbark increases healing from your heal over time effects by 20%.
 
-**Option: Improved Ironbark** (talent 108144, spell 382552: Improved Ironbark)
-- Cast: Passive
+**Choice: Improved Ironbark**
+
+- **Talent ID**: 108144, **Spell**: Improved Ironbark (ID: 382552)
+- **Cast**: Passive
 - Ironbark's cooldown is reduced by 20 sec.
-
-### Treants of the Moon — Row 8, Col 12 (node 94599)
-
-- **Type**: PASSIVE
-- **Talent ID**: 122206, **Spell**: Treants of the Moon (ID: 428544)
-- **Cast**: Passive
-- Your Grove Guardians cast Moonfire on nearby targets about once every 6 sec.
-
-### Expansiveness — Row 8, Col 13 (node 94602)
-
-- **Type**: PASSIVE
-- **Talent ID**: 122209, **Spell**: Expansiveness (ID: 429399)
-- **Cast**: Passive
-- Your maximum mana is increased by 5%.
-
-### Protective Growth — Row 8, Col 14 (node 94593)
-
-- **Type**: PASSIVE
-- **Talent ID**: 122198, **Spell**: Protective Growth (ID: 433748)
-- **Cast**: Passive
-- Your Regrowth protects you, reducing damage you take by 8% while your Regrowth is on you.
-
-### Sylvan Beckoning — Row 8, Col 15 (node 109714)
-
-- **Type**: PASSIVE
-- **Talent ID**: 140727, **Spell**: Sylvan Beckoning (ID: 1264614)
-- **Cast**: Passive
-- Entering an Eclipse summons a Dryad to assist you for 8 sec, casting Starsurge dealing 565 astral damage and Starfall at 200% effectiveness.
 
 ### Renewing Surge — Row 8, Col 16 (node 82060)
 
@@ -381,44 +232,6 @@ While channeling Tranquility, you take 20% reduced damage and are immune to knoc
 - **Cast**: Passive
 - Allies protected by your Ironbark also receive 75% of the healing from each of your active Rejuvenations and Ironbark's duration is increased by 4 sec.
 
-### [Choice] Row 9, Col 12 (node 94605)
-
-**Option: Power of Nature** (talent 122213, spell 428859: Power of Nature)
-- Cast: Passive
-- Your Grove Guardians increase the healing of your Rejuvenation, Efflorescence, and Lifebloom by 10% while active.
-
-**Option: Durability of Nature** (talent 122212, spell 429227: Durability of Nature)
-- Cast: Passive
-- Your Force of Nature treants have 100% increased health.
-
-### Cenarius' Might — Row 9, Col 13 (node 94604)
-
-- **Type**: PASSIVE
-- **Talent ID**: 122211, **Spell**: Cenarius' Might (ID: 455797)
-- **Cast**: Passive
-- Swiftmend healing is increased by 20%.
-
-### [Choice] Row 9, Col 14 (node 94595)
-
-**Option: Grove's Inspiration** (talent 122201, spell 429402: Grove's Inspiration)
-- Cast: Passive
-- Wrath and Starfire damage increased by 10%. 
-
-Regrowth, Wild Growth, and Swiftmend healing increased by 9%.
-
-**Option: Potent Enchantments** (talent 122200, spell 429420: Potent Enchantments)
-- Cast: Passive
-- Orbital Strike damage increased by 30%, and damage of Stellar Flares it applies increased by 30%.
-
-Whirling Stars increases the haste you gain during Celestial Alignment by an additional 10%.
-
-### Dryad's Dance — Row 9, Col 15 (node 109713)
-
-- **Type**: PASSIVE
-- **Talent ID**: 140726, **Spell**: Dryad's Dance (ID: 1264776)
-- **Cast**: Passive
-- Dryads cause most of your Astral power generation to be increased by 10%.
-
 ### Ysera's Gift — Row 9, Col 17 (node 82048)
 
 - **Type**: PASSIVE
@@ -426,18 +239,22 @@ Whirling Stars increases the haste you gain during Celestial Alignment by an add
 - **Cast**: Passive
 - Heals you for 3% of your maximum health every 5 sec. If you are at full health, an injured party or raid member will be healed instead.
 
-### [Choice] Row 9, Col 19 (node 82064)
+### Incarnation: Tree of Life / Convoke the Spirits — Row 9, Col 19 (node 82064)
 
-**Option: Incarnation: Tree of Life** (talent 108125, spell 33891: Incarnation: Tree of Life)
-- Cast: Instant
-- Cooldown: 3 min cooldown
+**Choice: Incarnation: Tree of Life**
+
+- **Talent ID**: 108125, **Spell**: Incarnation: Tree of Life (ID: 33891)
+- **Cast**: Instant
+- **Cooldown**: 3 min cooldown
 - Shapeshift into the Tree of Life, increasing healing done by 10%, increasing armor by 120%, and granting protection from Polymorph effects. Functionality of Rejuvenation, Wild Growth, Regrowth, Entangling Roots, and Wrath is enhanced.
 
 Lasts 30 sec. You may shapeshift in and out of this form for its duration.
 
-**Option: Convoke the Spirits** (talent 108124, spell 391528: Convoke the Spirits)
-- Cast: Channeled
-- Cooldown: 2 min cooldown
+**Choice: Convoke the Spirits**
+
+- **Talent ID**: 108124, **Spell**: Convoke the Spirits (ID: 391528)
+- **Cast**: Channeled
+- **Cooldown**: 2 min cooldown
 - Call upon the spirits for an eruption of energy, channeling a rapid flurry of 16 Druid spells and abilities over 4 sec.
 
 You will cast Wild Growth, Swiftmend, Moonfire, Wrath, Regrowth, Rejuvenation, Rake, and Thrash on appropriate nearby targets, favoring your current shapeshift form.
@@ -467,52 +284,18 @@ Restoration: Healing increased by 30%, and mana costs reduced by 50%.
 - **Cast**: Passive
 - When Regrowth critically heals, it is 260% effective instead of the usual 200%.
 
-### [Choice] Row 10, Col 12 (node 94591)
+### Liveliness / Master Shapeshifter — Row 10, Col 16 (node 82074)
 
-**Option: Bounteous Bloom** (talent 122196, spell 429215: Bounteous Bloom)
-- Cast: Passive
-- Your Grove Guardians' healing is increased by 30%.
+**Choice: Liveliness**
 
-**Option: Early Spring** (talent 122907, spell 428937: Early Spring)
-- Cast: Passive
-- Swiftmend and Wild Growth cooldowns reduced by 1 sec.
-
-### [Choice] Row 10, Col 13 (node 94592)
-
-**Option: Power of the Dream** (talent 122197, spell 434220: Power of the Dream)
-- Cast: Passive
-- Dream Surge heals 1 additional ally.
-
-**Option: Control of the Dream** (talent 122906, spell 434249: Control of the Dream)
-- Cast: Passive
-- Time elapsed while your major abilities are available to be used or at maximum charges is subtracted from that ability's cooldown after the next time you use it, up to 15 seconds.
-
-Affects Force of Nature, Celestial Alignment, and Convoke the Spirits.
-
-### Blooming Infusion — Row 10, Col 14 (node 94601)
-
-- **Type**: PASSIVE
-- **Talent ID**: 122208, **Spell**: Blooming Infusion (ID: 429433)
+- **Talent ID**: 108135, **Spell**: Liveliness (ID: 426702)
 - **Cast**: Passive
-- Every 5 Regrowths you cast makes your next Wrath, Starfire, or Entangling Roots instant and increases damage it deals by 100%.
-
-Every 5 Starsurges you cast makes your next Regrowth or Entangling roots instant.
-
-### Spirit of the Thicket — Row 10, Col 15 (node 109712)
-
-- **Type**: PASSIVE
-- **Talent ID**: 140725, **Spell**: Spirit of the Thicket (ID: 1264899)
-- **Cast**: Passive
-- Your Starfall damage is increased by 12% and your Starsurge damage is increased by 8%.
-
-### [Choice] Row 10, Col 16 (node 82074)
-
-**Option: Liveliness** (talent 108135, spell 426702: Liveliness)
-- Cast: Passive
 - Your damage over time effects deal their damage 25% faster, and your healing over time effects heal 5% faster.
 
-**Option: Master Shapeshifter** (talent 119816, spell 289237: Master Shapeshifter)
-- Cast: Passive
+**Choice: Master Shapeshifter**
+
+- **Talent ID**: 119816, **Spell**: Master Shapeshifter (ID: 289237)
+- **Cast**: Passive
 - Your abilities are amplified based on your current shapeshift form, granting an additional effect.
 
 Wrath, Starfire, and Starsurge deal 30% additional damage and generate 324 Mana.
@@ -542,7 +325,7 @@ Rip, Ferocious Bite, and Maim deal 60% additional damage and generate 1,500 Mana
 - **Type**: PASSIVE
 - **Talent ID**: 108123, **Spell**: Cenarius' Guidance (ID: 393371)
 - **Cast**: Passive
--  Incarnation: Tree of Life
+- Incarnation: Tree of Life
 During Incarnation: Tree of Life, you summon a Grove Guardian every 10 sec. The cooldown of Incarnation: Tree of Life is reduced by 5.0 sec when Grove Guardians fade.
 
  Convoke the Spirits
@@ -585,13 +368,6 @@ This effect is increased by 200% while Call of the Elder Druid is active.
 - **Cast**: Passive
 - When your Rejuvenation heals a full health target, its duration is increased by 2 sec, up to a maximum total increase of 6 sec per cast.
 
-### Harmony of the Grove — Row 11, Col 13 (node 94606)
-
-- **Type**: PASSIVE
-- **Talent ID**: 122215, **Spell**: Harmony of the Grove (ID: 428731)
-- **Cast**: Passive
-- Each of your Grove Guardians increases your healing done by 5% while active.
-
 ### Photosynthesis — Row 11, Col 17 (node 82073)
 
 - **Type**: PASSIVE
@@ -627,333 +403,761 @@ This effect is increased by 200% while Call of the Elder Druid is active.
 - **Cast**: Passive
 - Lifebloom stacks every 5 sec, stacking up to 3 times.
 
-## Hero Talent Trees
+## Class Talent Tree
 
-### Druid of the Claw (tree ID: 21) — NOT relevant for Resto
+### Unknown — Row 1, Col 15 (node 99806)
 
-#### Ravage (node 94609, talent 122218, spell 441583)
-- Your auto-attacks have a chance to make your next Ferocious Bite become Ravage.
+- **Type**: CHOICE
+- **Talent ID**: ?, **Spell**: Unknown (ID: ?)
+- **Cast**: 
+- 
 
-Ravage
-Finishing move that slashes through your target in a wide arc, dealing Physical damage per combo point to your target and consuming up to 25 additional Energy to increase that damage by up to 100%. Hits all other enemies in front of you for reduced damage per combo point spent. 
+### Rake — Row 2, Col 3 (node 82199)
 
-1 point: 13 damage, 6 in an arc
-2 points: 25 damage, 12 in an arc
-3 points: 39 damage, 17 in an arc
-4 points: 52 damage, 23 in an arc
-5 points: 66 damage, 30 in an arc
+- **Type**: ACTIVE
+- **Talent ID**: 108282, **Spell**: Rake (ID: 1822)
+- **Cast**: Instant
+- Rake the target for 10 Bleed damage and an additional 57 Bleed damage over 15 sec.
 
-#### Wildshape Mastery (node 94610, talent 122219, spell 441678)
-- Ironfur and Frenzied Regeneration persist in Cat Form.
+Awards 1 combo point.
 
-When transforming from Bear to Cat Form, you retain 80% of your Bear Form armor and health for 6 sec.
+### Frenzied Regeneration — Row 2, Col 5 (node 82220)
 
-For 6 sec after entering Bear Form, you heal for 10% of damage taken over 8 sec. 
+- **Type**: ACTIVE
+- **Talent ID**: 108303, **Spell**: Frenzied Regeneration (ID: 22842)
+- **Cast**: Instant
+- **Cooldown**: 1 sec cooldown
+- Heals you for 32% health over 3 sec.
 
-#### Bestial Strength (node 94611, talent 122220, spell 441841)
-- Maul and Raze damage increased by 10%.
+### Rejuvenation — Row 2, Col 7 (node 82217)
 
-#### [Choice] (node 94612)
+- **Type**: ACTIVE
+- **Talent ID**: 108300, **Spell**: Rejuvenation (ID: 774)
+- **Cast**: Instant
+- Heals the target for 1,672 over 12 sec.
 
-**Option: Empowered Shapeshifting** (talent 122222, spell 441689)
-- Frenzied Regeneration can be cast in Cat Form for 40 Energy.
+### Starfire — Row 2, Col 9 (node 91044)
 
-Bear Form reduces magic damage you take by 6%.
+- **Type**: ACTIVE
+- **Talent ID**: 117972, **Spell**: Starfire (ID: 197628)
+- **Cast**: 2.5 sec cast
+- Call down a burst of energy, causing 348 Arcane damage to the target, and 123 Arcane damage to all other enemies within 5 yards. Deals reduced damage beyond 8 targets.
 
-Shred and Swipe damage increased by 10%. Mangle damage increased by 25%.
+### Grievous Wounds — Row 3, Col 2 (node 82239)
 
-**Option: Wildpower Surge** (talent 122221, spell 441691)
-- Mangle grants Feline Potential. When you have 6 stacks, the next time you transform into Cat Form, gain 5 combo points and your next Ferocious Bite or Rip deals 50% increased damage for its full duration.
+- **Type**: PASSIVE
+- **Talent ID**: 108323, **Spell**: Grievous Wounds (ID: 474526)
+- **Cast**: Passive
+- Rake, Rip, and Thrash damage increased by 10%.
 
-#### Claw Rampage (node 94613, talent 122223, spell 441835)
-- During Berserk, Shred, and Swipe have a 20% chance to make your next Ferocious Bite become Ravage.
+### Swipe — Row 3, Col 4 (node 82223)
 
-#### [Choice] (node 94614)
+- **Type**: ACTIVE
+- **Talent ID**: 108306, **Spell**: Swipe (ID: 213764)
+- **Cast**: Instant
+- Swipe nearby enemies, inflicting Physical damage. Damage varies by shapeshift form.
 
-**Option: Strike for the Heart** (talent 122226, spell 441845)
-- Mangle damage increased by 10% and its critical strike chance is increased by 10%.
+### Ursoc's Spirit — Row 3, Col 6 (node 82219)
 
+- **Type**: PASSIVE
+- **Talent ID**: 108302, **Spell**: Ursoc's Spirit (ID: 449182)
+- **Cast**: Passive
+- Stamina increased by 4%.
 
+Stamina in Bear Form is increased by an additional 5%.
 
-**Option: Tear Down the Mighty** (talent 122225, spell 441846)
-- The cooldown of Sundering Roar is reduced by 15 sec.
+### Wild Growth — Row 3, Col 8 (node 82205)
 
-#### Pack's Endurance (node 94615, talent 122227, spell 441844)
-- Stampeding Roar's duration is increased by 25%.
+- **Type**: ACTIVE
+- **Talent ID**: 108288, **Spell**: Wild Growth (ID: 48438)
+- **Cast**: 1.5 sec cast
+- **Cooldown**: 10 sec cooldown
+- Heals up to 5 injured allies within 30 yards of the target for 1,085 over 7 sec. Healing starts high and declines over the duration.
 
-#### Aggravate Wounds (node 94616, talent 122228, spell 441829)
-- Every attack with an Energy cost that you cast extends the duration of your Dreadful Wounds by 0.6 sec, up to 8 additional sec.
+### Starsurge — Row 3, Col 10 (node 82200)
 
-#### Fount of Strength (node 94618, talent 122230, spell 441675)
-- Your maximum Energy and Rage are increased by 20.
+- **Type**: ACTIVE
+- **Talent ID**: 108283, **Spell**: Starsurge (ID: 197626)
+- **Cast**: Instant
+- **Cooldown**: 10 sec cooldown
+- Launch a surge of stellar energies at the target, dealing 791 Astral damage.
 
-Frenzied Regeneration also increases your maximum health by 10%.
+### Rip — Row 4, Col 3 (node 82222)
 
-#### Exacerbating Wounds (node 94619, talent 122231, spell 1271839)
-- Your Dreadful Wounds increase the damage afflicted enemies take from your Bleed damage over time effects by 15%.
+- **Type**: ACTIVE
+- **Talent ID**: 108305, **Spell**: Rip (ID: 1079)
+- **Cast**: Instant
+- Finishing move that causes Bleed damage over time. Lasts longer per combo point.
 
-#### Dreadful Wound (node 94620, talent 122232, spell 441809)
-- Ravage also inflicts a Bleed that causes 35 damage over 6 sec and saps its victims' strength, reducing damage they deal to you by 15%.
+   1 point  : 8 over 1 sec
+   2 points: 12 over 2 sec
+   3 points: 16 over 3 sec
+   4 points: 20 over 3 sec
+   5 points: 24 over 4 sec
 
-Dreadful Wound is not affected by Circle of Life and Death. 
+### Verdant Heart — Row 4, Col 5 (node 82218)
 
-#### Twin Claw (node 109721, talent 140734, spell 1271635)
-- You have a 18% chance to follow up any single target melee ability with a Twin Claw, dealing 118 Physical damage and generating 5 Rage.
+- **Type**: PASSIVE
+- **Talent ID**: 108301, **Spell**: Verdant Heart (ID: 301768)
+- **Cast**: Passive
+- Frenzied Regeneration and Barkskin increase all healing received by 20%.
 
+### Improved Nature's Cure — Row 4, Col 7 (node 104084)
 
+- **Type**: PASSIVE
+- **Talent ID**: 133393, **Spell**: Improved Nature's Cure (ID: 392378)
+- **Cast**: Passive
+- Nature's Cure additionally removes all Curse and Poison effects.
 
-#### Limb from Limb (node 109722, talent 140735, spell 1271540)
-- Your auto-attacks are 30% more likely to make your next Maul become Ravage.
+### Moonkin Form — Row 4, Col 9 (node 82208)
 
-#### [Choice] (node 109723)
+- **Type**: ACTIVE
+- **Talent ID**: 108291, **Spell**: Moonkin Form (ID: 24858)
+- **Cast**: Instant
+- Shapeshift into Moonkin Form, increasing the damage of your spells by 10% and your armor by 125%, and granting protection from Polymorph effects.
 
-**Option: Ruthless Aggression** (talent 140736, spell 441814)
-- Ravage increases your auto-attack speed by 35% for 6 sec.
+The act of shapeshifting frees you from movement impairing effects.
 
-**Option: Killing Strikes** (talent 141396, spell 441824)
-- Ravage increases your Agility by 8% and the armor granted by Ironfur by 20% for 8 sec.
+### Maim — Row 5, Col 2 (node 82221)
 
-Your first Mangle after entering combat makes your next Maul become Ravage.
+- **Type**: ACTIVE
+- **Talent ID**: 108304, **Spell**: Maim (ID: 22570)
+- **Cast**: Instant
+- **Cooldown**: 30 sec cooldown
+- Finishing move that causes Physical damage and stuns the target. Damage and duration increased per combo point:
 
----
+   1 point  : 5 damage, 1 sec
+   2 points: 10 damage, 2 sec
+   3 points: 15 damage, 3 sec
+   4 points: 21 damage, 4 sec
+   5 points: 26 damage, 5 sec
 
-### Wildstalker (tree ID: 22)
+### Killer Instinct (2 ranks) — Row 5, Col 4 (node 82225)
 
-#### Wildstalker's Power (node 94621, talent 122233, spell 439926)
-- Rip and Ferocious Bite damage increased by 5%.
+- **Type**: PASSIVE
+- **Talent ID**: 108308, **Spell**: Killer Instinct (ID: 108299)
+- **Cast**: Passive
+- Physical damage and Armor increased by 3%.
 
-Rejuvenation healing increased by 10%.
+### Ironfur — Row 5, Col 5 (node 82227)
 
-#### [Choice] (node 94622)
+- **Type**: ACTIVE
+- **Talent ID**: 108310, **Spell**: Ironfur (ID: 192081)
+- **Cast**: Instant
+- **Cooldown**: 0.5 sec cooldown
+- Increases armor by 124 for 7 sec.
 
-**Option: Entangling Vortex** (talent 122234, spell 439895)
-- Enemies pulled into Ursol's Vortex are rooted in place for 3 sec. Damage may cancel the effect.
+### Improved Barkskin — Row 5, Col 6 (node 104085)
 
-**Option: Flower Walk** (talent 124755, spell 439901)
-- During Barkskin your movement speed is increased by 10% and every second flowers grow beneath your feet that heal up to 3 nearby injured allies for 76.
+- **Type**: PASSIVE
+- **Talent ID**: 133394, **Spell**: Improved Barkskin (ID: 327993)
+- **Cast**: Passive
+- Barkskin's duration is increased by 4 sec.
 
-#### Strategic Infusion (node 94623, talent 122235, spell 439890)
-- Attacking from Prowl increases the chance for Shred, Rake, and Swipe to critically strike by 8% for 6 sec.
+### Hibernate — Row 5, Col 7 (node 82211)
 
-Your periodic heals have a 4% increased chance to critically heal.
+- **Type**: ACTIVE
+- **Talent ID**: 108294, **Spell**: Hibernate (ID: 2637)
+- **Cast**: 1.5 sec cast
+- Forces the enemy target to sleep for up to 40 sec. Any damage will awaken the target. Only one target can be forced to hibernate at a time. Only works on Beasts and Dragonkin.
 
-#### Lethal Preservation (node 94624, talent 122236, spell 455461)
-- When you remove an effect with Soothe or Remove Corruption, gain a combo point and heal for 4% of your maximum health. If you are at full health an injured party or raid member will be healed instead.
+### Nurturing Instinct (2 ranks) — Row 5, Col 8 (node 82214)
 
-#### [Choice] (node 94625)
+- **Type**: PASSIVE
+- **Talent ID**: 108297, **Spell**: Nurturing Instinct (ID: 33873)
+- **Cast**: Passive
+- Magical damage and healing increased by 3%.
 
-**Option: Bond with Nature** (talent 122237, spell 439929)
+### Sunfire — Row 5, Col 10 (node 93714)
+
+- **Type**: ACTIVE
+- **Talent ID**: 121114, **Spell**: Sunfire (ID: 93402)
+- **Cast**: Instant
+- A quick beam of solar light burns the enemy for 81 Nature damage and then an additional 705 Nature damage over 18 sec.
+
+### Primal Fury — Row 6, Col 3 (node 82224)
+
+- **Type**: PASSIVE
+- **Talent ID**: 108307, **Spell**: Primal Fury (ID: 159286)
+- **Cast**: Passive
+- While in Cat Form, when you critically strike with an attack that generates a combo point, you gain an additional combo point. Damage over time cannot trigger this effect.
+
+Mangle critical strike damage increased by 20%.
+
+### Thick Hide — Row 6, Col 5 (node 82228)
+
+- **Type**: PASSIVE
+- **Talent ID**: 108311, **Spell**: Thick Hide (ID: 16931)
+- **Cast**: Passive
+- Reduces all damage taken by 4%.
+
+### Natural Recovery — Row 6, Col 7 (node 82206)
+
+- **Type**: PASSIVE
+- **Talent ID**: 108289, **Spell**: Natural Recovery (ID: 377796)
+- **Cast**: Passive
 - Healing you receive is increased by 4%.
 
-**Option: Harmonious Constitution** (talent 124754, spell 440116)
-- Your Regrowth's healing to yourself is increased by 35%.
+### Astral Influence — Row 6, Col 9 (node 82210)
 
-#### Thriving Growth (node 94626, talent 122238, spell 439528)
-- Rip and Rake damage has a chance to cause Bloodseeker Vines to grow on the victim, dealing 34 Bleed damage over 6 sec.
+- **Type**: PASSIVE
+- **Talent ID**: 108293, **Spell**: Astral Influence (ID: 197524)
+- **Cast**: Passive
+- Increases the range of all of your spells by 5 yards.
 
-Wild Growth, Regrowth, and Efflorescence healing has a chance to cause Symbiotic Blooms to grow on the target, healing for 834 over 6 sec.
+### Wild Charge / Tiger Dash — Row 7, Col 4 (node 82198)
+
+**Choice: Wild Charge**
+
+- **Talent ID**: 108281, **Spell**: Wild Charge (ID: 102401)
+- **Cast**: Instant
+- **Cooldown**: 15 sec cooldown
+- Fly to a nearby ally's position.
+
+**Choice: Tiger Dash**
+
+- **Talent ID**: 108280, **Spell**: Tiger Dash (ID: 252216)
+- **Cast**: Instant
+- **Cooldown**: 45 sec cooldown
+- Shift into Cat Form and increase your movement speed by 200%, reducing gradually over 5 sec.
+
+### Soothe / Cyclone — Row 7, Col 6 (node 82229)
+
+**Choice: Soothe**
+
+- **Talent ID**: 108312, **Spell**: Soothe (ID: 2908)
+- **Cast**: Instant
+- **Cooldown**: 10 sec cooldown
+- Soothes the target, dispelling all enrage effects.
+
+**Choice: Cyclone**
+
+- **Talent ID**: 133390, **Spell**: Cyclone (ID: 33786)
+- **Cast**: 1.7 sec cast
+- Tosses the enemy target into the air, disorienting them but making them invulnerable for up to 5 sec. Only one target can be affected by your Cyclone at a time.
+
+### Aessina's Renewal — Row 7, Col 8 (node 82232)
+
+- **Type**: PASSIVE
+- **Talent ID**: 133384, **Spell**: Aessina's Renewal (ID: 474678)
+- **Cast**: Passive
+- When a hit deals more than 12% of your maximum health, instantly heal for 10% of your health.
+
+This effect cannot occur more than once every 30 seconds.
+
+### Starlight Conduit — Row 7, Col 10 (node 100223)
+
+- **Type**: PASSIVE
+- **Talent ID**: 128706, **Spell**: Starlight Conduit (ID: 451211)
+- **Cast**: Passive
+- Wrath, Starsurge, and Starfire damage increased by 5%. 
+
+Starsurge's cooldown is reduced by 4 sec and its mana cost is reduced by 50%.
+
+### Feline Swiftness — Row 8, Col 3 (node 82236)
+
+- **Type**: PASSIVE
+- **Talent ID**: 108319, **Spell**: Feline Swiftness (ID: 131768)
+- **Cast**: Passive
+- Increases your movement speed by 15%.
+
+### Well-Honed Instincts — Row 8, Col 4 (node 82235)
+
+- **Type**: PASSIVE
+- **Talent ID**: 108318, **Spell**: Well-Honed Instincts (ID: 377847)
+- **Cast**: Passive
+- When you fall below 40% health, you cast Frenzied Regeneration, up to once every 120 sec.
+
+### Matted Fur (2 ranks) — Row 8, Col 5 (node 100177)
+
+- **Type**: PASSIVE
+- **Talent ID**: 128634, **Spell**: Matted Fur (ID: 385786)
+- **Cast**: Passive
+- When you use Barkskin or Survival Instincts, absorb 525 damage for 8 sec.
+
+### Stampeding Roar — Row 8, Col 6 (node 82234)
+
+- **Type**: ACTIVE
+- **Talent ID**: 108317, **Spell**: Stampeding Roar (ID: 106898)
+- **Cast**: Instant
+- **Cooldown**: 2 min cooldown
+- Shift into Bear Form and let loose a wild roar, increasing the movement speed of all friendly players within 15 yards by 60% for 8 sec.
+
+### Lingering Healing — Row 8, Col 7 (node 82240)
+
+- **Type**: PASSIVE
+- **Talent ID**: 108324, **Spell**: Lingering Healing (ID: 231040)
+- **Cast**: Passive
+- Rejuvenation's duration is increased by 3 sec.
+
+Regrowth's duration is increased by 3 sec when cast on yourself.
+
+### Typhoon — Row 8, Col 8 (node 82209)
+
+- **Type**: ACTIVE
+- **Talent ID**: 108292, **Spell**: Typhoon (ID: 132469)
+- **Cast**: Instant
+- **Cooldown**: 30 sec cooldown
+- Blasts targets within 15 yards in front of you with a violent Typhoon, knocking them back and reducing their movement speed by 50% for 6 sec. Usable in all shapeshift forms.
+
+### Mass Entanglement / Ursol's Vortex — Row 8, Col 9 (node 82207)
+
+**Choice: Mass Entanglement**
+
+- **Talent ID**: 108290, **Spell**: Mass Entanglement (ID: 102359)
+- **Cast**: Instant
+- **Cooldown**: 30 sec cooldown
+- Roots the target and all enemies within 12 yards in place for 10 sec. Damage may interrupt the effect. Usable in all shapeshift forms.
+
+**Choice: Ursol's Vortex**
+
+- **Talent ID**: 133392, **Spell**: Ursol's Vortex (ID: 102793)
+- **Cast**: Instant
+- **Cooldown**: 1 min cooldown
+- Conjures a vortex of wind for 10 sec at the destination, reducing the movement speed of all enemies within 8 yards by 50%. The first time an enemy attempts to leave the vortex, winds will pull that enemy back to its center. Usable in all shapeshift forms.
+
+### Oakskin — Row 9, Col 3 (node 100176)
+
+- **Type**: PASSIVE
+- **Talent ID**: 128633, **Spell**: Oakskin (ID: 449191)
+- **Cast**: Passive
+- Survival Instincts and Barkskin reduce damage taken by an additional 10%.
+
+### Perfectly-Honed Instincts — Row 9, Col 4 (node 104082)
+
+- **Type**: PASSIVE
+- **Talent ID**: 133389, **Spell**: Perfectly-Honed Instincts (ID: 1213597)
+- **Cast**: Passive
+- Well-Honed Instincts can trigger up to once every 90 sec.
+
+### Instincts of the Claw — Row 9, Col 5 (node 104081)
+
+- **Type**: PASSIVE
+- **Talent ID**: 133388, **Spell**: Instincts of the Claw (ID: 449184)
+- **Cast**: Passive
+- Ferocious Bite and Maul damage increased by 8%.
+
+### Lycara's Teachings (2 ranks) — Row 9, Col 6 (node 82233)
+
+- **Type**: PASSIVE
+- **Talent ID**: 108316, **Spell**: Lycara's Teachings (ID: 378988)
+- **Cast**: Passive
+- You gain 3% of a stat while in each form:
+
+No Form: Haste
+Cat Form: Critical Strike
+Bear Form: Versatility
+Moonkin Form: Mastery
+
+### Lore of the Grove — Row 9, Col 7 (node 104080)
+
+- **Type**: PASSIVE
+- **Talent ID**: 133387, **Spell**: Lore of the Grove (ID: 449185)
+- **Cast**: Passive
+- Moonfire and Sunfire damage increased by 10%.
+
+### Gale Winds / Incessant Tempest — Row 9, Col 8 (node 104079)
+
+**Choice: Gale Winds**
+
+- **Talent ID**: 133386, **Spell**: Gale Winds (ID: 400142)
+- **Cast**: Passive
+- Increases Typhoon's radius by 20% and its range by 5 yds.
+
+**Choice: Incessant Tempest**
+
+- **Talent ID**: 133385, **Spell**: Incessant Tempest (ID: 400140)
+- **Cast**: Passive
+- Reduces the cooldown of Typhoon by 5 sec.
+
+### Gift of the Wild — Row 9, Col 9 (node 100175)
+
+- **Type**: PASSIVE
+- **Talent ID**: 128632, **Spell**: Gift of the Wild (ID: 1262034)
+- **Cast**: Passive
+- Mark of the Wild is 100% more effective on yourself.
+
+### Incapacitating Roar / Mighty Bash — Row 10, Col 2 (node 82237)
+
+**Choice: Incapacitating Roar**
+
+- **Talent ID**: 108321, **Spell**: Incapacitating Roar (ID: 99)
+- **Cast**: Instant
+- **Cooldown**: 30 sec cooldown
+- Shift into Bear Form and invoke the spirit of Ursol to let loose a deafening roar, incapacitating all enemies within 10 yards for 3 sec. Damage may cancel the effect.
+
+**Choice: Mighty Bash**
+
+- **Talent ID**: 108320, **Spell**: Mighty Bash (ID: 5211)
+- **Cast**: Instant
+- **Cooldown**: 1 min cooldown
+- Invokes the spirit of Ursoc to stun the target for 4 sec. Usable in all shapeshift forms.
+
+### Ursine Vigor — Row 10, Col 4 (node 100174)
+
+- **Type**: PASSIVE
+- **Talent ID**: 128631, **Spell**: Ursine Vigor (ID: 377842)
+- **Cast**: Passive
+- For 4 sec after shifting into Bear Form, your health and armor are increased by 15%.
+
+### Improved Stampeding Roar — Row 10, Col 5 (node 82230)
+
+- **Type**: PASSIVE
+- **Talent ID**: 108313, **Spell**: Improved Stampeding Roar (ID: 288826)
+- **Cast**: Passive
+- Cooldown reduced by 60 sec.
+
+### Circle of the Wild / Circle of the Heavens — Row 10, Col 6 (node 104078)
+
+**Choice: Circle of the Wild**
+
+- **Talent ID**: 133383, **Spell**: Circle of the Wild (ID: 474530)
+- **Cast**: Passive
+- Physical damage dealt by your abilities increased by 5%.
+
+**Choice: Circle of the Heavens**
+
+- **Talent ID**: 133382, **Spell**: Circle of the Heavens (ID: 474541)
+- **Cast**: Passive
+- Magical damage dealt by your spells increased by 5%.
+
+### Lycara's Inspiration — Row 10, Col 7 (node 92229)
+
+- **Type**: PASSIVE
+- **Talent ID**: 119305, **Spell**: Lycara's Inspiration (ID: 1232897)
+- **Cast**: Passive
+- You gain a bonus while in each form inspired by the breadth of your Druidic knowledge:
+
+No Form: 4% Magic Damage
+Cat Form: 4% Stamina
+Bear Form: 5% Movement Speed
+Moonkin Form: 3% Area damage taken reduction
+
+### Symbiotic Relationship — Row 10, Col 8 (node 100173)
+
+- **Type**: ACTIVE
+- **Talent ID**: 128630, **Spell**: Symbiotic Relationship (ID: 474750)
+- **Cast**: 1.5 sec cast
+- Form a bond with an ally. Your self-healing also heals your bonded ally for 10% of the amount healed. Your healing to your bonded ally also heals you for 8% of the amount healed.
+
+### Forestwalk (2 ranks) — Row 10, Col 10 (node 82243)
+
+- **Type**: PASSIVE
+- **Talent ID**: 108328, **Spell**: Forestwalk (ID: 400129)
+- **Cast**: Passive
+- Casting Regrowth increases your movement speed and healing received by 8% for 6 sec.
+
+### Fluid Form — Row 11, Col 3 (node 82246)
+
+- **Type**: PASSIVE
+- **Talent ID**: 108331, **Spell**: Fluid Form (ID: 449193)
+- **Cast**: Passive
+- Shred, Rake, and Skull Bash can be used in any form and shift you into Cat Form, if necessary. 
+
+Mangle can be used in any form and shifts you into Bear Form. 
+
+Wrath and Starfire shift you into Moonkin Form, if known.
+
+### Heart of the Wild — Row 11, Col 6 (node 82231)
+
+- **Type**: ACTIVE
+- **Talent ID**: 108314, **Spell**: Heart of the Wild (ID: 1261867)
+- **Cast**: Instant
+- **Cooldown**: 2 min cooldown
+- Perform a powerful off-role ability depending on your currently active shapeshift form.
+
+Non-shapeshifted:
+Empowered Wild Growth that heals up to 5 injured allies within 30 yards of the target for 6,514 over 7 sec.
+
+Bear Form:
+Increase your maximum health by 30% for 20 sec.
+
+### Innervate — Row 11, Col 9 (node 82244)
+
+- **Type**: ACTIVE
+- **Talent ID**: 108329, **Spell**: Innervate (ID: 29166)
+- **Cast**: Instant
+- **Cooldown**: 3 min cooldown
+- Infuse a friendly healer with energy, allowing them to cast spells without spending mana for 8 sec.
+
+## Hero Talent Trees
+
+### _Wildstalker_ (14 talents)
+
+#### Thriving Growth — Row 2, Col 26 (node 94626)
+
+- **Type**: PASSIVE
+- **Talent ID**: 122238, **Spell**: Thriving Growth (ID: 439528)
+- **Cast**: Passive
+- Rip and Rake damage has a chance to cause Bloodseeker Vines to grow on the victim, dealing (97.5% of Attack Power) Bleed damage over 6 sec.
+
+Wild Growth, Regrowth, and Efflorescence healing has a chance to cause Symbiotic Blooms to grow on the target, healing for (219.6% of Spell Power) over 6 sec.
 
 Multiple instances of these can overlap.
 
-#### Vigorous Creepers (node 94627, talent 122239, spell 440119)
-- Bloodseeker Vines increase the damage your abilities deal to affected enemies by 4%.
+#### Hunt Beneath the Open Skies — Row 3, Col 24 (node 94629)
 
-Symbiotic Blooms increase the healing your spells do to affected targets by 20%.
-
-#### [Choice] (node 94628)
-
-**Option: Twin Sprouts** (talent 122242, spell 440117)
-- When Bloodseeker Vines or Symbiotic Blooms grow, they have a 30% chance to cause another growth of the same type to immediately grow on a valid nearby target.
-
-**Option: Implant** (talent 122241, spell 440118)
-- Casting Swiftmend or Wild Growth causes a Symbiotic Bloom to grow on a target for 6 sec.
-
-#### Hunt Beneath the Open Skies (node 94629, talent 122243, spell 439868)
+- **Type**: PASSIVE
+- **Talent ID**: 122243, **Spell**: Hunt Beneath the Open Skies (ID: 439868)
+- **Cast**: Passive
 - Damage and healing while in Cat Form increased by 3%.
 
 Moonfire and Sunfire damage increased by 10%.
 
-#### Patient Custodian (node 94630, talent 122244, spell 1270592)
-- Your heal over time effects are 6% more effective.
+#### Strategic Infusion — Row 3, Col 25 (node 94623)
 
-#### [Choice] (node 94631)
+- **Type**: PASSIVE
+- **Talent ID**: 122235, **Spell**: Strategic Infusion (ID: 439890)
+- **Cast**: Passive
+- Attacking from Prowl increases the chance for Shred, Rake, and Swipe to critically strike by 8% for 6 sec.
 
-**Option: Resilient Flourishing** (talent 122246, spell 439880)
+Your periodic heals have a 4% increased chance to critically heal.
+
+#### Wildstalker's Power — Row 3, Col 26 (node 94621)
+
+- **Type**: PASSIVE
+- **Talent ID**: 122233, **Spell**: Wildstalker's Power (ID: 439926)
+- **Cast**: Passive
+- Rip and Ferocious Bite damage increased by 5%.
+
+Rejuvenation, Efflorescence, and Lifebloom healing increased by 10%.
+
+#### Green Thumb — Row 3, Col 27 (node 109717)
+
+- **Type**: PASSIVE
+- **Talent ID**: 140730, **Spell**: Green Thumb (ID: 1270565)
+- **Cast**: Passive
+- The rate at which Symbiotic Blooms grow is increased by 20%.
+
+#### Lethal Preservation — Row 4, Col 24 (node 94624)
+
+- **Type**: PASSIVE
+- **Talent ID**: 122236, **Spell**: Lethal Preservation (ID: 455461)
+- **Cast**: Passive
+- When you remove an effect with Soothe or Remove Corruption, gain a combo point and heal for 4% of your maximum health. If you are at full health an injured party or raid member will be healed instead.
+
+#### Entangling Vortex / Flower Walk — Row 4, Col 25 (node 94622)
+
+**Choice: Entangling Vortex**
+
+- **Talent ID**: 122234, **Spell**: Entangling Vortex (ID: 439895)
+- **Cast**: Passive
+- Enemies pulled into Ursol's Vortex are rooted in place for 3 sec. Damage may cancel the effect.
+
+**Choice: Flower Walk**
+
+- **Talent ID**: 124755, **Spell**: Flower Walk (ID: 439901)
+- **Cast**: Passive
+- During Barkskin your movement speed is increased by 10% and every second flowers grow beneath your feet that heal up to 3 nearby injured allies for 76.
+
+#### Bond with Nature / Harmonious Constitution — Row 4, Col 26 (node 94625)
+
+**Choice: Bond with Nature**
+
+- **Talent ID**: 122237, **Spell**: Bond with Nature (ID: 439929)
+- **Cast**: Passive
+- Healing you receive is increased by 4%.
+
+**Choice: Harmonious Constitution**
+
+- **Talent ID**: 124754, **Spell**: Harmonious Constitution (ID: 440116)
+- **Cast**: Passive
+- Your Regrowth's healing to yourself is increased by 35%.
+
+#### Bursting Growth — Row 4, Col 27 (node 109716)
+
+- **Type**: PASSIVE
+- **Talent ID**: 140729, **Spell**: Bursting Growth (ID: 440120)
+- **Cast**: Passive
+- When Bloodseeker Vines expire or you use Ferocious Bite on their target they explode in thorns, dealing 30 physical damage to nearby enemies. Damage reduced above 5 targets.
+
+When Symbiotic Blooms expire or you cast Rejuvenation on their target flowers grow around their target, healing them and up to 3 nearby allies for 160.
+
+#### Resilient Flourishing / Root Network — Row 5, Col 24 (node 94631)
+
+**Choice: Resilient Flourishing**
+
+- **Talent ID**: 122246, **Spell**: Resilient Flourishing (ID: 439880)
+- **Cast**: Passive
 - Bloodseeker Vines and Symbiotic Blooms last 2 additional sec.
 
 When a target afflicted by Bloodseeker Vines dies, the vines jump to a valid nearby target for their remaining duration.
 
-**Option: Root Network** (talent 122245, spell 439882)
+**Choice: Root Network**
+
+- **Talent ID**: 122245, **Spell**: Root Network (ID: 439882)
+- **Cast**: Passive
 - Each active Bloodseeker Vine increases the damage your abilities deal by 2%.
 
 Each active Symbiotic Bloom increases the healing of your spells by 2%.
 
-#### Rampancy (node 109715, talent 140728, spell 1270586)
+#### Patient Custodian — Row 5, Col 25 (node 94630)
+
+- **Type**: PASSIVE
+- **Talent ID**: 122244, **Spell**: Patient Custodian (ID: 1270592)
+- **Cast**: Passive
+- Your heal over time effects are 6% more effective.
+
+#### Twin Sprouts / Implant — Row 5, Col 26 (node 94628)
+
+**Choice: Twin Sprouts**
+
+- **Talent ID**: 122242, **Spell**: Twin Sprouts (ID: 440117)
+- **Cast**: Passive
+- When Bloodseeker Vines or Symbiotic Blooms grow, they have a 30% chance to cause another growth of the same type to immediately grow on a valid nearby target.
+
+**Choice: Implant**
+
+- **Talent ID**: 122241, **Spell**: Implant (ID: 440118)
+- **Cast**: Passive
+- Casting Swiftmend or Wild Growth causes a Symbiotic Bloom to grow on a target for 6 sec.
+
+#### Rampancy — Row 5, Col 27 (node 109715)
+
+- **Type**: PASSIVE
+- **Talent ID**: 140728, **Spell**: Rampancy (ID: 1270586)
+- **Cast**: Passive
 - Symbiotic Blooms have a 20% chance to trigger Bursting Growth every 2 sec at 100% effectiveness.
 
+#### Vigorous Creepers — Row 6, Col 26 (node 94627)
 
-#### Bursting Growth (node 109716, talent 140729, spell 440120)
-- When Bloodseeker Vines expire or you use Ferocious Bite on their target they explode in thorns, dealing 30 physical damage to nearby enemies. Damage reduced above 5 targets.
+- **Type**: PASSIVE
+- **Talent ID**: 122239, **Spell**: Vigorous Creepers (ID: 440119)
+- **Cast**: Passive
+- Bloodseeker Vines increase the damage your abilities deal to affected enemies by 4%.
 
-When Symbiotic Blooms expire or you cast Rejuvenation on their target flowers grow around their target, healing them and up to 3 nearby allies for 161.
+Symbiotic Blooms increase the healing your spells do to affected targets by 20%.
 
-#### Green Thumb (node 109717, talent 140730, spell 1270565)
-- The rate at which Symbiotic Blooms grow is increased by 20%.
+### _Keeper of the Grove_ (14 talents)
 
----
+#### Dream Surge — Row 7, Col 13 (node 94600)
 
-### Keeper of the Grove (tree ID: 23)
+- **Type**: PASSIVE
+- **Talent ID**: 122207, **Spell**: Dream Surge (ID: 433831)
+- **Cast**: Passive
+- When Grove Guardians are summoned, they grow Dream Petals on your target, healing up to 3 nearby allies for (146.4% of Spell Power).
 
-#### [Choice] (node 94591)
+#### Treants of the Moon — Row 8, Col 12 (node 94599)
 
-**Option: Bounteous Bloom** (talent 122196, spell 429215)
-- Your Grove Guardians' healing is increased by 30%.
+- **Type**: PASSIVE
+- **Talent ID**: 122206, **Spell**: Treants of the Moon (ID: 428544)
+- **Cast**: Passive
+- Your Grove Guardians cast Moonfire on nearby targets about once every 6 sec.
 
-**Option: Early Spring** (talent 122907, spell 428937)
-- Swiftmend and Wild Growth cooldowns reduced by 1 sec.
+#### Expansiveness — Row 8, Col 13 (node 94602)
 
-#### [Choice] (node 94592)
+- **Type**: PASSIVE
+- **Talent ID**: 122209, **Spell**: Expansiveness (ID: 429399)
+- **Cast**: Passive
+- Your maximum mana is increased by 5%.
 
-**Option: Power of the Dream** (talent 122197, spell 434220)
-- Dream Surge heals 1 additional ally.
+#### Protective Growth — Row 8, Col 14 (node 94593)
 
-**Option: Control of the Dream** (talent 122906, spell 434249)
-- Time elapsed while your major abilities are available to be used or at maximum charges is subtracted from that ability's cooldown after the next time you use it, up to 15 seconds.
-
-Affects Force of Nature, Celestial Alignment, and Convoke the Spirits.
-
-#### Protective Growth (node 94593, talent 122198, spell 433748)
+- **Type**: PASSIVE
+- **Talent ID**: 122198, **Spell**: Protective Growth (ID: 433748)
+- **Cast**: Passive
 - Your Regrowth protects you, reducing damage you take by 8% while your Regrowth is on you.
 
-#### [Choice] (node 94595)
+#### Sylvan Beckoning — Row 8, Col 15 (node 109714)
 
-**Option: Grove's Inspiration** (talent 122201, spell 429402)
+- **Type**: PASSIVE
+- **Talent ID**: 140727, **Spell**: Sylvan Beckoning (ID: 1264614)
+- **Cast**: Passive
+- Your periodic heals have a chance to empower your next Swiftmend to summon a Dryad to assist you, casting Tranquility at 10% effectiveness and Regrowth to heal (658.507% of Spell Power) damage onto your lowest health ally.
+
+#### Power of Nature / Durability of Nature — Row 9, Col 12 (node 94605)
+
+**Choice: Power of Nature**
+
+- **Talent ID**: 122213, **Spell**: Power of Nature (ID: 428859)
+- **Cast**: Passive
+- Your Grove Guardians increase the healing of your Rejuvenation, Efflorescence, and Lifebloom by 10% while active.
+
+**Choice: Durability of Nature**
+
+- **Talent ID**: 122212, **Spell**: Durability of Nature (ID: 429227)
+- **Cast**: Passive
+- Grove Guardians last 20% longer.
+
+#### Cenarius' Might — Row 9, Col 13 (node 94604)
+
+- **Type**: PASSIVE
+- **Talent ID**: 122211, **Spell**: Cenarius' Might (ID: 455797)
+- **Cast**: Passive
+- Swiftmend healing is increased by 20%.
+
+#### Grove's Inspiration / Potent Enchantments — Row 9, Col 14 (node 94595)
+
+**Choice: Grove's Inspiration**
+
+- **Talent ID**: 122201, **Spell**: Grove's Inspiration (ID: 429402)
+- **Cast**: Passive
 - Wrath and Starfire damage increased by 10%. 
 
 Regrowth, Wild Growth, and Swiftmend healing increased by 9%.
 
-**Option: Potent Enchantments** (talent 122200, spell 429420)
-- Orbital Strike damage increased by 30%, and damage of Stellar Flares it applies increased by 30%.
+**Choice: Potent Enchantments**
 
-Whirling Stars increases the haste you gain during Celestial Alignment by an additional 10%.
+- **Talent ID**: 122200, **Spell**: Potent Enchantments (ID: 429420)
+- **Cast**: Passive
+- Reforestation grants Tree of Life for 6 additional sec.
 
-#### Treants of the Moon (node 94599, talent 122206, spell 428544)
-- Your Grove Guardians cast Moonfire on nearby targets about once every 6 sec.
+#### Dryad's Dance — Row 9, Col 15 (node 109713)
 
-#### Dream Surge (node 94600, talent 122207, spell 433831)
-- When Grove Guardians are summoned, they grow Dream Petals on your target, healing up to 3 nearby allies for 565.
+- **Type**: PASSIVE
+- **Talent ID**: 140726, **Spell**: Dryad's Dance (ID: 1264776)
+- **Cast**: Passive
+- Dryads cause Swiftmend to cool down 25% faster.
 
-#### Blooming Infusion (node 94601, talent 122208, spell 429433)
+#### Bounteous Bloom / Early Spring — Row 10, Col 12 (node 94591)
+
+**Choice: Bounteous Bloom**
+
+- **Talent ID**: 122196, **Spell**: Bounteous Bloom (ID: 429215)
+- **Cast**: Passive
+- Your Grove Guardians' healing is increased by 30%.
+
+**Choice: Early Spring**
+
+- **Talent ID**: 122907, **Spell**: Early Spring (ID: 428937)
+- **Cast**: Passive
+- Swiftmend and Wild Growth cooldowns reduced by 1 sec.
+
+#### Power of the Dream / Control of the Dream — Row 10, Col 13 (node 94592)
+
+**Choice: Power of the Dream**
+
+- **Talent ID**: 122197, **Spell**: Power of the Dream (ID: 434220)
+- **Cast**: Passive
+- Dream Surge heals 1 additional ally.
+
+**Choice: Control of the Dream**
+
+- **Talent ID**: 122906, **Spell**: Control of the Dream (ID: 434249)
+- **Cast**: Passive
+- Time elapsed while your major abilities are available to be used or at maximum charges is subtracted from that ability's cooldown after the next time you use it, up to 15 seconds.
+
+Affects Nature's Swiftness, Incarnation: Tree of Life, and Convoke the Spirits.
+
+#### Blooming Infusion — Row 10, Col 14 (node 94601)
+
+- **Type**: PASSIVE
+- **Talent ID**: 122208, **Spell**: Blooming Infusion (ID: 429433)
+- **Cast**: Passive
 - Every 5 Regrowths you cast makes your next Wrath, Starfire, or Entangling Roots instant and increases damage it deals by 100%.
 
 Every 5 Starsurges you cast makes your next Regrowth or Entangling roots instant.
 
-#### Expansiveness (node 94602, talent 122209, spell 429399)
-- Your maximum mana is increased by 5%.
+#### Spirit of the Thicket — Row 10, Col 15 (node 109712)
 
-#### Cenarius' Might (node 94604, talent 122211, spell 455797)
-- Swiftmend healing is increased by 20%.
+- **Type**: PASSIVE
+- **Talent ID**: 140725, **Spell**: Spirit of the Thicket (ID: 1264899)
+- **Cast**: Passive
+- Ironbark summons a Dryad to channel a beam of pure nature onto your target, healing them for (4392% of Spell Power) over 6 sec.
 
-#### [Choice] (node 94605)
+#### Harmony of the Grove — Row 11, Col 13 (node 94606)
 
-**Option: Power of Nature** (talent 122213, spell 428859)
-- Your Grove Guardians increase the healing of your Rejuvenation, Efflorescence, and Lifebloom by 10% while active.
-
-**Option: Durability of Nature** (talent 122212, spell 429227)
-- Your Force of Nature treants have 100% increased health.
-
-#### Harmony of the Grove (node 94606, talent 122215, spell 428731)
+- **Type**: PASSIVE
+- **Talent ID**: 122215, **Spell**: Harmony of the Grove (ID: 428731)
+- **Cast**: Passive
 - Each of your Grove Guardians increases your healing done by 5% while active.
-
-#### Spirit of the Thicket (node 109712, talent 140725, spell 1264899)
-- Your Starfall damage is increased by 12% and your Starsurge damage is increased by 8%.
-
-#### Dryad's Dance (node 109713, talent 140726, spell 1264776)
-- Dryads cause most of your Astral power generation to be increased by 10%.
-
-#### Sylvan Beckoning (node 109714, talent 140727, spell 1264614)
-- Entering an Eclipse summons a Dryad to assist you for 8 sec, casting Starsurge dealing 560 astral damage and Starfall at 200% effectiveness.
-
----
-
-### Elune's Chosen (tree ID: 24) — NOT relevant for Resto
-
-#### [Choice] (node 94585)
-
-**Option: The Light of Elune** (talent 122188, spell 428655)
-- Moonfire damage has a chance to call down a Fury of Elune to follow your target for 3 sec.
-
- Fury of Elune
-Calls down a beam of pure celestial energy, dealing 425 Astral damage over 3 sec within its area.
-
-Generates 15 Astral Power over its duration.
-
-**Option: Astral Insight** (talent 122784, spell 429536)
-- Incarnation: Guardian of Ursoc increases Arcane damage from spells and abilities by 10% while active.
-
-Increases the duration and number of spells cast by Convoke the Spirits by 25%.
-
-#### [Choice] (node 94586)
-
-**Option: Arcane Affinity** (talent 122190, spell 429540)
-- All Arcane damage from your spells and abilities is increased by 3%.
-
-**Option: Lunation** (talent 122189, spell 429539)
-- Your Arcane abilities reduce the cooldown of Lunar Beam by 3.0 sec.
-
-
-#### The Eternal Moon (node 94587, talent 122191, spell 424113)
-- Further increases the power of Boundless Moonlight.
-
- Fury of Elune
-The flash of energy now generates 6 Astral Power and its damage is increased by 50%.
-
- Full Moon
-New Moon and Half Moon now also call down 1 Minor Moon.
-
-#### Lunar Insight (node 94588, talent 122193, spell 429530)
-- Moonfire deals 20% additional damage.
-
-#### Lunar Calling (node 94590, talent 122195, spell 429523)
-- Thrash now deals Arcane damage and its damage is increased by 12%.
-
-#### Glistening Fur (node 94594, talent 122781, spell 429533)
-- Bear Form and Moonkin Form reduce Arcane damage taken by 6% and all other magic damage taken by 3%.
-
-#### Stellar Command (node 94596, talent 122202, spell 429668)
-- Increases the damage of Lunar Beam by 30% and Fury of Elune by 15%.
-
-#### [Choice] (node 94597)
-
-**Option: Moondust** (talent 122204, spell 429538)
-- Enemies affected by Moonfire are slowed by 20%.
-
-**Option: Elune's Grace** (talent 128177, spell 443046)
-- Using Wild Charge while in Bear Form or Moonkin Form incurs a 3 sec shorter cooldown.
-
-#### Moon Guardian (node 94598, talent 122205, spell 429520)
-- Free automatic Moonfires from Galactic Guardian generate 5 Rage.
-
-#### Atmospheric Exposure (node 94607, talent 122216, spell 429532)
-- Enemies damaged by Lunar Beam or Fury of Elune take 6% increased damage from you for 6 sec.
-
-#### Boundless Moonlight (node 94608, talent 122217, spell 424058)
--  Fury of Elune
-Fury of Elune now ends with a flash of energy, blasting nearby enemies for 822 Astral damage.
-
- Full Moon
-Full Moon calls down 2 Minor Moons that deal 715 Astral damage and generate 3 Astral Power.
-
-#### Bask in Moonlight (node 109718, talent 140731, spell 1271305)
-- Starsurge damage increased by 10%. 
-Starfall damage increased by 10%. 
-
-
-#### Penumbral Swell (node 109719, talent 140732, spell 1271261)
-- Lunar Eclipse increases Arcane damage by an additional 3%.
-
-#### Star Cascade (node 109720, talent 140733, spell 1271206)
-- Gaining Astral Power with Wrath or Starfire has a 40% chance to launch a Starsurge at a victim at 70% effectiveness.
-
-
----
