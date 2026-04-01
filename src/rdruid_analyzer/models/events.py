@@ -67,12 +67,19 @@ class RemoveBuffEvent(BaseEvent):
     ability_id: int
 
 
+@dataclass
+class SummonEvent(BaseEvent):
+    target_id: int
+    ability_id: int
+
+
 EVENT_TYPE_MAP = {
     "cast": CastEvent,
     "heal": HealEvent,
     "applybuff": ApplyBuffEvent,
     "refreshbuff": RefreshBuffEvent,
     "removebuff": RemoveBuffEvent,
+    "summon": SummonEvent,
 }
 
 

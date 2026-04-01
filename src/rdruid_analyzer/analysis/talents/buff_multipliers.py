@@ -1,7 +1,13 @@
 from rdruid_analyzer.analysis.attributor import TalentAttributor
-from rdruid_analyzer.models.events import HealEvent, CastEvent
+from rdruid_analyzer.models.events import HealEvent, CastEvent, SummonEvent
 from rdruid_analyzer.tracking.hot_tracker import HotTracker
 from rdruid_analyzer.tracking.buff_tracker import BuffTracker
+
+GROVE_GUARDIAN_SUMMON_ID = 102693  # WCL summon ability for Grove Guardian treants
+GROVE_GUARDIAN_BASE_DURATION_MS = 8000
+GROVE_GUARDIAN_DURABILITY_BONUS = 0.2  # Durability of Nature: +20% duration
+DURABILITY_OF_NATURE_NODE = 94605
+DURABILITY_OF_NATURE_TALENT_ID = (122212, 117200)  # Blizzard API / WCL ID
 
 
 class StaticBuffAttributor(TalentAttributor):
@@ -59,63 +65,63 @@ class LifetreadingAttributor(StaticBuffAttributor):
     multiplier = 0.25
 
 
-class HarmonyOfTheGroveAttributor(TalentAttributor):
-    """Harmony of the Grove: Each Grove Guardian increases healing done by 5%.
-    This is a dynamic buff — we need to track active guardian count.
-    For simplicity, we track summon/despawn events. Grove Guardians last 8 sec.
-    The buff spell ID in WCL should be 428731."""
-    name = "Harmony of the Grove"
-    talent_node_id = 94606
+class _GuardianTrackingMixin:
+    """Shared guardian tracking via WCL summon events (ability 102693).
+    Accounts for Durability of Nature extending duration by 20%."""
 
     def __init__(self):
         super().__init__()
         self._guardian_count = 0
         self._guardian_despawn_times: list[int] = []
+        self._guardian_duration_ms: int = GROVE_GUARDIAN_BASE_DURATION_MS
 
-    def process_event(self, event, hot_tracker, buff_tracker):
-        # Clean up expired guardians (8 sec = 8000ms duration)
+    def set_combatant_info(self, info):
+        super().set_combatant_info(info)
+        # Check Durability of Nature for extended guardian duration
+        if info and DURABILITY_OF_NATURE_NODE in info.talent_nodes:
+            ids = DURABILITY_OF_NATURE_TALENT_ID
+            if any(tid in info.talent_ids for tid in ids):
+                self._guardian_duration_ms = int(
+                    GROVE_GUARDIAN_BASE_DURATION_MS * (1 + GROVE_GUARDIAN_DURABILITY_BONUS)
+                )
+
+    def _update_guardians(self, event):
         if hasattr(event, 'timestamp'):
             self._guardian_despawn_times = [t for t in self._guardian_despawn_times if t > event.timestamp]
             self._guardian_count = len(self._guardian_despawn_times)
 
-        # Track guardian summons via cast events
-        if isinstance(event, CastEvent) and event.ability_id in (18562, 48438):
-            # Only count if Grove Guardians talent is taken
-            if self.has_talent(82043):
-                self._guardian_despawn_times.append(event.timestamp + 8000)
-                self._guardian_count = len([t for t in self._guardian_despawn_times if t > event.timestamp])
+        if isinstance(event, SummonEvent) and event.ability_id == GROVE_GUARDIAN_SUMMON_ID:
+            self._guardian_despawn_times.append(event.timestamp + self._guardian_duration_ms)
+            self._guardian_count = len([t for t in self._guardian_despawn_times if t > event.timestamp])
+
+
+class HarmonyOfTheGroveAttributor(_GuardianTrackingMixin, TalentAttributor):
+    """Harmony of the Grove: Each Grove Guardian increases healing done by 5%.
+    Tracks guardians via WCL summon events, capturing all sources (casts, Convoke, etc.)."""
+    name = "Harmony of the Grove"
+    talent_node_id = 94606
+
+    def process_event(self, event, hot_tracker, buff_tracker):
+        self._update_guardians(event)
 
     def process_heal(self, event: HealEvent, hot_tracker: HotTracker, buff_tracker: BuffTracker) -> float:
         if self._guardian_count <= 0:
             return 0.0
-        # 5% per guardian
         multiplier = 0.05 * self._guardian_count
         return event.amount - event.amount / (1 + multiplier)
 
 
-class PowerOfNatureAttributor(TalentAttributor):
+class PowerOfNatureAttributor(_GuardianTrackingMixin, TalentAttributor):
     """Power of Nature: Grove Guardians increase Rejuv, Efflorescence, and Lifebloom
-    healing by 10% while active. Same guardian tracking as HarmonyOfTheGrove."""
+    healing by 10% while active."""
     name = "Power of Nature"
     talent_node_id = 94605
     talent_id = (122213, 117201, 117200)  # Blizzard API / WCL hero tree / WCL ID
 
     SPELL_IDS = {774, 155777, 81269, 33763, 33778}  # Rejuv, Germ Rejuv, Efflor, LB tick, LB bloom
 
-    def __init__(self):
-        super().__init__()
-        self._guardian_count = 0
-        self._guardian_despawn_times: list[int] = []
-
     def process_event(self, event, hot_tracker, buff_tracker):
-        if hasattr(event, 'timestamp'):
-            self._guardian_despawn_times = [t for t in self._guardian_despawn_times if t > event.timestamp]
-            self._guardian_count = len(self._guardian_despawn_times)
-
-        if isinstance(event, CastEvent) and event.ability_id in (18562, 48438):
-            if self.has_talent(82043):
-                self._guardian_despawn_times.append(event.timestamp + 8000)
-                self._guardian_count = len([t for t in self._guardian_despawn_times if t > event.timestamp])
+        self._update_guardians(event)
 
     def process_heal(self, event: HealEvent, hot_tracker: HotTracker, buff_tracker: BuffTracker) -> float:
         if self._guardian_count <= 0 or event.ability_id not in self.SPELL_IDS:
