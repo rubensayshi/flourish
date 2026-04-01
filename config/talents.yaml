@@ -47,8 +47,10 @@ verdancy:
   skip: false
 
 harmonious_blooming:
-  skip: true
-  skip_reason: "mastery scaling, too complex for now"
+  skip: false
+  mastery_pct: 25
+  mastery_base_stacks: 3
+  mastery_dr_table: [1.0, 1.7, 2.3, 2.8, 3.2]
 
 cenarius_guidance:
   skip: true

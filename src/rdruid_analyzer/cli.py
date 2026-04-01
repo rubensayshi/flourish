@@ -55,6 +55,7 @@ from rdruid_analyzer.analysis.talents.wildstalker import (
     StrategicInfusionAttributor,
 )
 from rdruid_analyzer.analysis.talents.symbiotic_bloom_mastery import SymbioticBloomMasteryAttributor
+from rdruid_analyzer.analysis.talents.harmonious_blooming import HarmoniousBloomingAttributor
 from rdruid_analyzer.analysis.talents.sm_cooldown_reduction import (
     SmCooldownReductionAttributor,
     WgCooldownReductionAttributor,
@@ -94,6 +95,16 @@ def build_attributors(config: dict) -> list:
             sbm_kwargs["base_stacks"] = sbm_cfg.mastery_base_stacks
         if sbm_cfg.mastery_dr_table is not None:
             sbm_kwargs["dr_table"] = sbm_cfg.mastery_dr_table
+
+    hb_cfg = config.get("harmonious_blooming")
+    hb_kwargs = {}
+    if hb_cfg:
+        if hb_cfg.mastery_pct is not None:
+            hb_kwargs["mastery_pct"] = hb_cfg.mastery_pct
+        if hb_cfg.mastery_base_stacks is not None:
+            hb_kwargs["base_stacks"] = hb_cfg.mastery_base_stacks
+        if hb_cfg.mastery_dr_table is not None:
+            hb_kwargs["dr_table"] = hb_cfg.mastery_dr_table
 
     sotf = SoulOfTheForestAttributor()
     gg = GroveGuardiansAttributor()
@@ -137,6 +148,7 @@ def build_attributors(config: dict) -> list:
         RootNetworkAttributor(),
         StrategicInfusionAttributor(),
         SymbioticBloomMasteryAttributor(**sbm_kwargs),
+        HarmoniousBloomingAttributor(**hb_kwargs),
         AbundanceAttributor(),
         PhotosynthesisAttributor(),
         NurturingDormancyAttributor(),
