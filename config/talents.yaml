@@ -239,6 +239,9 @@ dryads_dance:
 sm_cooldown_reduction:
   skip: false
 
+wg_cooldown_reduction:
+  skip: false
+
 # === Always-take / base talents (skip) ===
 
 lifebloom:

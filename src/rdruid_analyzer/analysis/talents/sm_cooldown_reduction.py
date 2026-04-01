@@ -4,8 +4,9 @@ from rdruid_analyzer.tracking.hot_tracker import HotTracker
 from rdruid_analyzer.tracking.buff_tracker import BuffTracker
 
 SWIFTMEND = 18562
+WILD_GROWTH = 48438
 EARLY_SPRING_NODE_ID = 94591
-EARLY_SPRING_TALENT_ID = 122907
+EARLY_SPRING_TALENT_ID = 117895  # WCL entryId (choice node vs Bounteous Bloom)
 DRYADS_DANCE_NODE_ID = 109713
 RENEWING_SURGE_NODE_ID = 82060
 
@@ -13,6 +14,8 @@ DRYAD_HEAL_SPELLS = {1264659, 1264664}
 SPIRIT_THICKET_SPELL = 1264905
 
 BASE_SM_CD_MS = 15000
+BASE_WG_CD_MS = 10000
+WG_4PC_REDUCTION_MS = 2000
 RENEWING_SURGE_REDUCTION_AVG = 0.195
 EARLY_SPRING_REDUCTION_MS = 1000
 DRYADS_DANCE_SPEED_FACTOR = 1.25
@@ -36,6 +39,86 @@ def compute_effective_cd(
         remaining = cd - overlap
         cd = remaining + overlap / DRYADS_DANCE_SPEED_FACTOR
     return cd
+
+
+def compute_effective_wg_cd(
+    has_early_spring: bool,
+    has_4pc: bool,
+) -> float:
+    """Compute effective WG cooldown in ms."""
+    cd = float(BASE_WG_CD_MS)
+    if has_4pc:
+        cd -= WG_4PC_REDUCTION_MS
+    if has_early_spring:
+        cd -= EARLY_SPRING_REDUCTION_MS
+    return cd
+
+
+class WgCooldownReductionAttributor(TalentAttributor):
+    """Attributes healing value of Early Spring WG CD reduction.
+
+    Tracks WG cast gaps, checks on-cooldown usage, and attributes
+    a fraction of downstream GG healing."""
+
+    name = "WG Cooldown Reduction"
+
+    def __init__(self, downstream_attributors=None, has_4pc=True):
+        super().__init__()
+        self._wg_cast_timestamps: list[int] = []
+        self._downstream = downstream_attributors or []
+        self._has_4pc = has_4pc
+
+    def is_selected(self) -> bool:
+        if self.combatant_info is None:
+            return True
+        return (
+            EARLY_SPRING_NODE_ID in self.combatant_info.talent_nodes
+            and EARLY_SPRING_TALENT_ID in self.combatant_info.talent_ids
+        )
+
+    def process_event(self, event, hot_tracker, buff_tracker):
+        if isinstance(event, CastEvent) and event.ability_id == WILD_GROWTH:
+            self._wg_cast_timestamps.append(event.timestamp)
+
+    def process_heal(self, event, hot_tracker, buff_tracker) -> float:
+        return 0.0
+
+    def finalize(self) -> float:
+        if len(self._wg_cast_timestamps) < 2:
+            return 0.0
+
+        has_early_spring = (
+            self.has_talent(EARLY_SPRING_NODE_ID)
+            and self.combatant_info is not None
+            and EARLY_SPRING_TALENT_ID in self.combatant_info.talent_ids
+        )
+
+        unreduced_cd = compute_effective_wg_cd(
+            has_early_spring=False,
+            has_4pc=self._has_4pc,
+        )
+
+        reduced_cd = compute_effective_wg_cd(
+            has_early_spring=has_early_spring,
+            has_4pc=self._has_4pc,
+        )
+
+        total_ratio = 0.0
+        total_casts = len(self._wg_cast_timestamps)
+
+        for i in range(1, total_casts):
+            gap = self._wg_cast_timestamps[i] - self._wg_cast_timestamps[i - 1]
+            if gap <= reduced_cd + ON_COOLDOWN_TOLERANCE_MS:
+                ratio = 1 - (reduced_cd / unreduced_cd)
+                total_ratio += max(ratio, 0.0)
+
+        if total_ratio == 0.0:
+            return 0.0
+
+        extra_cast_fraction = total_ratio / total_casts
+        downstream_total = sum(attr.total_attributed for attr in self._downstream)
+
+        return extra_cast_fraction * downstream_total
 
 
 class SmCooldownReductionAttributor(TalentAttributor):

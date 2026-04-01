@@ -3,6 +3,8 @@ import pytest
 from rdruid_analyzer.analysis.pipeline import Pipeline
 from rdruid_analyzer.analysis.talents.sm_cooldown_reduction import (
     SmCooldownReductionAttributor,
+    WgCooldownReductionAttributor,
+    compute_effective_wg_cd,
     DRYADS_DANCE_NODE_ID,
     EARLY_SPRING_NODE_ID,
     EARLY_SPRING_TALENT_ID,
@@ -12,6 +14,7 @@ from rdruid_analyzer.analysis.talents.soul_of_the_forest import SoulOfTheForestA
 from rdruid_analyzer.analysis.talents.direct_spells import GroveGuardiansAttributor
 
 SWIFTMEND = 18562
+WILD_GROWTH = 48438
 DRYAD_TRANQ = 1264659
 SOTF_BUFF = 114108
 REJUV = 774
@@ -247,3 +250,87 @@ def test_no_attribution_single_sm_cast():
     pipeline = Pipeline(attributors=[sotf, sm_cd])
     results = pipeline.run(events)
     assert results.talent_healing["SM Cooldown Reduction"] == 0.0
+
+
+# --- WG CD reduction tests ---
+
+
+def test_effective_wg_cd_with_4pc_and_early_spring():
+    cd = compute_effective_wg_cd(has_early_spring=True, has_4pc=True)
+    # 10000 - 2000 - 1000 = 7000
+    assert cd == pytest.approx(7000.0)
+
+
+def test_effective_wg_cd_with_4pc_no_early_spring():
+    cd = compute_effective_wg_cd(has_early_spring=False, has_4pc=True)
+    assert cd == pytest.approx(8000.0)
+
+
+def test_effective_wg_cd_no_4pc_with_early_spring():
+    cd = compute_effective_wg_cd(has_early_spring=True, has_4pc=False)
+    assert cd == pytest.approx(9000.0)
+
+
+def test_wg_tracks_casts():
+    attr = WgCooldownReductionAttributor()
+    pipeline = Pipeline(attributors=[attr])
+    events = [
+        make_cast(0, WILD_GROWTH),
+        make_cast(8000, WILD_GROWTH),
+        make_cast(16000, WILD_GROWTH),
+    ]
+    pipeline.run(events)
+    assert attr._wg_cast_timestamps == [0, 8000, 16000]
+
+
+def test_wg_attribution_on_cooldown():
+    """WG pressed on cooldown with 4pc + Early Spring -> attributes fraction of GG."""
+    gg = GroveGuardiansAttributor()
+    wg_cd = WgCooldownReductionAttributor(downstream_attributors=[gg], has_4pc=True)
+
+    # reduced_cd = 7000, unreduced_cd = 8000
+    # ratio = 1 - 7000/8000 = 0.125
+    GG_NODE = 82043
+    events = [
+        make_combatant_info(0, talent_nodes=[
+            EARLY_SPRING_NODE_ID, GG_NODE,
+        ], talent_ids=[EARLY_SPRING_TALENT_ID]),
+        make_cast(1000, WILD_GROWTH),
+        make_heal(1100, GG_NOURISH, 5000, source=99),
+        # WG 2 — gap=7500 < 7000+1500 → on cooldown
+        make_cast(8500, WILD_GROWTH),
+        make_heal(8600, GG_NOURISH, 5000, source=99),
+        # WG 3 — gap=7500 → on cooldown
+        make_cast(16000, WILD_GROWTH),
+        make_heal(16100, GG_NOURISH, 5000, source=99),
+    ]
+    pipeline = Pipeline(attributors=[gg, wg_cd])
+    results = pipeline.run(events)
+
+    # GG total: 3 * 5000 = 15000
+    # 2 on-CD casts, ratio = 0.125 each
+    # fraction = (0.125 * 2) / 3
+    # attribution = fraction * 15000
+    ratio = 1 - 7000.0 / 8000.0
+    fraction = (ratio * 2) / 3
+    expected = fraction * 15000
+    assert results.talent_healing["WG Cooldown Reduction"] == pytest.approx(expected, rel=0.01)
+
+
+def test_wg_no_attribution_when_not_on_cooldown():
+    gg = GroveGuardiansAttributor()
+    wg_cd = WgCooldownReductionAttributor(downstream_attributors=[gg], has_4pc=True)
+
+    events = [
+        make_combatant_info(0, talent_nodes=[
+            EARLY_SPRING_NODE_ID, 82043,
+        ], talent_ids=[EARLY_SPRING_TALENT_ID]),
+        make_cast(1000, WILD_GROWTH),
+        make_heal(1100, GG_NOURISH, 5000, source=99),
+        # WG 2 — gap=30000 >> 7000+1500
+        make_cast(31000, WILD_GROWTH),
+        make_heal(31100, GG_NOURISH, 5000, source=99),
+    ]
+    pipeline = Pipeline(attributors=[gg, wg_cd])
+    results = pipeline.run(events)
+    assert results.talent_healing["WG Cooldown Reduction"] == 0.0

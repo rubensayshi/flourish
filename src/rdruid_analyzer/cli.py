@@ -54,7 +54,10 @@ from rdruid_analyzer.analysis.talents.wildstalker import (
     RootNetworkAttributor,
 )
 from rdruid_analyzer.analysis.talents.symbiotic_bloom_mastery import SymbioticBloomMasteryAttributor
-from rdruid_analyzer.analysis.talents.sm_cooldown_reduction import SmCooldownReductionAttributor
+from rdruid_analyzer.analysis.talents.sm_cooldown_reduction import (
+    SmCooldownReductionAttributor,
+    WgCooldownReductionAttributor,
+)
 from rdruid_analyzer.analysis.talents.sylvan_beckoning import SylvanBeckoningAttributor
 from rdruid_analyzer.analysis.talents.abundance import AbundanceAttributor
 from rdruid_analyzer.analysis.talents.photosynthesis import PhotosynthesisAttributor
@@ -94,6 +97,7 @@ def build_attributors(config: dict) -> list:
     sotf = SoulOfTheForestAttributor()
     gg = GroveGuardiansAttributor()
     sm_cd = SmCooldownReductionAttributor(downstream_attributors=[sotf, gg])
+    wg_cd = WgCooldownReductionAttributor(downstream_attributors=[gg], has_4pc=False)
 
     all_attributors = [
         sotf,
@@ -140,6 +144,7 @@ def build_attributors(config: dict) -> list:
         PowerOfNatureAttributor(),
         ThrivingVegetationAttributor(),
         sm_cd,
+        wg_cd,
     ]
     active = []
     for a in all_attributors:
