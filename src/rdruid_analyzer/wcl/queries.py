@@ -27,6 +27,23 @@ query($code: String!) {
 }
 """
 
+DAMAGE_TAKEN_TABLE_QUERY = """
+query($code: String!, $startTime: Float!, $endTime: Float!, $targetID: Int!, $fightIDs: [Int!], $filterExpression: String) {
+    reportData {
+        report(code: $code) {
+            table(
+                startTime: $startTime,
+                endTime: $endTime,
+                targetID: $targetID,
+                fightIDs: $fightIDs,
+                dataType: DamageTaken,
+                filterExpression: $filterExpression
+            )
+        }
+    }
+}
+"""
+
 EVENTS_QUERY = """
 query($code: String!, $startTime: Float!, $endTime: Float!, $sourceID: Int!, $fightIDs: [Int!]) {
     reportData {

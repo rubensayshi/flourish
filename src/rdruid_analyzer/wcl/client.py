@@ -1,6 +1,6 @@
 import httpx
 
-from rdruid_analyzer.wcl.queries import EVENTS_QUERY, FIGHTS_QUERY
+from rdruid_analyzer.wcl.queries import DAMAGE_TAKEN_TABLE_QUERY, EVENTS_QUERY, FIGHTS_QUERY
 
 WCL_OAUTH_URL = "https://www.warcraftlogs.com/oauth/token"
 WCL_API_URL = "https://www.warcraftlogs.com/api/v2/client"
@@ -69,3 +69,27 @@ class WCLClient:
 
         all_events.sort(key=lambda e: e["timestamp"])
         return all_events
+
+    def get_damage_taken(
+        self,
+        code: str,
+        fight_id: int,
+        target_id: int,
+        start_time: float,
+        end_time: float,
+        filter_expression: str | None = None,
+    ) -> int:
+        """Fetch total damage taken using the table endpoint."""
+        data = self._query(
+            DAMAGE_TAKEN_TABLE_QUERY,
+            {
+                "code": code,
+                "startTime": start_time,
+                "endTime": end_time,
+                "targetID": target_id,
+                "fightIDs": [fight_id],
+                "filterExpression": filter_expression,
+            },
+        )
+        table_data = data["reportData"]["report"]["table"]["data"]
+        return sum(entry.get("total", 0) for entry in table_data.get("entries", []))

@@ -44,3 +44,23 @@ class CachedWCLClient:
         result = self._inner.get_events(code, fight_id, source_id, start_time, end_time)
         self._write(path, result)
         return result
+
+    def get_damage_taken(
+        self,
+        code: str,
+        fight_id: int,
+        target_id: int,
+        start_time: float,
+        end_time: float,
+        filter_expression: str | None = None,
+    ) -> int:
+        suffix = f"_{filter_expression}" if filter_expression else ""
+        path = self._cache_dir / f"{code}_{fight_id}_{target_id}_dmgtaken{suffix}.json"
+        cached = self._read(path)
+        if cached is not None:
+            return cached
+        result = self._inner.get_damage_taken(
+            code, fight_id, target_id, start_time, end_time, filter_expression
+        )
+        self._write(path, result)
+        return result
