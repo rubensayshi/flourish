@@ -74,9 +74,12 @@ class Pipeline:
                 for attr in self.attributors:
                     attributed = attr.process_heal(event, self.hot_tracker, self.buff_tracker)
                     results.talent_healing[attr.name] += attributed
+                    attr.total_attributed += attributed
 
         # Let attributors finalize (for deferred attribution like Photosynthesis)
         for attr in self.attributors:
-            results.talent_healing[attr.name] += attr.finalize()
+            finalized = attr.finalize()
+            results.talent_healing[attr.name] += finalized
+            attr.total_attributed += finalized
 
         return results

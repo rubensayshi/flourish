@@ -106,4 +106,61 @@ class SmCooldownReductionAttributor(TalentAttributor):
 
     def finalize(self) -> float:
         self._close_dryad_window()
-        return 0.0
+
+        if len(self._sm_cast_timestamps) < 2:
+            return 0.0
+
+        has_renewing_surge = self.has_talent(RENEWING_SURGE_NODE_ID)
+        has_early_spring = (
+            self.has_talent(EARLY_SPRING_NODE_ID)
+            and self.combatant_info is not None
+            and EARLY_SPRING_TALENT_ID in self.combatant_info.talent_ids
+        )
+        has_dryads_dance = self.has_talent(DRYADS_DANCE_NODE_ID)
+
+        # Unreduced CD = baseline with Renewing Surge only (no Early Spring, no Dryad)
+        unreduced_cd = compute_effective_cd(
+            has_renewing_surge=has_renewing_surge,
+            has_early_spring=False,
+            dryad_overlap_ms=0,
+        )
+
+        total_ratio = 0.0
+        total_casts = len(self._sm_cast_timestamps)
+
+        for i in range(1, total_casts):
+            prev_ts = self._sm_cast_timestamps[i - 1]
+            curr_ts = self._sm_cast_timestamps[i]
+            gap = curr_ts - prev_ts
+
+            # Compute Dryad overlap during CD window
+            dryad_overlap = 0.0
+            if has_dryads_dance:
+                cd_start = prev_ts
+                cd_end = prev_ts + unreduced_cd
+                for d_start, d_end in self._dryad_windows:
+                    overlap_start = max(cd_start, d_start)
+                    overlap_end = min(cd_end, d_end)
+                    if overlap_end > overlap_start:
+                        dryad_overlap += overlap_end - overlap_start
+
+            reduced_cd = compute_effective_cd(
+                has_renewing_surge=has_renewing_surge,
+                has_early_spring=has_early_spring,
+                dryad_overlap_ms=dryad_overlap,
+            )
+
+            # On-cooldown check
+            if gap <= reduced_cd + ON_COOLDOWN_TOLERANCE_MS:
+                ratio = 1 - (reduced_cd / unreduced_cd)
+                total_ratio += max(ratio, 0.0)
+
+        if total_ratio == 0.0:
+            return 0.0
+
+        extra_cast_fraction = total_ratio / total_casts
+
+        # Sum downstream attributor totals
+        downstream_total = sum(attr.total_attributed for attr in self._downstream)
+
+        return extra_cast_fraction * downstream_total

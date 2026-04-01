@@ -6,10 +6,16 @@ from rdruid_analyzer.analysis.talents.sm_cooldown_reduction import (
     DRYADS_DANCE_NODE_ID,
     EARLY_SPRING_NODE_ID,
     EARLY_SPRING_TALENT_ID,
+    RENEWING_SURGE_NODE_ID,
 )
+from rdruid_analyzer.analysis.talents.soul_of_the_forest import SoulOfTheForestAttributor
+from rdruid_analyzer.analysis.talents.direct_spells import GroveGuardiansAttributor
 
 SWIFTMEND = 18562
 DRYAD_TRANQ = 1264659
+SOTF_BUFF = 114108
+REJUV = 774
+GG_NOURISH = 422090
 
 
 def make_cast(ts, ability, source=1, target=2):
@@ -125,3 +131,119 @@ def test_effective_cd_with_dryad_partial_overlap():
 def test_effective_cd_no_renewing_surge():
     cd = compute_effective_cd(has_renewing_surge=False, has_early_spring=True, dryad_overlap_ms=0)
     assert cd == pytest.approx(14000.0)
+
+
+# --- finalize tests ---
+
+
+def make_applybuff(ts, ability, source=1, target=1):
+    return {"timestamp": ts, "type": "applybuff", "sourceID": source, "targetID": target, "abilityGameID": ability}
+
+
+def make_removebuff(ts, ability, source=1, target=1):
+    return {"timestamp": ts, "type": "removebuff", "sourceID": source, "targetID": target, "abilityGameID": ability}
+
+
+def test_full_attribution_on_cooldown():
+    """SM pressed on cooldown -> attributes fraction of downstream healing."""
+    sotf = SoulOfTheForestAttributor()
+    gg = GroveGuardiansAttributor()
+    sm_cd = SmCooldownReductionAttributor(downstream_attributors=[sotf, gg])
+
+    # With Early Spring + Renewing Surge (no Dryad's Dance):
+    # reduced_cd = 11075ms, unreduced_cd = 12075ms
+    # ratio = 1 - 11075/12075 ≈ 0.0828
+    events = [
+        make_combatant_info(0, talent_nodes=[
+            EARLY_SPRING_NODE_ID, RENEWING_SURGE_NODE_ID,
+            82055,  # SotF node
+            82043,  # GG node
+        ], talent_ids=[EARLY_SPRING_TALENT_ID]),
+        # SM 1
+        make_cast(1000, SWIFTMEND),
+        make_applybuff(1001, SOTF_BUFF),
+        make_cast(1002, REJUV, target=3),
+        make_applybuff(1003, REJUV, target=3),
+        make_removebuff(1004, SOTF_BUFF),
+        make_heal(1100, REJUV, 10000, target=3),
+        make_heal(1200, GG_NOURISH, 5000, source=99),
+        # SM 2 — gap=11000 < 11075+1500 → on cooldown
+        make_cast(12000, SWIFTMEND),
+        make_applybuff(12001, SOTF_BUFF),
+        make_cast(12002, REJUV, target=4),
+        make_applybuff(12003, REJUV, target=4),
+        make_removebuff(12004, SOTF_BUFF),
+        make_heal(12100, REJUV, 10000, target=4),
+        make_heal(12200, GG_NOURISH, 5000, source=99),
+        # SM 3 — gap=11000 < 11075+1500 → on cooldown
+        make_cast(23000, SWIFTMEND),
+        make_applybuff(23001, SOTF_BUFF),
+        make_cast(23002, REJUV, target=5),
+        make_applybuff(23003, REJUV, target=5),
+        make_removebuff(23004, SOTF_BUFF),
+        make_heal(23100, REJUV, 10000, target=5),
+        make_heal(23200, GG_NOURISH, 5000, source=99),
+    ]
+    # sm_cd must be LAST for finalize ordering
+    pipeline = Pipeline(attributors=[sotf, gg, sm_cd])
+    results = pipeline.run(events)
+
+    # SotF: 3 * (10000 - 10000/1.6) = 3 * 3750 = 11250
+    # GG: 3 * 5000 = 15000
+    # downstream = 26250
+    # 2 on-CD casts (gaps from cast 1→2 and 2→3), ratio ≈ 0.0828 each
+    # extra_cast_fraction = (0.0828 * 2) / 3
+    # attribution = fraction * 26250
+    ratio = 1 - 11075.0 / 12075.0
+    fraction = (ratio * 2) / 3
+    expected = fraction * 26250
+    assert results.talent_healing["SM Cooldown Reduction"] == pytest.approx(expected, rel=0.01)
+
+
+def test_no_attribution_when_not_on_cooldown():
+    """SM not pressed on cooldown -> no attribution."""
+    sotf = SoulOfTheForestAttributor()
+    sm_cd = SmCooldownReductionAttributor(downstream_attributors=[sotf])
+
+    events = [
+        make_combatant_info(0, talent_nodes=[
+            EARLY_SPRING_NODE_ID, RENEWING_SURGE_NODE_ID,
+            82055,
+        ], talent_ids=[EARLY_SPRING_TALENT_ID]),
+        make_cast(1000, SWIFTMEND),
+        make_applybuff(1001, SOTF_BUFF),
+        make_cast(1002, REJUV, target=3),
+        make_applybuff(1003, REJUV, target=3),
+        make_removebuff(1004, SOTF_BUFF),
+        make_heal(1100, REJUV, 10000, target=3),
+        # SM 2 — gap=30000 >> effective CD + tolerance
+        make_cast(31000, SWIFTMEND),
+        make_applybuff(31001, SOTF_BUFF),
+        make_cast(31002, REJUV, target=4),
+        make_applybuff(31003, REJUV, target=4),
+        make_removebuff(31004, SOTF_BUFF),
+        make_heal(31100, REJUV, 10000, target=4),
+    ]
+    pipeline = Pipeline(attributors=[sotf, sm_cd])
+    results = pipeline.run(events)
+    assert results.talent_healing["SM Cooldown Reduction"] == 0.0
+
+
+def test_no_attribution_single_sm_cast():
+    """Single SM cast can't determine on-cooldown, no attribution."""
+    sotf = SoulOfTheForestAttributor()
+    sm_cd = SmCooldownReductionAttributor(downstream_attributors=[sotf])
+    events = [
+        make_combatant_info(0, talent_nodes=[
+            EARLY_SPRING_NODE_ID, RENEWING_SURGE_NODE_ID, 82055,
+        ], talent_ids=[EARLY_SPRING_TALENT_ID]),
+        make_cast(1000, SWIFTMEND),
+        make_applybuff(1001, SOTF_BUFF),
+        make_cast(1002, REJUV, target=3),
+        make_applybuff(1003, REJUV, target=3),
+        make_removebuff(1004, SOTF_BUFF),
+        make_heal(1100, REJUV, 10000, target=3),
+    ]
+    pipeline = Pipeline(attributors=[sotf, sm_cd])
+    results = pipeline.run(events)
+    assert results.talent_healing["SM Cooldown Reduction"] == 0.0

@@ -12,6 +12,7 @@ class TalentAttributor:
 
     def __init__(self):
         self.combatant_info: CombatantInfoEvent | None = None
+        self.total_attributed: float = 0.0
 
     def set_combatant_info(self, info: CombatantInfoEvent):
         """Called once at fight start with player's talent/stat info."""
