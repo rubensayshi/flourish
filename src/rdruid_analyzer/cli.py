@@ -189,8 +189,9 @@ def analyze(
     console.print(f"Fetched {len(raw_events)} events")
 
     # Run analysis
+    pet_ids = {a["id"] for a in all_actors if a.get("petOwner")}
     attributors = build_attributors(config)
-    pipeline = Pipeline(attributors=attributors)
+    pipeline = Pipeline(attributors=attributors, pet_ids=pet_ids)
     results = pipeline.run(raw_events)
 
     # Output

@@ -23,10 +23,11 @@ class AnalysisResults:
 
 
 class Pipeline:
-    def __init__(self, attributors: list[TalentAttributor]):
+    def __init__(self, attributors: list[TalentAttributor], pet_ids: set[int] | None = None):
         self.attributors = attributors
         self.hot_tracker = HotTracker()
         self.buff_tracker = BuffTracker()
+        self.pet_ids = pet_ids or set()
 
     def run(self, raw_events: list[dict]) -> AnalysisResults:
         results = AnalysisResults()
@@ -60,8 +61,10 @@ class Pipeline:
             for attr in self.attributors:
                 attr.process_event(event, self.hot_tracker, self.buff_tracker)
 
-            # Process heals
+            # Process heals (skip healing to pets — not counted by WCL)
             if isinstance(event, HealEvent):
+                if event.target_id in self.pet_ids:
+                    continue
                 results.total_healing += event.amount
 
                 if event.is_wasted:

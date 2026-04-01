@@ -18,7 +18,7 @@ class ConvokeAttributor(TalentAttributor):
 
     name = "Convoke the Spirits"
     talent_node_id = 82064
-    talent_id = (108124, 103119)  # Blizzard API ID + WCL ID
+    talent_id = 103119  # WCL entryId (choice node vs Tree of Life)
 
     def __init__(self, healing_ratio: float = DEFAULT_HEALING_RATIO):
         super().__init__()

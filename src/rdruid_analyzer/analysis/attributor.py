@@ -8,7 +8,7 @@ from rdruid_analyzer.tracking.buff_tracker import BuffTracker
 class TalentAttributor:
     name: str = "Unknown"
     talent_node_id: int | None = None  # Blizzard talent tree nodeID
-    talent_id: int | tuple[int, ...] | None = None  # talent ID(s) (for choice-node disambiguation)
+    talent_id: int | None = None  # WCL entryId (for choice-node disambiguation)
 
     def __init__(self):
         self.combatant_info: CombatantInfoEvent | None = None
@@ -25,10 +25,9 @@ class TalentAttributor:
             return True  # no node configured, always active
         if self.talent_node_id not in self.combatant_info.talent_nodes:
             return False
-        # For choice nodes, also check talent_id if set
+        # For choice nodes, also check talent_id (WCL entryId) if set
         if self.talent_id is not None:
-            ids = self.talent_id if isinstance(self.talent_id, tuple) else (self.talent_id,)
-            return any(tid in self.combatant_info.talent_ids for tid in ids)
+            return self.talent_id in self.combatant_info.talent_ids
         return True
 
     def has_talent(self, node_id: int) -> bool:

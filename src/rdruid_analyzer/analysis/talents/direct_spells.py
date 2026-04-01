@@ -77,7 +77,7 @@ class FlourishAttributor(DirectSpellAttributor):
     appear under a different spell ID."""
     name = "Flourish"
     talent_node_id = 82053
-    talent_id = 108111
+    talent_id = 103106  # WCL entryId (choice node vs Inner Peace)
     spell_ids = {1264659}  # Tranquility (Flourish-modified)
 
 

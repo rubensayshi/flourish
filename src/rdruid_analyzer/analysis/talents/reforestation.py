@@ -8,7 +8,7 @@ TOL_BUFF = 33891
 REFORESTATION_TOL_DURATION_MS = 10000
 POTENT_ENCHANTMENTS_TOL_DURATION_MS = 16000
 POTENT_ENCHANTMENTS_NODE_ID = 94595
-POTENT_ENCHANTMENTS_TALENT_IDS = (122200, 117188)  # Blizzard API vs WCL ID (shared hero tree)
+POTENT_ENCHANTMENTS_ENTRY_ID = 117188  # WCL entryId
 REJUV_IDS = {774, 155777}
 
 
@@ -43,7 +43,7 @@ class ReforestationAttributor(TalentAttributor):
         """Return ToL duration, extended if Potent Enchantments is selected."""
         if (self.combatant_info
                 and POTENT_ENCHANTMENTS_NODE_ID in self.combatant_info.talent_nodes
-                and any(tid in self.combatant_info.talent_ids for tid in POTENT_ENCHANTMENTS_TALENT_IDS)):
+                and POTENT_ENCHANTMENTS_ENTRY_ID in self.combatant_info.talent_ids):
             return POTENT_ENCHANTMENTS_TOL_DURATION_MS
         return REFORESTATION_TOL_DURATION_MS
 
