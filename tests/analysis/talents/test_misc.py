@@ -154,7 +154,7 @@ class TestNurturingDormancy:
     def test_tick_past_base_duration_attributed(self):
         events = [
             make_apply(0, REJUV),
-            make_heal(13000, REJUV, 5000),  # 13s > 12s base
+            make_heal(18000, REJUV, 5000),  # 18s > 17s base
         ]
         pipeline = Pipeline(attributors=[NurturingDormancyAttributor()])
         results = pipeline.run(events)
@@ -163,7 +163,7 @@ class TestNurturingDormancy:
     def test_tick_within_base_duration_not_attributed(self):
         events = [
             make_apply(0, REJUV),
-            make_heal(5000, REJUV, 5000),  # 5s < 12s base
+            make_heal(16000, REJUV, 5000),  # 16s < 17s base
         ]
         pipeline = Pipeline(attributors=[NurturingDormancyAttributor()])
         results = pipeline.run(events)
@@ -191,11 +191,11 @@ class TestNurturingDormancy:
         events = [
             make_apply(0, REJUV),
             make_refresh(10000, REJUV),  # Refresh at 10s
-            make_heal(21000, REJUV, 5000),  # 11s after refresh — past base 12s? No, 11 < 12
+            make_heal(26000, REJUV, 5000),  # 16s after refresh — past base 17s? No, 16 < 17
         ]
         pipeline = Pipeline(attributors=[NurturingDormancyAttributor()])
         results = pipeline.run(events)
-        # 21000 - 10000 = 11000ms < 12000ms base — should NOT be attributed
+        # 26000 - 10000 = 16000ms < 17000ms base — should NOT be attributed
         assert results.talent_healing["Nurturing Dormancy"] == 0.0
 
     def test_refresh_then_tick_past_base_attributed(self):
@@ -203,9 +203,9 @@ class TestNurturingDormancy:
         events = [
             make_apply(0, REJUV),
             make_refresh(5000, REJUV),  # Refresh at 5s
-            make_heal(18000, REJUV, 5000),  # 13s after refresh — past 12s base
+            make_heal(23000, REJUV, 5000),  # 18s after refresh — past 17s base
         ]
         pipeline = Pipeline(attributors=[NurturingDormancyAttributor()])
         results = pipeline.run(events)
-        # 18000 - 5000 = 13000ms > 12000ms — attributed
+        # 23000 - 5000 = 18000ms > 17000ms — attributed
         assert results.talent_healing["Nurturing Dormancy"] == pytest.approx(5000.0)

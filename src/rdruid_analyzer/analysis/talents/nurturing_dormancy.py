@@ -4,7 +4,7 @@ from rdruid_analyzer.tracking.hot_tracker import HotTracker
 from rdruid_analyzer.tracking.buff_tracker import BuffTracker
 
 REJUV_IDS = {774, 155777}  # Rejuv + Germination
-BASE_REJUV_DURATION_MS = 12000  # 12 sec base
+BASE_REJUV_DURATION_MS = 17000  # 12s base + 3s Lingering Healing + 2s Germination
 
 
 class NurturingDormancyAttributor(TalentAttributor):
