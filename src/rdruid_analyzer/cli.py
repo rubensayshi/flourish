@@ -64,6 +64,7 @@ from rdruid_analyzer.analysis.talents.sylvan_beckoning import SylvanBeckoningAtt
 from rdruid_analyzer.analysis.talents.abundance import AbundanceAttributor
 from rdruid_analyzer.analysis.talents.photosynthesis import PhotosynthesisAttributor
 from rdruid_analyzer.analysis.talents.nurturing_dormancy import NurturingDormancyAttributor
+from rdruid_analyzer.analysis.talents.protective_growth import ProtectiveGrowthAttributor
 from rdruid_analyzer.output.table import render_results
 
 app = typer.Typer()
@@ -82,7 +83,7 @@ def get_wcl_client() -> WCLClient:
     return WCLClient(client_id, client_secret)
 
 
-def build_attributors(config: Config) -> list:
+def build_attributors(config: Config, damage_taken_with_regrowth: int | None = None) -> list:
     talents = config.talents
     mastery = config.mastery
     mastery_kwargs = {"mastery_pct": mastery.pct, "base_stacks": mastery.base_stacks, "dr_table": mastery.dr_table}
@@ -136,6 +137,7 @@ def build_attributors(config: Config) -> list:
         AbundanceAttributor(),
         PhotosynthesisAttributor(),
         NurturingDormancyAttributor(),
+        ProtectiveGrowthAttributor(damage_taken_with_regrowth=damage_taken_with_regrowth),
         SylvanBeckoningAttributor(),
         ThrivingGrowthAttributor(),
         SpiritOfTheThicketAttributor(),
@@ -211,9 +213,20 @@ def analyze(
     )
     console.print(f"Fetched {len(raw_events)} events")
 
+    REGROWTH_BUFF_ID = 8936
+    damage_taken_with_regrowth = client.get_damage_taken(
+        report_code,
+        selected_fight["id"],
+        selected_player["id"],
+        selected_fight["startTime"],
+        selected_fight["endTime"],
+        filter_expression=f"IN BUFFER target.has.buff({REGROWTH_BUFF_ID})",
+    )
+    console.print(f"Damage taken (with Regrowth): {damage_taken_with_regrowth:,}")
+
     # Run analysis
     pet_ids = {a["id"] for a in all_actors if a.get("petOwner")}
-    attributors = build_attributors(config)
+    attributors = build_attributors(config, damage_taken_with_regrowth=damage_taken_with_regrowth)
     pipeline = Pipeline(attributors=attributors, pet_ids=pet_ids)
     results = pipeline.run(raw_events)
 

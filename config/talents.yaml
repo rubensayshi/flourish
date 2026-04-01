@@ -317,8 +317,7 @@ master_shapeshifter:
   skip_reason: "mana generation / damage, not direct healing"
 
 protective_growth:
-  skip: true
-  skip_reason: "self damage reduction, not healing"
+  skip: false
 
 hunt_beneath_the_open_skies:
   skip: true
