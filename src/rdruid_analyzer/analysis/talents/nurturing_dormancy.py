@@ -3,7 +3,7 @@ from rdruid_analyzer.models.events import HealEvent
 from rdruid_analyzer.tracking.hot_tracker import HotTracker
 from rdruid_analyzer.tracking.buff_tracker import BuffTracker
 
-REJUV = 774
+REJUV_IDS = {774, 155777}  # Rejuv + Germination
 BASE_REJUV_DURATION_MS = 12000  # 12 sec base
 
 
@@ -15,9 +15,9 @@ class NurturingDormancyAttributor(TalentAttributor):
     talent_node_id = 82076
 
     def process_heal(self, event: HealEvent, hot_tracker: HotTracker, buff_tracker: BuffTracker) -> float:
-        if event.ability_id != REJUV:
+        if event.ability_id not in REJUV_IDS:
             return 0.0
-        hot = hot_tracker.get(event.target_id, REJUV)
+        hot = hot_tracker.get(event.target_id, event.ability_id)
         if not hot:
             return 0.0
         # Use the most recent application/refresh as the base

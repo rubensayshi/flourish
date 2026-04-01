@@ -3,6 +3,7 @@ from rdruid_analyzer.models.events import (
     HealEvent,
     CastEvent,
     ApplyBuffEvent,
+    RefreshBuffEvent,
     RemoveBuffEvent,
 )
 from rdruid_analyzer.tracking.hot_tracker import HotTracker
@@ -10,7 +11,10 @@ from rdruid_analyzer.tracking.buff_tracker import BuffTracker
 
 SWIFTMEND = 18562
 REJUV = 774
+GERMINATION_REJUV = 155777
+REJUV_IDS = {REJUV, GERMINATION_REJUV}
 REGROWTH = 8936
+SOTF_SPELL_IDS = REJUV_IDS | {REGROWTH}
 SOTF_BUFF = 114108
 SOTF_MULTIPLIER = 0.6  # +60%
 SOTF_TAG = "sotf"
@@ -60,8 +64,8 @@ class SoulOfTheForestAttributor(TalentAttributor):
                 self._consume_timestamp = event.timestamp
                 self._pending_cast = None
 
-        # Tag HoTs on ApplyBuff
-        if isinstance(event, ApplyBuffEvent) and event.ability_id in (REJUV, REGROWTH):
+        # Tag HoTs on ApplyBuff or RefreshBuff (PotA spreads may refresh existing HoTs)
+        if isinstance(event, (ApplyBuffEvent, RefreshBuffEvent)) and event.ability_id in SOTF_SPELL_IDS:
             hot = hot_tracker.get(event.target_id, event.ability_id)
             if not hot:
                 return
@@ -71,10 +75,11 @@ class SoulOfTheForestAttributor(TalentAttributor):
                 hot.tags.add(SOTF_TAG)
                 self._sotf_ready = False
 
-            # PotA spread targets (within window, different target, same spell)
+            # PotA spread targets (within window, different target, Rejuv-like or same spell)
+            # Spread can be 774 or 155777 regardless of primary spell variant
             elif (
                 self._consume_timestamp is not None
-                and event.ability_id == self._primary_spell
+                and (event.ability_id in REJUV_IDS if self._primary_spell in REJUV_IDS else event.ability_id == self._primary_spell)
                 and event.target_id != self._primary_target
                 and event.timestamp - self._consume_timestamp <= POTA_WINDOW_MS
             ):
@@ -91,7 +96,7 @@ class SoulOfTheForestAttributor(TalentAttributor):
             self._consume_timestamp = None
 
     def process_heal(self, event: HealEvent, hot_tracker: HotTracker, buff_tracker: BuffTracker) -> float:
-        if event.ability_id not in (REJUV, REGROWTH):
+        if event.ability_id not in SOTF_SPELL_IDS:
             return 0.0
 
         hot = hot_tracker.get(event.target_id, event.ability_id)

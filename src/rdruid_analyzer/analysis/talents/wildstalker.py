@@ -33,7 +33,7 @@ class ImplantAttributor(TalentAttributor):
 
     name = "Implant"
     talent_node_id = 94628
-    talent_id = 122241
+    talent_id = (122241, 117229)  # Blizzard API vs WCL ID (shared hero tree)
 
     def __init__(self):
         super().__init__()
@@ -69,7 +69,7 @@ class RootNetworkAttributor(TalentAttributor):
 
     name = "Root Network"
     talent_node_id = 94631
-    talent_id = 122245
+    talent_id = (122245, 117233)  # Blizzard API vs WCL ID (shared hero tree)
 
     def process_heal(self, event: HealEvent, hot_tracker: HotTracker, buff_tracker: BuffTracker) -> float:
         bloom_count = len(hot_tracker.get_all_by_spell(SYMBIOTIC_BLOOM))

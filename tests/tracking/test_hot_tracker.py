@@ -42,13 +42,14 @@ def test_refresh_updates_timestamp():
     assert hot.last_refresh == 200
 
 
-def test_tags_persist_through_refresh():
+def test_tags_cleared_on_refresh():
+    """Refresh = new HoT application, so old tags should be cleared."""
     tracker = HotTracker()
     tracker.process(make_apply(100, TARGET_A, REJUV_ID))
     hot = tracker.get(TARGET_A, REJUV_ID)
     hot.tags.add("sotf")
     tracker.process(make_refresh(200, TARGET_A, REJUV_ID))
-    assert "sotf" in tracker.get(TARGET_A, REJUV_ID).tags
+    assert "sotf" not in tracker.get(TARGET_A, REJUV_ID).tags
 
 
 def test_get_all_hots_on_target():

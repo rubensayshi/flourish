@@ -29,6 +29,7 @@ class HotTracker:
             existing = self._hots.get(key)
             if existing:
                 existing.last_refresh = event.timestamp
+                existing.tags = set()  # new HoT application, reset tags
             else:
                 self._hots[key] = HotInstance(
                     spell_id=event.ability_id,
