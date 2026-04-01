@@ -2,6 +2,15 @@
 # skip: true = exclude from analysis
 # multiplier: fraction of healing attributable to this talent
 
+# Mastery: Harmony settings (used by Harmonious Blooming & Symbiotic Bloom Mastery)
+# pct: player's mastery percentage
+# base_stacks: typical number of HoTs on a target (excluding talent-added stacks)
+# dr_table: cumulative mastery multiplier per stack count (diminishing returns)
+mastery:
+  pct: 25
+  base_stacks: 3
+  dr_table: [1.0, 1.7, 2.3, 2.8, 3.2]
+
 # === Spec talents (analyze) ===
 
 soul_of_the_forest:
@@ -48,9 +57,6 @@ verdancy:
 
 harmonious_blooming:
   skip: false
-  mastery_pct: 25
-  mastery_base_stacks: 3
-  mastery_dr_table: [1.0, 1.7, 2.3, 2.8, 3.2]
 
 cenarius_guidance:
   skip: true
@@ -174,9 +180,6 @@ green_thumb:
 
 symbiotic_bloom_mastery:
   skip: false
-  mastery_pct: 25
-  mastery_base_stacks: 3
-  mastery_dr_table: [1.0, 1.7, 2.3, 2.8, 3.2]
 
 # === Keeper of the Grove hero talents ===
 

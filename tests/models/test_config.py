@@ -3,6 +3,10 @@ from rdruid_analyzer.models.config import TalentConfig, load_config
 
 def test_load_config(tmp_path):
     yaml_content = """
+mastery:
+  pct: 30
+  base_stacks: 4
+
 soul_of_the_forest:
   skip: false
   multiplier: 0.6
@@ -13,9 +17,11 @@ wild_growth:
     p = tmp_path / "talents.yaml"
     p.write_text(yaml_content)
     config = load_config(str(p))
-    assert not config["soul_of_the_forest"].skip
-    assert config["soul_of_the_forest"].multiplier == 0.6
-    assert config["wild_growth"].skip
+    assert config.mastery.pct == 30
+    assert config.mastery.base_stacks == 4
+    assert not config.talents["soul_of_the_forest"].skip
+    assert config.talents["soul_of_the_forest"].multiplier == 0.6
+    assert config.talents["wild_growth"].skip
 
 
 def test_missing_talent_uses_defaults():

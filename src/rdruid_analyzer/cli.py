@@ -7,7 +7,7 @@ from rich.prompt import Prompt
 
 from rdruid_analyzer.wcl.client import WCLClient
 from rdruid_analyzer.wcl.cache import CachedWCLClient
-from rdruid_analyzer.models.config import load_config
+from rdruid_analyzer.models.config import load_config, Config, MasteryConfig
 from rdruid_analyzer.analysis.pipeline import Pipeline
 from rdruid_analyzer.analysis.talents.soul_of_the_forest import SoulOfTheForestAttributor
 from rdruid_analyzer.analysis.talents.direct_spells import (
@@ -82,29 +82,13 @@ def get_wcl_client() -> WCLClient:
     return WCLClient(client_id, client_secret)
 
 
-def build_attributors(config: dict) -> list:
-    convoke_cfg = config.get("convoke_the_spirits")
+def build_attributors(config: Config) -> list:
+    talents = config.talents
+    mastery = config.mastery
+    mastery_kwargs = {"mastery_pct": mastery.pct, "base_stacks": mastery.base_stacks, "dr_table": mastery.dr_table}
+
+    convoke_cfg = talents.get("convoke_the_spirits")
     convoke_ratio = convoke_cfg.multiplier if convoke_cfg and convoke_cfg.multiplier is not None else 0.7
-
-    sbm_cfg = config.get("symbiotic_bloom_mastery")
-    sbm_kwargs = {}
-    if sbm_cfg:
-        if sbm_cfg.mastery_pct is not None:
-            sbm_kwargs["mastery_pct"] = sbm_cfg.mastery_pct
-        if sbm_cfg.mastery_base_stacks is not None:
-            sbm_kwargs["base_stacks"] = sbm_cfg.mastery_base_stacks
-        if sbm_cfg.mastery_dr_table is not None:
-            sbm_kwargs["dr_table"] = sbm_cfg.mastery_dr_table
-
-    hb_cfg = config.get("harmonious_blooming")
-    hb_kwargs = {}
-    if hb_cfg:
-        if hb_cfg.mastery_pct is not None:
-            hb_kwargs["mastery_pct"] = hb_cfg.mastery_pct
-        if hb_cfg.mastery_base_stacks is not None:
-            hb_kwargs["base_stacks"] = hb_cfg.mastery_base_stacks
-        if hb_cfg.mastery_dr_table is not None:
-            hb_kwargs["dr_table"] = hb_cfg.mastery_dr_table
 
     sotf = SoulOfTheForestAttributor()
     gg = GroveGuardiansAttributor()
@@ -147,8 +131,8 @@ def build_attributors(config: dict) -> list:
         ImplantAttributor(),
         RootNetworkAttributor(),
         StrategicInfusionAttributor(),
-        SymbioticBloomMasteryAttributor(**sbm_kwargs),
-        HarmoniousBloomingAttributor(**hb_kwargs),
+        SymbioticBloomMasteryAttributor(**mastery_kwargs),
+        HarmoniousBloomingAttributor(**mastery_kwargs),
         AbundanceAttributor(),
         PhotosynthesisAttributor(),
         NurturingDormancyAttributor(),
@@ -163,7 +147,7 @@ def build_attributors(config: dict) -> list:
     active = []
     for a in all_attributors:
         key = a.name.lower().replace(" ", "_").replace("'", "")
-        cfg = config.get(key)
+        cfg = talents.get(key)
         if cfg and cfg.skip:
             continue
         active.append(a)
@@ -178,7 +162,7 @@ def analyze(
     config_path: str = typer.Option("config/talents.yaml", help="Talent config path"),
 ):
     """Analyze a WarcraftLogs report for talent healing attribution."""
-    config = load_config(config_path) if os.path.exists(config_path) else {}
+    config = load_config(config_path) if os.path.exists(config_path) else Config(mastery=MasteryConfig(), talents={})
 
     client = get_wcl_client()
     client = CachedWCLClient(client)

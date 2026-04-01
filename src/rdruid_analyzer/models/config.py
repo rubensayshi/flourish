@@ -1,6 +1,13 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import yaml
+
+
+@dataclass
+class MasteryConfig:
+    pct: float = 25.0
+    base_stacks: int = 3
+    dr_table: list[float] = field(default_factory=lambda: [1.0, 1.7, 2.3, 2.8, 3.2])
 
 
 @dataclass
@@ -8,23 +15,31 @@ class TalentConfig:
     skip: bool = False
     skip_reason: str = ""
     multiplier: float | None = None
-    mastery_pct: float | None = None
-    mastery_base_stacks: int | None = None
-    mastery_dr_table: list[float] | None = None
 
 
-def load_config(path: str) -> dict[str, TalentConfig]:
+@dataclass
+class Config:
+    mastery: MasteryConfig
+    talents: dict[str, TalentConfig]
+
+
+def load_config(path: str) -> Config:
     with open(path) as f:
         raw = yaml.safe_load(f) or {}
-    result = {}
+
+    mastery_raw = raw.pop("mastery", {}) or {}
+    mastery = MasteryConfig(
+        pct=mastery_raw.get("pct", 25.0),
+        base_stacks=mastery_raw.get("base_stacks", 3),
+        dr_table=mastery_raw.get("dr_table", [1.0, 1.7, 2.3, 2.8, 3.2]),
+    )
+
+    talents = {}
     for name, values in raw.items():
         values = values or {}
-        result[name] = TalentConfig(
+        talents[name] = TalentConfig(
             skip=values.get("skip", False),
             skip_reason=values.get("skip_reason", ""),
             multiplier=values.get("multiplier"),
-            mastery_pct=values.get("mastery_pct"),
-            mastery_base_stacks=values.get("mastery_base_stacks"),
-            mastery_dr_table=values.get("mastery_dr_table"),
         )
-    return result
+    return Config(mastery=mastery, talents=talents)
