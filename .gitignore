@@ -27,6 +27,9 @@ env/
 .coverage
 htmlcov/
 
+# Cache
+data/cache/
+
 # OS
 .DS_Store
 Thumbs.db

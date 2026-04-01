@@ -53,7 +53,6 @@ from rdruid_analyzer.analysis.talents.wildstalker import (
     RootNetworkAttributor,
 )
 from rdruid_analyzer.analysis.talents.sylvan_beckoning import SylvanBeckoningAttributor
-from rdruid_analyzer.analysis.talents.power_of_the_archdruid import PowerOfTheArchdruidAttributor
 from rdruid_analyzer.analysis.talents.abundance import AbundanceAttributor
 from rdruid_analyzer.analysis.talents.photosynthesis import PhotosynthesisAttributor
 from rdruid_analyzer.analysis.talents.nurturing_dormancy import NurturingDormancyAttributor
@@ -81,7 +80,6 @@ def build_attributors(config: dict) -> list:
 
     all_attributors = [
         SoulOfTheForestAttributor(),
-        PowerOfTheArchdruidAttributor(),
         EverbloomAttributor(),
         GroveGuardiansAttributor(),
         DreamSurgeAttributor(),
