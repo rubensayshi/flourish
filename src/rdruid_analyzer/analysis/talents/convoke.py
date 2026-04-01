@@ -3,7 +3,7 @@ from rdruid_analyzer.models.events import HealEvent, CastEvent, ApplyBuffEvent
 from rdruid_analyzer.tracking.hot_tracker import HotTracker
 from rdruid_analyzer.tracking.buff_tracker import BuffTracker
 
-CONVOKE = 391528
+CONVOKE_SPELL_IDS = {391528, 323764}  # talent-tree ID + legacy (SL covenant) ID
 CONVOKE_DURATION_MS = 4000
 DEFAULT_HEALING_RATIO = 0.7
 CONVOKE_TAG = "convoke"
@@ -18,7 +18,7 @@ class ConvokeAttributor(TalentAttributor):
 
     name = "Convoke the Spirits"
     talent_node_id = 82064
-    talent_id = 108124
+    talent_id = (108124, 103119)  # Blizzard API ID + WCL ID
 
     def __init__(self, healing_ratio: float = DEFAULT_HEALING_RATIO):
         super().__init__()
@@ -29,7 +29,7 @@ class ConvokeAttributor(TalentAttributor):
         return 0 < self._channel_end >= timestamp
 
     def process_event(self, event, hot_tracker: HotTracker, buff_tracker: BuffTracker):
-        if isinstance(event, CastEvent) and event.ability_id == CONVOKE:
+        if isinstance(event, CastEvent) and event.ability_id in CONVOKE_SPELL_IDS:
             self._channel_end = event.timestamp + CONVOKE_DURATION_MS
 
         # Tag HoTs applied during Convoke channel

@@ -4,6 +4,7 @@ from rdruid_analyzer.analysis.pipeline import Pipeline
 from rdruid_analyzer.analysis.talents.convoke import ConvokeAttributor
 
 CONVOKE = 391528
+CONVOKE_LEGACY = 323764
 
 
 def make_cast(ts, ability, target=1):
@@ -25,6 +26,17 @@ def test_convoke_attributes_during_channel():
     results = pipeline.run(events)
     # 70% of (10000 + 5000) = 10500
     assert results.talent_healing["Convoke the Spirits"] == pytest.approx(10500.0)
+
+
+def test_convoke_legacy_spell_id():
+    """WCL may log Convoke cast with the legacy Shadowlands spell ID 323764."""
+    events = [
+        make_cast(1000, CONVOKE_LEGACY),
+        make_heal(1500, 774, 10000),
+    ]
+    pipeline = Pipeline(attributors=[ConvokeAttributor()])
+    results = pipeline.run(events)
+    assert results.talent_healing["Convoke the Spirits"] == pytest.approx(7000.0)
 
 
 def test_convoke_no_attribution_outside_channel():

@@ -98,7 +98,7 @@ class PowerOfNatureAttributor(TalentAttributor):
     healing by 10% while active. Same guardian tracking as HarmonyOfTheGrove."""
     name = "Power of Nature"
     talent_node_id = 94605
-    talent_id = 122213  # Choice node with Durability of Nature
+    talent_id = (122213, 117201, 117200)  # Blizzard API / WCL hero tree / WCL ID
 
     SPELL_IDS = {774, 155777, 81269, 33763, 33778}  # Rejuv, Germ Rejuv, Efflor, LB tick, LB bloom
 
@@ -128,7 +128,7 @@ class GrovesInspirationAttributor(StaticBuffAttributor):
     """Grove's Inspiration: Regrowth, Wild Growth, and Swiftmend healing increased by 9%."""
     name = "Grove's Inspiration"
     talent_node_id = 94595
-    talent_id = 122201
+    talent_id = (122201, 117189)  # Blizzard API vs WCL ID (shared hero tree variant)
     spell_ids = {8936, 1264664, 48438, 18562}
     # Regrowth, Rampant Growth Regrowth, Wild Growth, Swiftmend
     multiplier = 0.09
@@ -146,7 +146,7 @@ class BountifulBloomAttributor(StaticBuffAttributor):
     """Bounteous Bloom: Grove Guardians healing increased by 30%."""
     name = "Bounteous Bloom"
     talent_node_id = 94591
-    talent_id = 122196
+    talent_id = (122196, 117184, 117895)  # Blizzard API / WCL hero tree / WCL ID
     spell_ids = {422090, 142421}  # Nourish + direct heal (from treants)
     multiplier = 0.3
 
@@ -178,7 +178,7 @@ class LivelinessAttributor(StaticBuffAttributor):
     """Liveliness: HoTs heal 5% faster = ~5% more total HoT healing."""
     name = "Liveliness"
     talent_node_id = 82074
-    talent_id = 108135
+    talent_id = (108135, 114809)  # Blizzard API / WCL ID
     spell_ids = {774, 155777, 8936, 1264664, 48438, 33763, 33778, 1244341}
     # Rejuv, Germination, Regrowth, Rampant Growth RG, WG, LB tick, LB bloom, Everbloom
     multiplier = 0.05

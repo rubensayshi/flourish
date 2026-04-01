@@ -16,7 +16,7 @@ class TreeOfLifeAttributor(TalentAttributor):
 
     name = "Incarnation: Tree of Life"
     talent_node_id = 82064
-    talent_id = 108125
+    talent_id = (108125, 103119)  # Blizzard API / WCL ID
 
     def __init__(self):
         super().__init__()
