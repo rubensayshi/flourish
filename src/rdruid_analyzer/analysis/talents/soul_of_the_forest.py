@@ -32,6 +32,11 @@ class SoulOfTheForestAttributor(TalentAttributor):
     Attribution:
     - Primary target: SotF bonus only (the 60% portion)
     - Spread targets: 100% of healing (wouldn't exist without PotA)
+    - Regrowth direct heal: SotF bonus (fires before HoT is tagged)
+
+    We use RemoveBuffEvent(SOTF_BUFF) as the definitive signal that SotF was
+    consumed, then retroactively tag the primary HoT. This avoids false
+    consumption by interfering events (Dream Surge procs, etc.).
     """
 
     name = "SotF + Power of the Archdruid"
@@ -39,7 +44,6 @@ class SoulOfTheForestAttributor(TalentAttributor):
 
     def __init__(self):
         super().__init__()
-        self._sotf_ready = False
         # PotA spread tracking
         self._primary_target: int | None = None
         self._primary_spell: int | None = None
@@ -47,15 +51,11 @@ class SoulOfTheForestAttributor(TalentAttributor):
         self._pending_cast: tuple[int, int, int] | None = None  # (ts, target, spell)
 
     def process_event(self, event, hot_tracker: HotTracker, buff_tracker: BuffTracker):
-        # Track Swiftmend → SotF ready
-        if isinstance(event, CastEvent) and event.ability_id == SWIFTMEND:
-            self._sotf_ready = True
-
         # Track Rejuv/Regrowth casts as potential SotF consumers
         if isinstance(event, CastEvent) and event.ability_id in (REJUV, REGROWTH):
             self._pending_cast = (event.timestamp, event.target_id, event.ability_id)
 
-        # SotF buff removal = consumed by the preceding cast → start PotA window
+        # SotF buff removal = consumed → retroactively tag the primary HoT + start PotA window
         if isinstance(event, RemoveBuffEvent) and event.ability_id == SOTF_BUFF:
             if self._pending_cast is not None:
                 _, target_id, spell_id = self._pending_cast
@@ -64,27 +64,30 @@ class SoulOfTheForestAttributor(TalentAttributor):
                 self._consume_timestamp = event.timestamp
                 self._pending_cast = None
 
-        # Tag HoTs on ApplyBuff or RefreshBuff (PotA spreads may refresh existing HoTs)
+                # Tag the primary HoT (cast may be Rejuv 774 but applied as Germination 155777)
+                if spell_id in REJUV_IDS:
+                    for sid in REJUV_IDS:
+                        hot = hot_tracker.get(target_id, sid)
+                        if hot and SOTF_TAG not in hot.tags:
+                            hot.tags.add(SOTF_TAG)
+                            break
+                else:
+                    hot = hot_tracker.get(target_id, spell_id)
+                    if hot:
+                        hot.tags.add(SOTF_TAG)
+
+        # Tag PotA spread HoTs (within window, different target)
         if isinstance(event, (ApplyBuffEvent, RefreshBuffEvent)) and event.ability_id in SOTF_SPELL_IDS:
-            hot = hot_tracker.get(event.target_id, event.ability_id)
-            if not hot:
-                return
-
-            # Primary SotF target (via _sotf_ready flag)
-            if self._sotf_ready:
-                hot.tags.add(SOTF_TAG)
-                self._sotf_ready = False
-
-            # PotA spread targets (within window, different target, Rejuv-like or same spell)
-            # Spread can be 774 or 155777 regardless of primary spell variant
-            elif (
+            if (
                 self._consume_timestamp is not None
-                and (event.ability_id in REJUV_IDS if self._primary_spell in REJUV_IDS else event.ability_id == self._primary_spell)
                 and event.target_id != self._primary_target
+                and (event.ability_id in REJUV_IDS if self._primary_spell in REJUV_IDS else event.ability_id == self._primary_spell)
                 and event.timestamp - self._consume_timestamp <= POTA_WINDOW_MS
             ):
-                hot.tags.add(SOTF_TAG)
-                hot.tags.add(POTA_TAG)
+                hot = hot_tracker.get(event.target_id, event.ability_id)
+                if hot:
+                    hot.tags.add(SOTF_TAG)
+                    hot.tags.add(POTA_TAG)
 
         # Expire PotA window
         if (
@@ -98,6 +101,17 @@ class SoulOfTheForestAttributor(TalentAttributor):
     def process_heal(self, event: HealEvent, hot_tracker: HotTracker, buff_tracker: BuffTracker) -> float:
         if event.ability_id not in SOTF_SPELL_IDS:
             return 0.0
+
+        # Regrowth direct heal: fires before HoT is tagged (before RemoveBuffEvent).
+        # Use buff_tracker as source of truth — SotF buff is still active during the direct heal.
+        if (
+            event.ability_id == REGROWTH
+            and buff_tracker.is_active(SOTF_BUFF)
+            and self._pending_cast is not None
+            and event.target_id == self._pending_cast[1]
+            and self._pending_cast[2] == REGROWTH
+        ):
+            return event.amount - event.amount / (1 + SOTF_MULTIPLIER)
 
         hot = hot_tracker.get(event.target_id, event.ability_id)
         if not hot or SOTF_TAG not in hot.tags:
