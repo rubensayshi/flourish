@@ -48,6 +48,10 @@ cp .env.example .env          # then fill in WCL_CLIENT_ID / WCL_CLIENT_SECRET
 - **Overheal filtering:** heals >50% overheal (`OVERHEAL_WASTE_THRESHOLD`) are excluded from attribution (`is_wasted` on `HealEvent`).
 - **HoT tagging:** attributors tag `HotInstance.tags` during `process_event` (e.g., `"sotf"` tag), then check tags during `process_heal` to calculate bonus healing.
 - **Adding a new talent:** create a `TalentAttributor` subclass in `analysis/talents/`, implement `process_event`/`process_heal`, and add it to the registry in `cli.py:build_attributors()`. The talent must also have an entry in `config/talents.yaml`.
+- **Talent ID types — do not confuse:**
+  - `nodeID` — talent tree position. Used for `talent_node_id` on attributors. Same across all ID systems.
+  - WCL entry ID (`talentTree[].id`) — what WCL returns in combatantinfo. Used for `talent_id` on attributors to disambiguate choice nodes. Look these up in `docs/raidbots_druid_talents.json` under `entries[].id`.
+  - Blizzard definition ID (`talent.id` in Blizzard API) — **not** the same as WCL entry ID. Shown in `docs/resto_druid_talents.md` as "Definition ID". Do **not** use these in attributor code.
 
 ## Config
 

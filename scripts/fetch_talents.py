@@ -217,7 +217,7 @@ def format_node(node: dict) -> str:
 
             lines.append(f"**Choice: {ct_talent.get('name', '?')}**")
             lines.append("")
-            lines.append(f"- **Talent ID**: {ct_talent.get('id', '?')}, **Spell**: {ct_spell.get('name', '?')} (ID: {ct_spell.get('id', '?')})")
+            lines.append(f"- **Definition ID**: {ct_talent.get('id', '?')}, **Spell**: {ct_spell.get('name', '?')} (ID: {ct_spell.get('id', '?')})")
             lines.append(f"- **Cast**: {ct_cast}")
             if ct_cd:
                 lines.append(f"- **Cooldown**: {ct_cd}")
@@ -225,7 +225,7 @@ def format_node(node: dict) -> str:
             lines.append("")
     else:
         lines.append(f"- **Type**: {node_type}")
-        lines.append(f"- **Talent ID**: {talent_id}, **Spell**: {spell_name} (ID: {spell_id})")
+        lines.append(f"- **Definition ID**: {talent_id}, **Spell**: {spell_name} (ID: {spell_id})")
         lines.append(f"- **Cast**: {cast_time}")
         if cooldown:
             lines.append(f"- **Cooldown**: {cooldown}")
