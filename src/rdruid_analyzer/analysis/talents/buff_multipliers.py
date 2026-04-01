@@ -34,10 +34,10 @@ class WildSynthesisAttributor(StaticBuffAttributor):
 
 
 class WildstalkersPowerAttributor(StaticBuffAttributor):
-    """Wildstalker's Power: Rejuvenation healing increased by 10%."""
+    """Wildstalker's Power: Rejuvenation, Efflorescence, and Lifebloom healing increased by 10%."""
     name = "Wildstalker's Power"
     talent_node_id = 94621
-    spell_ids = {774, 155777}  # Rejuvenation + Germination Rejuv
+    spell_ids = {774, 155777, 81269, 33763, 33778}  # Rejuv, Germination Rejuv, Efflorescence, LB tick, LB bloom
     multiplier = 0.1
 
 

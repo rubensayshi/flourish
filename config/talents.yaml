@@ -58,11 +58,9 @@ improved_regrowth:
   skip: true
   skip_reason: "always take for pathing"
 
-thriving_growth:
-  skip: false
-
 prosperity:
-  skip: false
+  skip: true
+  skip_reason: "extra Swiftmend charge, CD-based, hard to attribute"
 
 natures_splendor:
   skip: true
@@ -133,9 +131,13 @@ lifetreading:
   skip: false
 
 renewing_surge:
-  skip: false
+  skip: true
+  skip_reason: "Swiftmend CD reduction, hard to attribute"
 
 # === Wildstalker hero talents ===
+
+thriving_growth:
+  skip: false
 
 wildstalkers_power:
   skip: false
@@ -150,7 +152,8 @@ bursting_growth:
   skip: false
 
 rampancy:
-  skip: false
+  skip: true
+  skip_reason: "proc rate increase for Bursting Growth, hard to attribute"
 
 resilient_flourishing:
   skip: false
@@ -159,13 +162,15 @@ root_network:
   skip: false
 
 twin_sprouts:
-  skip: false
+  skip: true
+  skip_reason: "proc chance for extra Symbiotic Bloom, hard to attribute"
 
 implant:
   skip: false
 
 green_thumb:
-  skip: false
+  skip: true
+  skip_reason: "proc rate increase for Symbiotic Blooms, hard to attribute"
 
 # === Keeper of the Grove hero talents ===
 
@@ -173,10 +178,12 @@ dream_surge:
   skip: false
 
 treants_of_the_moon:
-  skip: false
+  skip: true
+  skip_reason: "damage only (Moonfire casts)"
 
 blooming_infusion:
-  skip: false
+  skip: true
+  skip_reason: "cast speed utility, not direct healing increase"
 
 harmony_of_the_grove:
   skip: false
@@ -185,25 +192,41 @@ power_of_nature:
   skip: false
 
 durability_of_nature:
-  skip: false
+  skip: true
+  skip_reason: "treant duration increase, indirect, hard to attribute"
 
 bounteous_bloom:
   skip: false
 
 early_spring:
-  skip: false
+  skip: true
+  skip_reason: "CD reduction (Swiftmend/WG -1s)"
 
 power_of_the_dream:
   skip: false
 
 control_of_the_dream:
-  skip: false
+  skip: true
+  skip_reason: "CD management utility, not direct healing"
 
 groves_inspiration:
   skip: false
 
+potent_enchantments:
+  skip: false
+
 cenarius_might:
   skip: false
+
+sylvan_beckoning:
+  skip: false
+
+spirit_of_the_thicket:
+  skip: false
+
+dryads_dance:
+  skip: true
+  skip_reason: "Swiftmend CD reduction via Dryads"
 
 # === Always-take / base talents (skip) ===
 
@@ -279,11 +302,11 @@ protective_growth:
 
 hunt_beneath_the_open_skies:
   skip: true
-  skip_reason: "damage / Cat Form, not healing"
+  skip_reason: "Cat Form buff, Resto rarely uses Cat Form"
 
 strategic_infusion:
   skip: true
-  skip_reason: "crit from Prowl / minor periodic crit"
+  skip_reason: "minor periodic heal crit boost (+4%), hard to attribute"
 
 lethal_preservation:
   skip: true
@@ -308,19 +331,3 @@ harmonious_constitution:
 expansiveness:
   skip: true
   skip_reason: "mana increase, not direct healing"
-
-sylvan_beckoning:
-  skip: true
-  skip_reason: "damage / astral, not healing"
-
-dryads_dance:
-  skip: true
-  skip_reason: "astral power generation, not healing"
-
-potent_enchantments:
-  skip: true
-  skip_reason: "damage only, not healing"
-
-spirit_of_the_thicket:
-  skip: true
-  skip_reason: "damage only, not healing"
