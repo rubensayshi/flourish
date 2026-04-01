@@ -6,6 +6,9 @@ from rdruid_analyzer.tracking.buff_tracker import BuffTracker
 SWIFTMEND = 18562
 TOL_BUFF = 33891
 REFORESTATION_TOL_DURATION_MS = 10000
+POTENT_ENCHANTMENTS_TOL_DURATION_MS = 16000
+POTENT_ENCHANTMENTS_NODE_ID = 94595
+POTENT_ENCHANTMENTS_TALENT_ID = 122200
 REJUV_IDS = {774, 155777}
 
 
@@ -33,7 +36,16 @@ class ReforestationAttributor(TalentAttributor):
         if isinstance(event, CastEvent) and event.ability_id == SWIFTMEND:
             self._sm_count += 1
             if self._sm_count % 4 == 0 and not self._real_tol_active:
-                self._reforestation_tol_end = event.timestamp + REFORESTATION_TOL_DURATION_MS
+                duration = self._get_tol_duration()
+                self._reforestation_tol_end = event.timestamp + duration
+
+    def _get_tol_duration(self) -> int:
+        """Return ToL duration, extended if Potent Enchantments is selected."""
+        if (self.combatant_info
+                and POTENT_ENCHANTMENTS_NODE_ID in self.combatant_info.talent_nodes
+                and POTENT_ENCHANTMENTS_TALENT_ID in self.combatant_info.talent_ids):
+            return POTENT_ENCHANTMENTS_TOL_DURATION_MS
+        return REFORESTATION_TOL_DURATION_MS
 
     def process_heal(self, event: HealEvent, hot_tracker: HotTracker, buff_tracker: BuffTracker) -> float:
         if self._real_tol_active:

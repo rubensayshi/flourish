@@ -119,7 +119,8 @@ dream_of_cenarius:
   skip_reason: "damage-to-healing, niche"
 
 thriving_vegetation:
-  skip: false
+  skip: true
+  skip_reason: "instant heal baked into Rejuv amount, Regrowth duration extension; hard to separate"
 
 nurturing_dormancy:
   skip: false
@@ -156,7 +157,8 @@ rampancy:
   skip_reason: "proc rate increase for Bursting Growth, hard to attribute"
 
 resilient_flourishing:
-  skip: false
+  skip: true
+  skip_reason: "extra Symbiotic Bloom duration, hard to separate extra ticks"
 
 root_network:
   skip: false
@@ -203,7 +205,8 @@ early_spring:
   skip_reason: "CD reduction (Swiftmend/WG -1s)"
 
 power_of_the_dream:
-  skip: false
+  skip: true
+  skip_reason: "extra Dream Surge target, same spell ID, can't separate"
 
 control_of_the_dream:
   skip: true

@@ -6,6 +6,7 @@ from rich.console import Console
 from rich.prompt import Prompt
 
 from rdruid_analyzer.wcl.client import WCLClient
+from rdruid_analyzer.wcl.cache import CachedWCLClient
 from rdruid_analyzer.models.config import load_config
 from rdruid_analyzer.analysis.pipeline import Pipeline
 from rdruid_analyzer.analysis.talents.soul_of_the_forest import SoulOfTheForestAttributor
@@ -23,6 +24,8 @@ from rdruid_analyzer.analysis.talents.direct_spells import (
     RampantGrowthAttributor,
     FlourishAttributor,
     BurstingGrowthAttributor,
+    ThrivingGrowthAttributor,
+    SpiritOfTheThicketAttributor,
 )
 from rdruid_analyzer.analysis.talents.buff_multipliers import (
     ImprovedSwiftmendAttributor,
@@ -38,6 +41,7 @@ from rdruid_analyzer.analysis.talents.buff_multipliers import (
     IntensityAttributor,
     LivelinessAttributor,
     RegenesisAttributor,
+    PowerOfNatureAttributor,
 )
 from rdruid_analyzer.analysis.talents.tree_of_life import TreeOfLifeAttributor
 from rdruid_analyzer.analysis.talents.convoke import ConvokeAttributor
@@ -48,6 +52,8 @@ from rdruid_analyzer.analysis.talents.wildstalker import (
     ImplantAttributor,
     RootNetworkAttributor,
 )
+from rdruid_analyzer.analysis.talents.sylvan_beckoning import SylvanBeckoningAttributor
+from rdruid_analyzer.analysis.talents.power_of_the_archdruid import PowerOfTheArchdruidAttributor
 from rdruid_analyzer.analysis.talents.abundance import AbundanceAttributor
 from rdruid_analyzer.analysis.talents.photosynthesis import PhotosynthesisAttributor
 from rdruid_analyzer.analysis.talents.nurturing_dormancy import NurturingDormancyAttributor
@@ -75,6 +81,7 @@ def build_attributors(config: dict) -> list:
 
     all_attributors = [
         SoulOfTheForestAttributor(),
+        PowerOfTheArchdruidAttributor(),
         EverbloomAttributor(),
         GroveGuardiansAttributor(),
         DreamSurgeAttributor(),
@@ -111,6 +118,10 @@ def build_attributors(config: dict) -> list:
         AbundanceAttributor(),
         PhotosynthesisAttributor(),
         NurturingDormancyAttributor(),
+        SylvanBeckoningAttributor(),
+        ThrivingGrowthAttributor(),
+        SpiritOfTheThicketAttributor(),
+        PowerOfNatureAttributor(),
     ]
     active = []
     for a in all_attributors:
@@ -133,6 +144,7 @@ def analyze(
     config = load_config(config_path) if os.path.exists(config_path) else {}
 
     client = get_wcl_client()
+    client = CachedWCLClient(client)
     report = client.get_report(report_code)
     console.print(f"[bold]Report:[/] {report['title']}")
 

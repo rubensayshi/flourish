@@ -93,6 +93,37 @@ class HarmonyOfTheGroveAttributor(TalentAttributor):
         return event.amount - event.amount / (1 + multiplier)
 
 
+class PowerOfNatureAttributor(TalentAttributor):
+    """Power of Nature: Grove Guardians increase Rejuv, Efflorescence, and Lifebloom
+    healing by 10% while active. Same guardian tracking as HarmonyOfTheGrove."""
+    name = "Power of Nature"
+    talent_node_id = 94605
+    talent_id = 122213  # Choice node with Durability of Nature
+
+    SPELL_IDS = {774, 155777, 81269, 33763, 33778}  # Rejuv, Germ Rejuv, Efflor, LB tick, LB bloom
+
+    def __init__(self):
+        super().__init__()
+        self._guardian_count = 0
+        self._guardian_despawn_times: list[int] = []
+
+    def process_event(self, event, hot_tracker, buff_tracker):
+        if hasattr(event, 'timestamp'):
+            self._guardian_despawn_times = [t for t in self._guardian_despawn_times if t > event.timestamp]
+            self._guardian_count = len(self._guardian_despawn_times)
+
+        if isinstance(event, CastEvent) and event.ability_id in (18562, 48438):
+            if self.has_talent(82043):
+                self._guardian_despawn_times.append(event.timestamp + 8000)
+                self._guardian_count = len([t for t in self._guardian_despawn_times if t > event.timestamp])
+
+    def process_heal(self, event: HealEvent, hot_tracker: HotTracker, buff_tracker: BuffTracker) -> float:
+        if self._guardian_count <= 0 or event.ability_id not in self.SPELL_IDS:
+            return 0.0
+        multiplier = 0.10 * self._guardian_count
+        return event.amount - event.amount / (1 + multiplier)
+
+
 class GrovesInspirationAttributor(StaticBuffAttributor):
     """Grove's Inspiration: Regrowth, Wild Growth, and Swiftmend healing increased by 9%."""
     name = "Grove's Inspiration"
