@@ -53,6 +53,7 @@ from rdruid_analyzer.analysis.talents.wildstalker import (
     ImplantAttributor,
     RootNetworkAttributor,
 )
+from rdruid_analyzer.analysis.talents.symbiotic_bloom_mastery import SymbioticBloomMasteryAttributor
 from rdruid_analyzer.analysis.talents.sylvan_beckoning import SylvanBeckoningAttributor
 from rdruid_analyzer.analysis.talents.abundance import AbundanceAttributor
 from rdruid_analyzer.analysis.talents.photosynthesis import PhotosynthesisAttributor
@@ -78,6 +79,16 @@ def get_wcl_client() -> WCLClient:
 def build_attributors(config: dict) -> list:
     convoke_cfg = config.get("convoke_the_spirits")
     convoke_ratio = convoke_cfg.multiplier if convoke_cfg and convoke_cfg.multiplier is not None else 0.7
+
+    sbm_cfg = config.get("symbiotic_bloom_mastery")
+    sbm_kwargs = {}
+    if sbm_cfg:
+        if sbm_cfg.mastery_pct is not None:
+            sbm_kwargs["mastery_pct"] = sbm_cfg.mastery_pct
+        if sbm_cfg.mastery_base_stacks is not None:
+            sbm_kwargs["base_stacks"] = sbm_cfg.mastery_base_stacks
+        if sbm_cfg.mastery_dr_table is not None:
+            sbm_kwargs["dr_table"] = sbm_cfg.mastery_dr_table
 
     all_attributors = [
         SoulOfTheForestAttributor(),
@@ -114,6 +125,7 @@ def build_attributors(config: dict) -> list:
         VigorousCreepersAttributor(),
         ImplantAttributor(),
         RootNetworkAttributor(),
+        SymbioticBloomMasteryAttributor(**sbm_kwargs),
         AbundanceAttributor(),
         PhotosynthesisAttributor(),
         NurturingDormancyAttributor(),

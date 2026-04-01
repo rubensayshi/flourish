@@ -8,6 +8,7 @@ HERO_TREES: dict[str, set[str]] = {
         "Wildstalker's Power", "Patient Custodian", "Vigorous Creepers",
         "Bursting Growth", "Rampancy", "Resilient Flourishing", "Root Network",
         "Twin Sprouts", "Implant", "Green Thumb", "Thriving Growth",
+        "Symbiotic Bloom Mastery",
         "Entangling Vortex", "Flower Walk", "Strategic Infusion",
         "Lethal Preservation", "Bond with Nature", "Harmonious Constitution",
         "Hunt Beneath the Open Skies",

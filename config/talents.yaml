@@ -173,6 +173,12 @@ green_thumb:
   skip: true
   skip_reason: "proc rate increase for Symbiotic Blooms, hard to attribute"
 
+symbiotic_bloom_mastery:
+  skip: false
+  mastery_pct: 25
+  mastery_base_stacks: 3
+  mastery_dr_table: [1.0, 1.7, 2.3, 2.8, 3.2]
+
 # === Keeper of the Grove hero talents ===
 
 dream_surge:
