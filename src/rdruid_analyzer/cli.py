@@ -214,13 +214,18 @@ def analyze(
     console.print(f"Fetched {len(raw_events)} events")
 
     REGROWTH_BUFF_ID = 8936
+    regrowth_filter = (
+        f'IN RANGE FROM (type = "applybuff" OR type = "refreshbuff") AND ability.id = {REGROWTH_BUFF_ID} '
+        f'TO type = "removebuff" AND ability.id = {REGROWTH_BUFF_ID} '
+        f"GROUP BY target ON target END"
+    )
     damage_taken_with_regrowth = client.get_damage_taken(
         report_code,
         selected_fight["id"],
         selected_player["id"],
         selected_fight["startTime"],
         selected_fight["endTime"],
-        filter_expression=f"IN BUFFER target.has.buff({REGROWTH_BUFF_ID})",
+        filter_expression=regrowth_filter,
     )
     console.print(f"Damage taken (with Regrowth): {damage_taken_with_regrowth:,}")
 

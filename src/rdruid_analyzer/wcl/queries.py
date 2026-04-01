@@ -28,13 +28,13 @@ query($code: String!) {
 """
 
 DAMAGE_TAKEN_TABLE_QUERY = """
-query($code: String!, $startTime: Float!, $endTime: Float!, $targetID: Int!, $fightIDs: [Int!], $filterExpression: String) {
+query($code: String!, $startTime: Float!, $endTime: Float!, $sourceID: Int!, $fightIDs: [Int!], $filterExpression: String) {
     reportData {
         report(code: $code) {
             table(
                 startTime: $startTime,
                 endTime: $endTime,
-                targetID: $targetID,
+                sourceID: $sourceID,
                 fightIDs: $fightIDs,
                 dataType: DamageTaken,
                 filterExpression: $filterExpression
