@@ -8,6 +8,8 @@ from rdruid_analyzer.analysis.talents.sm_cooldown_reduction import (
     DRYADS_DANCE_NODE_ID,
     EARLY_SPRING_NODE_ID,
     EARLY_SPRING_TALENT_ID,
+    PROSPERITY_NODE_ID,
+    PROSPERITY_TALENT_ID,
     RENEWING_SURGE_NODE_ID,
 )
 from rdruid_analyzer.analysis.talents.soul_of_the_forest import SoulOfTheForestAttributor
@@ -254,6 +256,160 @@ def test_no_attribution_single_sm_cast():
     pipeline = Pipeline(attributors=[sotf, sm_cd])
     results = pipeline.run(events)
     assert results.talent_healing["SM Cooldown Reduction"] == 0.0
+
+
+# --- 2-charge (Prosperity) tests ---
+
+
+def test_two_charge_rapid_then_on_cooldown():
+    """With Prosperity: 2 rapid casts, then 3rd pressed on cooldown when 1st charge returns."""
+    sotf = SoulOfTheForestAttributor()
+    gg = GroveGuardiansAttributor()
+    sm_cd = SmCooldownReductionAttributor(downstream_attributors=[sotf, gg])
+
+    # Early Spring + Renewing Surge + Prosperity: reduced_cd = 11075, unreduced_cd = 12075
+    events = [
+        make_combatant_info(0, talent_nodes=[
+            EARLY_SPRING_NODE_ID, RENEWING_SURGE_NODE_ID,
+            PROSPERITY_NODE_ID,
+            82055, 82043,  # SotF, GG nodes
+        ], talent_ids=[EARLY_SPRING_TALENT_ID, PROSPERITY_TALENT_ID]),
+        # SM 1 — uses charge 1
+        make_cast(1000, SWIFTMEND),
+        make_applybuff(1001, SOTF_BUFF),
+        make_cast(1002, REJUV, target=3),
+        make_applybuff(1003, REJUV, target=3),
+        make_removebuff(1004, SOTF_BUFF),
+        make_heal(1100, REJUV, 10000, target=3),
+        make_heal(1200, GG_NOURISH, 5000, source=99),
+        # SM 2 — uses charge 2, gap=1000 (both charges available, NOT on CD)
+        make_cast(2000, SWIFTMEND),
+        make_applybuff(2001, SOTF_BUFF),
+        make_cast(2002, REJUV, target=4),
+        make_applybuff(2003, REJUV, target=4),
+        make_removebuff(2004, SOTF_BUFF),
+        make_heal(2100, REJUV, 10000, target=4),
+        make_heal(2200, GG_NOURISH, 5000, source=99),
+        # SM 3 — 1st charge recharges at 1000+11075=12075, cast at 12500 (425ms after)
+        # Was depleted from t=2000..12075, cast within tolerance → on CD
+        make_cast(12500, SWIFTMEND),
+        make_applybuff(12501, SOTF_BUFF),
+        make_cast(12502, REJUV, target=5),
+        make_applybuff(12503, REJUV, target=5),
+        make_removebuff(12504, SOTF_BUFF),
+        make_heal(12600, REJUV, 10000, target=5),
+        make_heal(12700, GG_NOURISH, 5000, source=99),
+    ]
+    pipeline = Pipeline(attributors=[sotf, gg, sm_cd])
+    results = pipeline.run(events)
+
+    # 1 on-CD cast out of 3 total
+    ratio = 1 - 11075.0 / 12075.0
+    fraction = ratio / 3
+    downstream = 3 * (10000 - 10000 / 1.6) + 3 * 5000  # SotF + GG = 11250 + 15000
+    expected = fraction * downstream
+    assert results.talent_healing["SM Cooldown Reduction"] == pytest.approx(expected, rel=0.01)
+
+
+def test_two_charge_not_on_cooldown():
+    """With Prosperity: 2 rapid casts, then 3rd cast long after charge returned → not on CD."""
+    sotf = SoulOfTheForestAttributor()
+    sm_cd = SmCooldownReductionAttributor(downstream_attributors=[sotf])
+
+    events = [
+        make_combatant_info(0, talent_nodes=[
+            EARLY_SPRING_NODE_ID, RENEWING_SURGE_NODE_ID,
+            PROSPERITY_NODE_ID, 82055,
+        ], talent_ids=[EARLY_SPRING_TALENT_ID, PROSPERITY_TALENT_ID]),
+        make_cast(1000, SWIFTMEND),
+        make_applybuff(1001, SOTF_BUFF),
+        make_cast(1002, REJUV, target=3),
+        make_applybuff(1003, REJUV, target=3),
+        make_removebuff(1004, SOTF_BUFF),
+        make_heal(1100, REJUV, 10000, target=3),
+        # SM 2 — use 2nd charge immediately
+        make_cast(2000, SWIFTMEND),
+        make_applybuff(2001, SOTF_BUFF),
+        make_cast(2002, REJUV, target=4),
+        make_applybuff(2003, REJUV, target=4),
+        make_removebuff(2004, SOTF_BUFF),
+        make_heal(2100, REJUV, 10000, target=4),
+        # SM 3 — charge back at 12075, cast at 20000 (7925ms later, way past tolerance)
+        make_cast(20000, SWIFTMEND),
+        make_applybuff(20001, SOTF_BUFF),
+        make_cast(20002, REJUV, target=5),
+        make_applybuff(20003, REJUV, target=5),
+        make_removebuff(20004, SOTF_BUFF),
+        make_heal(20100, REJUV, 10000, target=5),
+    ]
+    pipeline = Pipeline(attributors=[sotf, sm_cd])
+    results = pipeline.run(events)
+    assert results.talent_healing["SM Cooldown Reduction"] == 0.0
+
+
+def test_two_charge_sustained_on_cooldown():
+    """With Prosperity: sustained on-CD usage — use both charges, then press on CD repeatedly."""
+    sotf = SoulOfTheForestAttributor()
+    gg = GroveGuardiansAttributor()
+    sm_cd = SmCooldownReductionAttributor(downstream_attributors=[sotf, gg])
+
+    # reduced_cd = 11075, unreduced_cd = 12075
+    # Charge timeline:
+    #   t=1000: cast, charges 2→1, recharge queued at 1000+11075=12075
+    #   t=2000: cast, charges 1→0, recharge queued at 12075+11075=23150
+    #   t=12500: 1st charge back at 12075 (425ms ago) → on CD. charges 1→0. recharge at 23150+11075=34225? No...
+    # Wait - when cast 3 happens, we consume the charge and schedule recharge.
+    # recharge_start = pending[-1][0] if pending else cast_ts
+    # After popping 12075 entry and before consuming: pending=[(23150, 11075)]
+    # After consuming: schedule from pending[-1][0]=23150 → (23150+11075=34225, 11075)
+    #   t=23500: 2nd charge back at 23150 (350ms ago) → on CD.
+    events = [
+        make_combatant_info(0, talent_nodes=[
+            EARLY_SPRING_NODE_ID, RENEWING_SURGE_NODE_ID,
+            PROSPERITY_NODE_ID, 82055, 82043,
+        ], talent_ids=[EARLY_SPRING_TALENT_ID, PROSPERITY_TALENT_ID]),
+        # SM 1
+        make_cast(1000, SWIFTMEND),
+        make_applybuff(1001, SOTF_BUFF),
+        make_cast(1002, REJUV, target=3),
+        make_applybuff(1003, REJUV, target=3),
+        make_removebuff(1004, SOTF_BUFF),
+        make_heal(1100, REJUV, 10000, target=3),
+        make_heal(1200, GG_NOURISH, 5000, source=99),
+        # SM 2 — both charges used
+        make_cast(2000, SWIFTMEND),
+        make_applybuff(2001, SOTF_BUFF),
+        make_cast(2002, REJUV, target=4),
+        make_applybuff(2003, REJUV, target=4),
+        make_removebuff(2004, SOTF_BUFF),
+        make_heal(2100, REJUV, 10000, target=4),
+        make_heal(2200, GG_NOURISH, 5000, source=99),
+        # SM 3 — on CD (charge back at 12075, cast at 12500)
+        make_cast(12500, SWIFTMEND),
+        make_applybuff(12501, SOTF_BUFF),
+        make_cast(12502, REJUV, target=5),
+        make_applybuff(12503, REJUV, target=5),
+        make_removebuff(12504, SOTF_BUFF),
+        make_heal(12600, REJUV, 10000, target=5),
+        make_heal(12700, GG_NOURISH, 5000, source=99),
+        # SM 4 — on CD (charge back at 23150, cast at 23500)
+        make_cast(23500, SWIFTMEND),
+        make_applybuff(23501, SOTF_BUFF),
+        make_cast(23502, REJUV, target=6),
+        make_applybuff(23503, REJUV, target=6),
+        make_removebuff(23504, SOTF_BUFF),
+        make_heal(23600, REJUV, 10000, target=6),
+        make_heal(23700, GG_NOURISH, 5000, source=99),
+    ]
+    pipeline = Pipeline(attributors=[sotf, gg, sm_cd])
+    results = pipeline.run(events)
+
+    # 2 on-CD casts (3rd and 4th), 4 total
+    ratio = 1 - 11075.0 / 12075.0
+    fraction = (ratio * 2) / 4
+    downstream = 4 * (10000 - 10000 / 1.6) + 4 * 5000  # 15000 + 20000
+    expected = fraction * downstream
+    assert results.talent_healing["SM Cooldown Reduction"] == pytest.approx(expected, rel=0.01)
 
 
 # --- WG CD reduction tests ---
