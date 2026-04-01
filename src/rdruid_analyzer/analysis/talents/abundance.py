@@ -40,7 +40,7 @@ class AbundanceAttributor(TalentAttributor):
             base_crit = self.combatant_info.crit_spell / CRIT_RATING_PER_PERCENT
         base_crit = max(base_crit, 0.05)  # minimum 5% base crit
 
-        total_crit = base_crit + abundance_crit
+        total_crit = min(base_crit + abundance_crit, 1.0)
         abundance_share = abundance_crit / total_crit
 
         # Crit heal = 2x normal, so bonus = amount / 2

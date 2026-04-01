@@ -41,3 +41,29 @@ def test_iwg_multiple_ticks():
     results = pipeline.run(events)
     # 2/7 * 21000 = 6000
     assert results.talent_healing["Improved Wild Growth"] == pytest.approx(6000.0)
+
+
+TOL_BUFF = 33891
+
+
+def make_applybuff(ts, ability, target=2):
+    return {"timestamp": ts, "type": "applybuff", "sourceID": 1, "targetID": target, "abilityGameID": ability}
+
+
+def make_removebuff(ts, ability, target=2):
+    return {"timestamp": ts, "type": "removebuff", "sourceID": 1, "targetID": target, "abilityGameID": ability}
+
+
+def test_iwg_skips_during_tol():
+    """IWG should not attribute during Tree of Life — ToL handles IWG targets itself."""
+    events = [
+        make_applybuff(50, TOL_BUFF, target=1),
+        make_heal(100, WILD_GROWTH, 7000),
+        make_heal(200, WILD_GROWTH, 7000),
+        make_removebuff(300, TOL_BUFF, target=1),
+        make_heal(400, WILD_GROWTH, 7000),  # after ToL ends
+    ]
+    pipeline = Pipeline(attributors=[ImprovedWildGrowthAttributor()])
+    results = pipeline.run(events)
+    # Only the last tick (after ToL) should be attributed: 2/7 * 7000 = 2000
+    assert results.talent_healing["Improved Wild Growth"] == pytest.approx(2000.0)

@@ -94,10 +94,11 @@ class TestImplant:
         assert results.talent_healing["Implant"] == pytest.approx(8000.0)
 
     def test_wg_triggers_implant_bloom(self):
+        """WG is AoE — bloom can appear on any target, not just the cast target."""
         events = [
-            make_cast(100, WILD_GROWTH),
-            make_apply(200, SYMBIOTIC_BLOOM),
-            make_heal(300, SYMBIOTIC_BLOOM, 5000),
+            make_cast(100, WILD_GROWTH, target=TARGET),
+            make_apply(200, SYMBIOTIC_BLOOM, target=TARGET2),  # bloom on different target
+            make_heal(300, SYMBIOTIC_BLOOM, 5000, target=TARGET2),
         ]
         pipeline = Pipeline(attributors=[ImplantAttributor()])
         results = pipeline.run(events)

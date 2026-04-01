@@ -40,18 +40,18 @@ class ImplantAttributor(TalentAttributor):
 
     def __init__(self):
         super().__init__()
-        self._recent_casts: list[tuple[int, int]] = []  # (timestamp, target_id)
+        self._recent_casts: list[int] = []  # timestamps of SM/WG casts
 
     def process_event(self, event, hot_tracker: HotTracker, buff_tracker: BuffTracker):
         if isinstance(event, CastEvent) and event.ability_id in (SWIFTMEND, WILD_GROWTH):
-            self._recent_casts.append((event.timestamp, event.target_id))
+            self._recent_casts.append(event.timestamp)
             # Clean old entries
             self._recent_casts = [
-                (t, tid) for t, tid in self._recent_casts if event.timestamp - t < IMPLANT_WINDOW_MS * 2
+                t for t in self._recent_casts if event.timestamp - t < IMPLANT_WINDOW_MS * 2
             ]
 
         if isinstance(event, ApplyBuffEvent) and event.ability_id == SYMBIOTIC_BLOOM:
-            for ts, tid in self._recent_casts:
+            for ts in self._recent_casts:
                 if event.timestamp - ts < IMPLANT_WINDOW_MS:
                     hot = hot_tracker.get(event.target_id, SYMBIOTIC_BLOOM)
                     if hot:
