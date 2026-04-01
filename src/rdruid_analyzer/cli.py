@@ -227,7 +227,7 @@ def analyze(
         selected_fight["endTime"],
         filter_expression=regrowth_filter,
     )
-    console.print(f"Damage taken (with Regrowth): {damage_taken_with_regrowth:,}")
+
 
     # Run analysis
     pet_ids = {a["id"] for a in all_actors if a.get("petOwner")}
