@@ -54,6 +54,7 @@ from rdruid_analyzer.analysis.talents.wildstalker import (
     RootNetworkAttributor,
 )
 from rdruid_analyzer.analysis.talents.symbiotic_bloom_mastery import SymbioticBloomMasteryAttributor
+from rdruid_analyzer.analysis.talents.sm_cooldown_reduction import SmCooldownReductionAttributor
 from rdruid_analyzer.analysis.talents.sylvan_beckoning import SylvanBeckoningAttributor
 from rdruid_analyzer.analysis.talents.abundance import AbundanceAttributor
 from rdruid_analyzer.analysis.talents.photosynthesis import PhotosynthesisAttributor
@@ -90,10 +91,14 @@ def build_attributors(config: dict) -> list:
         if sbm_cfg.mastery_dr_table is not None:
             sbm_kwargs["dr_table"] = sbm_cfg.mastery_dr_table
 
+    sotf = SoulOfTheForestAttributor()
+    gg = GroveGuardiansAttributor()
+    sm_cd = SmCooldownReductionAttributor(downstream_attributors=[sotf, gg])
+
     all_attributors = [
-        SoulOfTheForestAttributor(),
+        sotf,
         EverbloomAttributor(),
-        GroveGuardiansAttributor(),
+        gg,
         DreamSurgeAttributor(),
         EfflorescenceAttributor(),
         VerdancyAttributor(),
@@ -134,6 +139,7 @@ def build_attributors(config: dict) -> list:
         SpiritOfTheThicketAttributor(),
         PowerOfNatureAttributor(),
         ThrivingVegetationAttributor(),
+        sm_cd,
     ]
     active = []
     for a in all_attributors:

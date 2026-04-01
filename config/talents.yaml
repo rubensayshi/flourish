@@ -236,6 +236,9 @@ dryads_dance:
   skip: true
   skip_reason: "Swiftmend CD reduction via Dryads"
 
+sm_cooldown_reduction:
+  skip: false
+
 # === Always-take / base talents (skip) ===
 
 lifebloom:
