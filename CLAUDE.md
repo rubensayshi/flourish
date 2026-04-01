@@ -11,16 +11,16 @@ Restoration Druid talent analyzer for World of Warcraft. Fetches combat log data
 ## Commands
 
 ```bash
-# Install (editable, with dev deps)
-pip install -e ".[dev]"
+# Install (uses uv)
+uv sync --all-extras
 
 # Run CLI
-rdruid-analyzer analyze <report_code> [--fight ID] [--player NAME] [--config-path PATH]
+uv run rdruid-analyzer analyze <report_code> [--fight ID] [--player NAME] [--config-path PATH]
 
 # Tests
-pytest                        # all tests
-pytest tests/analysis/        # specific module
-pytest -k test_name           # single test by name
+uv run pytest                        # all tests
+uv run pytest tests/analysis/        # specific module
+uv run pytest -k test_name           # single test by name
 
 # Environment
 cp .env.example .env          # then fill in WCL_CLIENT_ID / WCL_CLIENT_SECRET
