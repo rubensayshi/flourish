@@ -77,7 +77,9 @@ class WgCooldownReductionAttributor(TalentAttributor):
         )
 
     def process_event(self, event, hot_tracker, buff_tracker):
-        if isinstance(event, CastEvent) and event.ability_id == WILD_GROWTH:
+        # Track begincast (not cast) for WG since it has a cast time.
+        # The CD starts when you press the button, not when the cast finishes.
+        if isinstance(event, CastEvent) and event.type == "begincast" and event.ability_id == WILD_GROWTH:
             self._wg_cast_timestamps.append(event.timestamp)
 
     def process_heal(self, event, hot_tracker, buff_tracker) -> float:

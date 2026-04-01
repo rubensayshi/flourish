@@ -25,6 +25,10 @@ def make_cast(ts, ability, source=1, target=2):
     return {"timestamp": ts, "type": "cast", "sourceID": source, "targetID": target, "abilityGameID": ability}
 
 
+def make_begincast(ts, ability, source=1, target=2):
+    return {"timestamp": ts, "type": "begincast", "sourceID": source, "targetID": target, "abilityGameID": ability}
+
+
 def make_heal(ts, ability, amount, source=1, target=2, overheal=0):
     return {"timestamp": ts, "type": "heal", "sourceID": source, "targetID": target,
             "abilityGameID": ability, "amount": amount, "overheal": overheal, "hitType": 1}
@@ -275,9 +279,9 @@ def test_wg_tracks_casts():
     attr = WgCooldownReductionAttributor()
     pipeline = Pipeline(attributors=[attr])
     events = [
-        make_cast(0, WILD_GROWTH),
-        make_cast(8000, WILD_GROWTH),
-        make_cast(16000, WILD_GROWTH),
+        make_begincast(0, WILD_GROWTH),
+        make_begincast(8000, WILD_GROWTH),
+        make_begincast(16000, WILD_GROWTH),
     ]
     pipeline.run(events)
     assert attr._wg_cast_timestamps == [0, 8000, 16000]
@@ -295,13 +299,13 @@ def test_wg_attribution_on_cooldown():
         make_combatant_info(0, talent_nodes=[
             EARLY_SPRING_NODE_ID, GG_NODE,
         ], talent_ids=[EARLY_SPRING_TALENT_ID]),
-        make_cast(1000, WILD_GROWTH),
+        make_begincast(1000, WILD_GROWTH),
         make_heal(1100, GG_NOURISH, 5000, source=99),
         # WG 2 — gap=7500 < 7000+1500 → on cooldown
-        make_cast(8500, WILD_GROWTH),
+        make_begincast(8500, WILD_GROWTH),
         make_heal(8600, GG_NOURISH, 5000, source=99),
         # WG 3 — gap=7500 → on cooldown
-        make_cast(16000, WILD_GROWTH),
+        make_begincast(16000, WILD_GROWTH),
         make_heal(16100, GG_NOURISH, 5000, source=99),
     ]
     pipeline = Pipeline(attributors=[gg, wg_cd])
@@ -325,10 +329,10 @@ def test_wg_no_attribution_when_not_on_cooldown():
         make_combatant_info(0, talent_nodes=[
             EARLY_SPRING_NODE_ID, 82043,
         ], talent_ids=[EARLY_SPRING_TALENT_ID]),
-        make_cast(1000, WILD_GROWTH),
+        make_begincast(1000, WILD_GROWTH),
         make_heal(1100, GG_NOURISH, 5000, source=99),
         # WG 2 — gap=30000 >> 7000+1500
-        make_cast(31000, WILD_GROWTH),
+        make_begincast(31000, WILD_GROWTH),
         make_heal(31100, GG_NOURISH, 5000, source=99),
     ]
     pipeline = Pipeline(attributors=[gg, wg_cd])

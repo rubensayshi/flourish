@@ -75,6 +75,7 @@ class SummonEvent(BaseEvent):
 
 
 EVENT_TYPE_MAP = {
+    "begincast": CastEvent,
     "cast": CastEvent,
     "heal": HealEvent,
     "applybuff": ApplyBuffEvent,
