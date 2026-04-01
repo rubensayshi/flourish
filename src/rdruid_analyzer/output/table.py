@@ -52,33 +52,40 @@ def render_results(results: AnalysisResults, fight_name: str = "", player_name: 
     table.add_column("% Total", justify="right")
     table.add_column("HPS", justify="right")
 
-    # Compute hero tree aggregates
+    # Split talents into non-hero and hero groups
     hero_totals: dict[str, float] = {}
+    hero_talents: dict[str, list[tuple[str, float]]] = {}
+    non_hero: list[tuple[str, float]] = []
+
     for name, amount in results.talent_healing.items():
         if amount <= 0:
             continue
         tree = _hero_tree_for(name)
         if tree:
             hero_totals[tree] = hero_totals.get(tree, 0) + amount
+            hero_talents.setdefault(tree, []).append((name, amount))
+        else:
+            non_hero.append((name, amount))
 
-    sorted_talents = sorted(results.talent_healing.items(), key=lambda x: x[1], reverse=True)
-    for name, amount in sorted_talents:
-        if amount <= 0:
-            continue
+    # Non-hero talents sorted by healing
+    for name, amount in sorted(non_hero, key=lambda x: x[1], reverse=True):
         pct = (amount / results.total_healing * 100) if results.total_healing > 0 else 0
         hps = amount / duration_sec
         table.add_row(name, format_healing(amount), f"{pct:.1f}%", format_healing(hps))
 
-    # Hero tree aggregate rows
-    if hero_totals:
+    # Hero tree groups: aggregate header + individual talents
+    for tree, total in sorted(hero_totals.items(), key=lambda x: x[1], reverse=True):
         table.add_section()
-        for tree, total in sorted(hero_totals.items(), key=lambda x: x[1], reverse=True):
-            pct = (total / results.total_healing * 100) if results.total_healing > 0 else 0
-            hps = total / duration_sec
-            table.add_row(
-                f"⮡ {tree} (total)", format_healing(total), f"{pct:.1f}%", format_healing(hps),
-                style="bold",
-            )
+        pct = (total / results.total_healing * 100) if results.total_healing > 0 else 0
+        hps = total / duration_sec
+        table.add_row(
+            f"{tree}", format_healing(total), f"{pct:.1f}%", format_healing(hps),
+            style="bold",
+        )
+        for name, amount in sorted(hero_talents[tree], key=lambda x: x[1], reverse=True):
+            pct = (amount / results.total_healing * 100) if results.total_healing > 0 else 0
+            hps = amount / duration_sec
+            table.add_row(f"  {name}", format_healing(amount), f"{pct:.1f}%", format_healing(hps))
 
     table.add_section()
     table.add_row("Wasted (>50% OH)", format_healing(results.wasted), "—", "—", style="dim")
