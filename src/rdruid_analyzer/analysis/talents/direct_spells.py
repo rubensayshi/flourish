@@ -85,7 +85,7 @@ class BurstingGrowthAttributor(DirectSpellAttributor):
     """Bursting Growth: AoE heal when Symbiotic Blooms expire or Rejuv on bloom target."""
     name = "Bursting Growth"
     talent_node_id = 109716
-    spell_ids = {440120}
+    spell_ids = {440121}
 
 
 class ThrivingGrowthAttributor(DirectSpellAttributor):

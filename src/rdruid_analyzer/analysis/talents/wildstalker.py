@@ -4,7 +4,7 @@ from rdruid_analyzer.tracking.hot_tracker import HotTracker
 from rdruid_analyzer.tracking.buff_tracker import BuffTracker
 
 # Symbiotic Bloom buff — from Thriving Growth
-SYMBIOTIC_BLOOM = 439528
+SYMBIOTIC_BLOOM = 439530
 
 SWIFTMEND = 18562
 WILD_GROWTH = 48438
