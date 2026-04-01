@@ -127,9 +127,6 @@ nurturing_dormancy:
 everbloom:
   skip: false
 
-lifetreading:
-  skip: false
-
 renewing_surge:
   skip: true
   skip_reason: "Swiftmend CD reduction, hard to attribute"
@@ -246,31 +243,35 @@ wg_cooldown_reduction:
 
 lifebloom:
   skip: true
-  skip_reason: "always take"
+  skip_reason: "always take, baseline skill"
 
 swiftmend:
   skip: true
-  skip_reason: "always take"
+  skip_reason: "always take, baseline skill"
 
 wild_growth:
   skip: true
-  skip_reason: "always take"
+  skip_reason: "always take, baseline skill"
 
 rejuvenation:
   skip: true
-  skip_reason: "always take"
+  skip_reason: "always take, baseline skill"
 
 tranquility:
   skip: true
-  skip_reason: "always take"
+  skip_reason: "always take, baseline skill"
 
 efflorescence:
   skip: true
-  skip_reason: "always take"
+  skip_reason: "always take, baseline skill"
 
 regrowth:
   skip: true
-  skip_reason: "always take"
+  skip_reason: "always take, baseline skill"
+
+lifetreading:
+  skip: false
+  skip_reason: "always take, QoL"
 
 # === Non-healing utility (skip) ===
 
@@ -319,8 +320,7 @@ hunt_beneath_the_open_skies:
   skip_reason: "Cat Form buff, Resto rarely uses Cat Form"
 
 strategic_infusion:
-  skip: true
-  skip_reason: "minor periodic heal crit boost (+4%), hard to attribute"
+  skip: false
 
 lethal_preservation:
   skip: true

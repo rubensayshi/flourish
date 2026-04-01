@@ -52,6 +52,7 @@ from rdruid_analyzer.analysis.talents.wildstalker import (
     VigorousCreepersAttributor,
     ImplantAttributor,
     RootNetworkAttributor,
+    StrategicInfusionAttributor,
 )
 from rdruid_analyzer.analysis.talents.symbiotic_bloom_mastery import SymbioticBloomMasteryAttributor
 from rdruid_analyzer.analysis.talents.sm_cooldown_reduction import (
@@ -134,6 +135,7 @@ def build_attributors(config: dict) -> list:
         VigorousCreepersAttributor(),
         ImplantAttributor(),
         RootNetworkAttributor(),
+        StrategicInfusionAttributor(),
         SymbioticBloomMasteryAttributor(**sbm_kwargs),
         AbundanceAttributor(),
         PhotosynthesisAttributor(),

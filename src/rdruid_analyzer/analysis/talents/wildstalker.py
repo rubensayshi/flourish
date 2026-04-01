@@ -6,6 +6,9 @@ from rdruid_analyzer.tracking.buff_tracker import BuffTracker
 # Symbiotic Bloom buff — from Thriving Growth
 SYMBIOTIC_BLOOM = 439530
 
+STRATEGIC_INFUSION_CRIT_BONUS = 0.04  # +4% crit chance on periodic heals
+CRIT_RATING_PER_PERCENT = 700.0  # same conversion as abundance.py
+
 SWIFTMEND = 18562
 WILD_GROWTH = 48438
 IMPLANT_TAG = "implant"
@@ -62,6 +65,29 @@ class ImplantAttributor(TalentAttributor):
         if hot and IMPLANT_TAG in hot.tags:
             return float(event.amount)
         return 0.0
+
+
+class StrategicInfusionAttributor(TalentAttributor):
+    """Strategic Infusion: periodic heals have +4% crit chance.
+    For periodic heal crits, attribute the talent's share of the crit bonus."""
+
+    name = "Strategic Infusion"
+    talent_node_id = 94623
+
+    def process_heal(self, event: HealEvent, hot_tracker: HotTracker, buff_tracker: BuffTracker) -> float:
+        if not event.tick or event.hit_type != 2:
+            return 0.0
+
+        base_crit = 0.0
+        if self.combatant_info:
+            base_crit = self.combatant_info.crit_spell / CRIT_RATING_PER_PERCENT
+        base_crit = max(base_crit, 0.05)
+
+        total_crit = base_crit + STRATEGIC_INFUSION_CRIT_BONUS
+        infusion_share = STRATEGIC_INFUSION_CRIT_BONUS / total_crit
+
+        crit_bonus = event.amount / 2.0
+        return crit_bonus * infusion_share
 
 
 class RootNetworkAttributor(TalentAttributor):
