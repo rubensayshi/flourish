@@ -270,7 +270,7 @@ regrowth:
   skip_reason: "always take, baseline skill"
 
 lifetreading:
-  skip: false
+  skip: true
   skip_reason: "always take, QoL"
 
 # === Non-healing utility (skip) ===
