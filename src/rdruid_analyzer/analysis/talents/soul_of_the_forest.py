@@ -39,7 +39,7 @@ class SoulOfTheForestAttributor(TalentAttributor):
     consumption by interfering events (Dream Surge procs, etc.).
     """
 
-    name = "SotF + Power of the Archdruid"
+    name = "SotF + PotA"
     talent_node_id = 82055  # SotF node
 
     def __init__(self):

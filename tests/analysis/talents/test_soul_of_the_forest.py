@@ -57,7 +57,7 @@ def test_sotf_attributes_bonus_from_rejuv():
     ]
     pipeline = Pipeline(attributors=[SoulOfTheForestAttributor()])
     results = pipeline.run(events)
-    assert results.talent_healing["SotF + Power of the Archdruid"] == pytest.approx(3750.0)
+    assert results.talent_healing["SotF + PotA"] == pytest.approx(3750.0)
 
 
 def test_sotf_does_not_attribute_unbuffed_rejuv():
@@ -67,7 +67,7 @@ def test_sotf_does_not_attribute_unbuffed_rejuv():
     ]
     pipeline = Pipeline(attributors=[SoulOfTheForestAttributor()])
     results = pipeline.run(events)
-    assert results.talent_healing["SotF + Power of the Archdruid"] == 0.0
+    assert results.talent_healing["SotF + PotA"] == 0.0
 
 
 def test_sotf_only_applies_to_consuming_cast():
@@ -86,7 +86,7 @@ def test_sotf_only_applies_to_consuming_cast():
     ]
     pipeline = Pipeline(attributors=[SoulOfTheForestAttributor()])
     results = pipeline.run(events)
-    assert results.talent_healing["SotF + Power of the Archdruid"] == pytest.approx(3750.0)
+    assert results.talent_healing["SotF + PotA"] == pytest.approx(3750.0)
 
 
 def test_sotf_regrowth_direct_heal_attributed():
@@ -105,7 +105,7 @@ def test_sotf_regrowth_direct_heal_attributed():
     pipeline = Pipeline(attributors=[SoulOfTheForestAttributor()])
     results = pipeline.run(events)
     # Direct: 60000 * 0.375 = 22500, HoT tick: 5000 * 0.375 = 1875
-    assert results.talent_healing["SotF + Power of the Archdruid"] == pytest.approx(22500.0 + 1875.0)
+    assert results.talent_healing["SotF + PotA"] == pytest.approx(22500.0 + 1875.0)
 
 
 def test_sotf_germination_rejuv():
@@ -120,7 +120,7 @@ def test_sotf_germination_rejuv():
     ]
     pipeline = Pipeline(attributors=[SoulOfTheForestAttributor()])
     results = pipeline.run(events)
-    assert results.talent_healing["SotF + Power of the Archdruid"] == pytest.approx(3750.0)
+    assert results.talent_healing["SotF + PotA"] == pytest.approx(3750.0)
 
 
 # --- PotA spread (SotF consumed → spreads to 2 extra targets) ---
@@ -145,7 +145,7 @@ def test_pota_spreads_get_full_attribution():
     pipeline = Pipeline(attributors=[SoulOfTheForestAttributor()])
     results = pipeline.run(events)
     # Primary: 3750 (60% bonus), Spread1: 10000, Spread2: 10000
-    assert results.talent_healing["SotF + Power of the Archdruid"] == pytest.approx(23750.0)
+    assert results.talent_healing["SotF + PotA"] == pytest.approx(23750.0)
 
 
 def test_pota_spread_outside_window_not_attributed():
@@ -163,7 +163,7 @@ def test_pota_spread_outside_window_not_attributed():
     ]
     pipeline = Pipeline(attributors=[SoulOfTheForestAttributor()])
     results = pipeline.run(events)
-    assert results.talent_healing["SotF + Power of the Archdruid"] == pytest.approx(3750.0)
+    assert results.talent_healing["SotF + PotA"] == pytest.approx(3750.0)
 
 
 def test_pota_spread_wrong_spell_not_attributed():
@@ -181,7 +181,7 @@ def test_pota_spread_wrong_spell_not_attributed():
     ]
     pipeline = Pipeline(attributors=[SoulOfTheForestAttributor()])
     results = pipeline.run(events)
-    assert results.talent_healing["SotF + Power of the Archdruid"] == pytest.approx(3750.0)
+    assert results.talent_healing["SotF + PotA"] == pytest.approx(3750.0)
 
 
 def test_sotf_tag_cleared_on_refresh():
@@ -199,7 +199,7 @@ def test_sotf_tag_cleared_on_refresh():
     ]
     pipeline = Pipeline(attributors=[SoulOfTheForestAttributor()])
     results = pipeline.run(events)
-    assert results.talent_healing["SotF + Power of the Archdruid"] == pytest.approx(3750.0)
+    assert results.talent_healing["SotF + PotA"] == pytest.approx(3750.0)
 
 
 def test_interfering_applybuff_does_not_steal_sotf():
@@ -219,4 +219,4 @@ def test_interfering_applybuff_does_not_steal_sotf():
     pipeline = Pipeline(attributors=[SoulOfTheForestAttributor()])
     results = pipeline.run(events)
     # Only TARGET's Rejuv should have SotF, not target 99
-    assert results.talent_healing["SotF + Power of the Archdruid"] == pytest.approx(3750.0)
+    assert results.talent_healing["SotF + PotA"] == pytest.approx(3750.0)
