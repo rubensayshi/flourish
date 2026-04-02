@@ -8,12 +8,44 @@
         </svg>
         Flourish
       </router-link>
-      <router-link to="/settings" class="text-sm text-slate-400 hover:text-emerald-400">
-        Settings
-      </router-link>
+      <div class="flex items-center gap-4">
+        <router-link to="/settings" class="text-sm text-slate-400 hover:text-emerald-400">
+          Settings
+        </router-link>
+        <button
+          v-if="!auth.isAuthenticated()"
+          @click="auth.login()"
+          class="text-sm px-3 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white transition-colors"
+        >
+          Login with WarcraftLogs
+        </button>
+        <div v-else class="flex items-center gap-2">
+          <span class="text-sm text-emerald-400">Logged in</span>
+          <button
+            @click="auth.logout()"
+            class="text-sm px-3 py-1.5 rounded bg-slate-700 hover:bg-slate-600 text-slate-300 transition-colors"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
     </header>
     <main class="px-4 py-8">
       <router-view />
     </main>
   </div>
 </template>
+
+<script setup>
+import { onMounted } from 'vue'
+import { useAuth } from './composables/useAuth.js'
+
+const auth = useAuth()
+
+onMounted(() => {
+  const result = auth.handleCallback()
+  if (result && !result.success) {
+    console.error('WCL OAuth error:', result.error)
+  }
+})
+</script>

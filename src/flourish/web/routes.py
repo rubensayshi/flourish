@@ -6,7 +6,8 @@ from slowapi import Limiter
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
-from flourish.web.dependencies import get_wcl_client
+from flourish.web.dependencies import get_wcl_client_for_request, get_user_token
+from flourish.web.auth import check_anon_limit, record_anon_usage
 from flourish.web.cache import ResultCache
 from flourish.models.config import load_config, Config, MasteryConfig
 from flourish.analysis.pipeline import Pipeline
@@ -28,6 +29,18 @@ def _check_rate_limit(request: Request, rate_limit):
         raise RateLimitExceeded(rate_limit)
 
 
+def _check_anon_access(request: Request, code: str):
+    """Raise 403 if anonymous user has exceeded the report limit."""
+    if get_user_token(request):
+        return  # Authenticated users have no limit
+    ip = get_remote_address(request)
+    if not check_anon_limit(ip, code):
+        raise HTTPException(
+            status_code=403,
+            detail="Free report limit reached. Log in with WarcraftLogs to analyze more reports.",
+        )
+
+
 @router.get("/health")
 def health():
     return {"status": "ok"}
@@ -36,11 +49,17 @@ def health():
 @router.get("/report/{code}")
 def get_report(request: Request, code: str):
     _check_rate_limit(request, _REPORT_LIMIT)
-    client = get_wcl_client()
+    _check_anon_access(request, code)
+
+    client = get_wcl_client_for_request(request)
     try:
         report = client.get_report(code)
     except Exception:
         raise HTTPException(status_code=404, detail="Report not found")
+
+    # Record anonymous usage after successful fetch
+    if not get_user_token(request):
+        record_anon_usage(get_remote_address(request), code)
 
     fights = [
         {
@@ -70,11 +89,17 @@ def analyze(request: Request, code: str, fight_id: int, player_name: str, base_s
             return cached
 
     _check_rate_limit(request, _ANALYZE_LIMIT)
-    client = get_wcl_client()
+    _check_anon_access(request, code)
+
+    client = get_wcl_client_for_request(request)
     try:
         report = client.get_report(code)
     except Exception:
         raise HTTPException(status_code=404, detail="Report not found")
+
+    # Record anonymous usage after successful fetch
+    if not get_user_token(request):
+        record_anon_usage(get_remote_address(request), code)
 
     selected_fight = next(
         (f for f in report["fights"] if f["id"] == fight_id), None

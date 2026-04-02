@@ -7,6 +7,7 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
 from flourish.web.routes import router, limiter
+from flourish.web.auth import router as auth_router
 
 
 def create_app() -> FastAPI:
@@ -22,6 +23,7 @@ def create_app() -> FastAPI:
         )
 
     app.include_router(router)
+    app.include_router(auth_router)
 
     static_dir = Path(__file__).parent.parent.parent.parent / "frontend" / "dist"
     if static_dir.exists():

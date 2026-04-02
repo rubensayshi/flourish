@@ -26,7 +26,7 @@ def _mock_wcl_client():
     return client
 
 
-@patch("flourish.web.routes.get_wcl_client")
+@patch("flourish.web.routes.get_wcl_client_for_request")
 def test_report_endpoint_returns_fights_and_druids(mock_get_client):
     mock_get_client.return_value = _mock_wcl_client()
     app = create_app()
@@ -42,7 +42,7 @@ def test_report_endpoint_returns_fights_and_druids(mock_get_client):
     assert data["druids"][0]["name"] == "Saikó"
 
 
-@patch("flourish.web.routes.get_wcl_client")
+@patch("flourish.web.routes.get_wcl_client_for_request")
 def test_report_endpoint_404_on_invalid_code(mock_get_client):
     mock_get_client.return_value = MagicMock(
         get_report=MagicMock(side_effect=Exception("not found"))

@@ -4,7 +4,16 @@
     <div class="max-w-5xl w-full">
       <LoadingSpinner v-if="loading">Loading report...</LoadingSpinner>
 
-      <div v-else-if="error" class="text-red-400">{{ error }}</div>
+      <div v-else-if="error" class="text-red-400">
+        {{ error }}
+        <button
+          v-if="isLoginError"
+          @click="auth.login()"
+          class="ml-3 text-sm px-3 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white transition-colors"
+        >
+          Login with WarcraftLogs
+        </button>
+      </div>
 
       <template v-else-if="report">
         <h2 class="text-xl font-bold mb-4">{{ report.title }}</h2>
@@ -41,11 +50,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { fetchReport, fetchAnalysis } from '../api'
 import { addReportEntry } from '../composables/useReportHistory'
 import { settings } from '../composables/useSettings'
+import { useAuth } from '../composables/useAuth'
 import FightSelector from '../components/FightSelector.vue'
 import PlayerSelector from '../components/PlayerSelector.vue'
 import LoadingSpinner from '../components/LoadingSpinner.vue'
@@ -54,6 +64,8 @@ import ReportHistory from '../components/ReportHistory.vue'
 
 const route = useRoute()
 const router = useRouter()
+const auth = useAuth()
+const isLoginError = computed(() => error.value && error.value.includes('Log in'))
 
 const report = ref(null)
 const loading = ref(true)
