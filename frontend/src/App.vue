@@ -9,7 +9,7 @@
         Flourish
       </router-link>
     </header>
-    <main class="mx-auto max-w-5xl px-4 py-8">
+    <main class="px-4 py-8">
       <router-view />
     </main>
   </div>
