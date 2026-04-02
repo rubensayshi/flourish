@@ -4,17 +4,17 @@
       <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wide">Recent Analyses</h3>
       <button @click="handleClear" class="text-xs text-slate-500 hover:text-slate-300">Clear</button>
     </div>
-    <ul class="space-y-1.5">
+    <ul class="space-y-1.5 list-none p-0">
       <li v-for="(entry, i) in entries" :key="i">
         <router-link
           :to="`/results/${entry.code}/${entry.fightId}/${entry.player}`"
-          class="flex items-center justify-between rounded-lg px-3 py-2 bg-slate-800/50
-                 hover:bg-slate-800 border transition-colors"
-          :class="isActive(entry) ? 'border-emerald-600/50 bg-emerald-900/10' : 'border-slate-700/50 hover:border-slate-600'"
+          class="flex items-center justify-between rounded-lg px-4 py-2.5 bg-slate-800/50
+                 hover:bg-slate-800 border border-slate-700/50 transition-colors no-underline"
+          :class="isActive(entry) ? 'border-emerald-600/50 bg-emerald-900/10' : 'hover:border-slate-600'"
         >
-          <div class="min-w-0">
+          <div class="min-w-0 flex-1 text-left">
             <span class="text-slate-200 text-sm font-medium truncate block">{{ entry.title }}</span>
-            <span class="text-slate-500 text-xs">{{ entry.fight }} &middot; {{ entry.player }}</span>
+            <span class="text-slate-500 text-xs truncate block">{{ entry.fight }} &middot; {{ entry.player }}</span>
           </div>
           <span class="text-slate-600 text-xs ml-3 shrink-0">{{ timeAgo(entry.ts) }}</span>
         </router-link>
