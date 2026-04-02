@@ -48,6 +48,13 @@ export const TALENT_EXPLANATIONS = {
   'Symbiotic Bloom Mastery': `Each Symbiotic Bloom adds 1 extra HoT stack for Mastery. Same DR-table calculation as Harmonious Blooming but per bloom:
 <br><br><code>fraction = 1 \u2212 (mult_at_base / mult_at_base+bloom_count)</code>`,
 
+  'Grove Guardians': `100% of treant healing (Nourish + direct heals), minus portions claimed by Wild Synthesis (+30%) and Bounteous Bloom (+30%) to avoid double-counting.
+<br><br>If both are talented: <code>heal / 1.3 / 1.3</code>.`,
+
+  'Wild Synthesis': `+30% to Grove Guardian, Efflorescence, and Dream Bloom healing. Grove Guardians reduces its own value accordingly.`,
+
+  'Bounteous Bloom': `+30% to Grove Guardian healing. Grove Guardians reduces its own value accordingly.`,
+
   'Harmony of the Grove': `+5% healing per active Grove Guardian. Tracks guardian summons and despawn timers (extended 20% with Durability of Nature).
 <br><br><code>heal \u00d7 0.05 \u00d7 active_guardian_count</code>`,
 
