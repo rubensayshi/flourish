@@ -29,7 +29,10 @@
               :class="i % 2 === 0 ? 'bg-slate-800/50' : ''"
               class="border-b border-slate-800"
             >
-              <td class="py-1.5 pr-3">{{ t.name }}</td>
+              <td class="py-1.5 pr-3">
+                <a v-if="wowheadUrl(t.name)" :href="wowheadUrl(t.name)" target="_blank" class="text-slate-100 hover:text-emerald-400 no-underline">{{ t.name }}</a>
+                <span v-else>{{ t.name }}</span>
+              </td>
               <td class="py-1.5 pr-3 text-right font-mono">{{ fmt(t.attributed) }}</td>
               <td class="py-1.5 pr-3 text-right font-mono" :class="pctColor(t.pct)">
                 {{ t.pct.toFixed(1) }}%
@@ -74,7 +77,10 @@
                 :class="i % 2 === 0 ? 'bg-slate-800/50' : ''"
                 class="border-b border-slate-800"
               >
-                <td class="py-1.5 pr-3">{{ t.name }}</td>
+                <td class="py-1.5 pr-3">
+                  <a v-if="wowheadUrl(t.name)" :href="wowheadUrl(t.name)" target="_blank" class="text-slate-100 hover:text-emerald-400 no-underline">{{ t.name }}</a>
+                  <span v-else>{{ t.name }}</span>
+                </td>
                 <td class="py-1.5 pr-3 text-right font-mono">{{ fmt(t.attributed) }}</td>
                 <td class="py-1.5 pr-3 text-right font-mono" :class="pctColor(t.pct)">
                   {{ t.pct.toFixed(1) }}%
@@ -105,9 +111,16 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted, onUpdated, nextTick } from 'vue'
+import { wowheadUrl } from '../wowheadSpells.js'
 
 const props = defineProps({ data: Object })
+
+function refreshTooltips() {
+  nextTick(() => { window.$WowheadPower?.refreshLinks() })
+}
+onMounted(refreshTooltips)
+onUpdated(refreshTooltips)
 
 const totalAttributed = computed(() => {
   const talentSum = props.data.talents.reduce((sum, t) => sum + t.attributed, 0)
