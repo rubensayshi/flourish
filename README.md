@@ -10,6 +10,7 @@ Built for WoW Midnight Season 1 (12.0.1).
 
 - Python 3.12+
 - [uv](https://docs.astral.sh/uv/) package manager
+- Node.js 18+ (for frontend development only)
 - A [WarcraftLogs](https://www.warcraftlogs.com) API v2 client (create one at [WCL API Clients](https://www.warcraftlogs.com/api/clients))
 
 ### Install
@@ -31,7 +32,15 @@ WCL_CLIENT_SECRET=your-client-secret
 
 ## Usage
 
-### Basic (interactive)
+### Web UI
+
+```bash
+uv run uvicorn flourish.web.app:create_app --factory --reload
+```
+
+Opens at `http://localhost:8000`. Paste a WarcraftLogs report URL, select a fight and player, and view results. Features rate limiting, result caching, and report history.
+
+### CLI
 
 ```bash
 uv run flourish <report-code>
@@ -113,16 +122,31 @@ convoke_the_spirits:
 
 Any heal tick where more than 50% of the raw healing was overheal gets no talent attribution. This prevents inflating talent values with wasted healing.
 
-## Implemented talents (28)
+## Implemented talents (47)
 
-### Direct spell
-Everbloom, Grove Guardians, Dream Surge, Efflorescence, Verdancy, Nature's Bounty, Regenerative Heartwood, Cultivation, Ysera's Gift, Embrace of the Dream, Rampant Growth, Improved Swiftmend, Flourish, Bursting Growth
+### Spec talents
 
-### Buff multiplier
-Wild Synthesis, Wildstalker's Power, Patient Custodian, Lifetreading, Grove's Inspiration, Cenarius' Might, Bounteous Bloom, Unstoppable Growth, Liveliness, Regenesis
+**Direct spell:** Everbloom, Efflorescence, Verdancy, Nature's Bounty, Regenerative Heartwood, Cultivation, Ysera's Gift, Embrace of the Dream, Rampant Growth, Flourish, Thriving Vegetation
 
-### Stateful
-Soul of the Forest, Incarnation: Tree of Life, Convoke the Spirits, Improved Wild Growth, Reforestation, Harmony of the Grove, Abundance, Intensity, Photosynthesis, Nurturing Dormancy, Vigorous Creepers, Implant, Root Network
+**Buff multiplier:** Improved Swiftmend, Lifetreading, Unstoppable Growth, Intensity, Liveliness, Regenesis
+
+**Stateful:** Soul of the Forest, Incarnation: Tree of Life, Convoke the Spirits, Improved Wild Growth, Reforestation, Abundance, Photosynthesis, Nurturing Dormancy, Protective Growth, Harmonious Blooming
+
+### Keeper of the Grove
+
+**Direct spell:** Grove Guardians, Dream Surge, Spirit of the Thicket
+
+**Buff multiplier:** Wild Synthesis, Grove's Inspiration, Cenarius' Might, Bountiful Bloom, Harmony of the Grove, Power of Nature
+
+**Stateful:** Sylvan Beckoning, Swiftmend Cooldown Reduction, Wild Growth Cooldown Reduction
+
+### Wildstalker
+
+**Direct spell:** Bursting Growth, Thriving Growth
+
+**Buff multiplier:** Wildstalker's Power, Patient Custodian
+
+**Stateful:** Vigorous Creepers, Implant, Root Network, Strategic Infusion, Symbiotic Bloom (mastery)
 
 ## Development
 
@@ -134,9 +158,19 @@ uv run pytest
 uv run pytest -v
 ```
 
+### Frontend
+
+The web UI is a Vue 3 + Vite + TailwindCSS SPA in `frontend/`. The built assets in `frontend/dist/` are served by FastAPI.
+
+```bash
+cd frontend
+npm install
+npm run dev    # dev server with hot reload
+npm run build  # production build → dist/
+```
+
 ## Limitations
 
 - Class tree talents are not analyzed
-- Mastery (Harmony) attribution is not yet implemented
 - Germination is skipped (always-take)
 - Some approximations are used (Regenesis uses flat 15% instead of health-based scaling, Unstoppable Growth uses flat 27.7% multiplier)
