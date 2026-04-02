@@ -65,7 +65,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { fetchReport, fetchAnalysis } from '../api'
 import { addReportEntry } from '../composables/useReportHistory'
@@ -95,7 +95,11 @@ const isLoginError = computed(() => {
   return msg.includes('Log in')
 })
 
-onMounted(async () => {
+async function loadFromRoute() {
+  loading.value = true
+  error.value = null
+  analyzeError.value = null
+  results.value = null
   try {
     report.value = await fetchReport(route.params.code)
 
@@ -108,6 +112,14 @@ onMounted(async () => {
     error.value = e.message
   } finally {
     loading.value = false
+  }
+}
+
+onMounted(loadFromRoute)
+
+watch(() => [route.params.code, route.params.fightId, route.params.player], (newP, oldP) => {
+  if (newP[0] !== oldP[0] || newP[1] !== oldP[1] || newP[2] !== oldP[2]) {
+    loadFromRoute()
   }
 })
 
