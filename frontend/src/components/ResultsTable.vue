@@ -60,16 +60,58 @@
           </tbody>
           <tfoot class="text-slate-500">
             <tr class="border-t border-slate-700">
-              <td class="py-1.5 pr-3">Wasted (&gt;50% OH)</td>
+              <td class="py-1.5 pr-3">
+                <span class="inline-flex items-center gap-1.5">
+                  Wasted (&gt;50% OH)
+                  <button
+                    @click="showWastedExplanation = !showWastedExplanation"
+                    class="text-slate-500 hover:text-emerald-400 transition-colors flex-shrink-0"
+                    :class="{ 'text-emerald-400': showWastedExplanation }"
+                    title="What does this mean?"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
+                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                </span>
+              </td>
               <td class="py-1.5 pr-3 text-right font-mono">{{ fmt(data.wasted) }}</td>
               <td class="py-1.5 pr-3 text-right">&mdash;</td>
               <td class="py-1.5 text-right">&mdash;</td>
             </tr>
+            <tr v-if="showWastedExplanation">
+              <td colspan="4" class="px-3 py-3 bg-slate-800/80 border-b border-slate-700">
+                <div class="text-xs text-slate-300 leading-relaxed">
+                  Healing events where more than 50% was overheal are excluded from talent attribution, since the healing was largely wasted and doesn't meaningfully reflect talent value.
+                </div>
+              </td>
+            </tr>
             <tr>
-              <td class="py-1.5 pr-3">Unattributed</td>
+              <td class="py-1.5 pr-3">
+                <span class="inline-flex items-center gap-1.5">
+                  Unattributed
+                  <button
+                    @click="showUnattributedExplanation = !showUnattributedExplanation"
+                    class="text-slate-500 hover:text-emerald-400 transition-colors flex-shrink-0"
+                    :class="{ 'text-emerald-400': showUnattributedExplanation }"
+                    title="What does this mean?"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
+                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                </span>
+              </td>
               <td class="py-1.5 pr-3 text-right font-mono">{{ fmt(data.unattributed) }}</td>
               <td class="py-1.5 pr-3 text-right">&mdash;</td>
               <td class="py-1.5 text-right">&mdash;</td>
+            </tr>
+            <tr v-if="showUnattributedExplanation">
+              <td colspan="4" class="px-3 py-3 bg-slate-800/80 border-b border-slate-700">
+                <div class="text-xs text-slate-300 leading-relaxed">
+                  Healing that could not be attributed to any specific talent. This includes baseline healing from spells that aren't modified by any selected talent, or healing from interactions not yet tracked by the analyzer.
+                </div>
+              </td>
             </tr>
           </tfoot>
         </table>
@@ -154,6 +196,8 @@ import { hasExplanation, getExplanation } from '../talentExplanations.js'
 const props = defineProps({ data: Object })
 
 const expandedTalents = ref(new Set())
+const showWastedExplanation = ref(false)
+const showUnattributedExplanation = ref(false)
 
 function toggleExplanation(name) {
   if (expandedTalents.value.has(name)) {
