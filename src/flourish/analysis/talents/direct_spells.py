@@ -8,20 +8,6 @@ class EverbloomAttributor(DirectSpellAttributor):
     spell_ids = {1244341}
 
 
-class GroveGuardiansAttributor(DirectSpellAttributor):
-    """Grove Guardians: Treant pets cast Nourish and direct heals."""
-    name = "Grove Guardians"
-    talent_node_id = 82043
-    spell_ids = {422090, 142421}  # Nourish + direct heal (from treants)
-    allow_pet_source = True
-
-
-class DreamSurgeAttributor(DirectSpellAttributor):
-    name = "Dream Surge"
-    talent_node_id = 94600
-    spell_ids = {434141}  # Dream Bloom
-
-
 class EfflorescenceAttributor(DirectSpellAttributor):
     name = "Efflorescence"
     talent_node_id = 82057
@@ -89,31 +75,8 @@ class FlourishAttributor(DirectSpellAttributor):
     spell_ids = {1264659}  # Tranquility (Flourish-modified)
 
 
-class BurstingGrowthAttributor(DirectSpellAttributor):
-    """Bursting Growth: AoE heal when Symbiotic Blooms expire or Rejuv on bloom target."""
-    name = "Bursting Growth"
-    talent_node_id = 109716
-    spell_ids = {440121}
-
-
-class ThrivingGrowthAttributor(DirectSpellAttributor):
-    """Thriving Growth: Wild Growth/Regrowth/Efflorescence can proc Symbiotic Blooms."""
-    name = "Thriving Growth"
-    talent_node_id = 94626
-    spell_ids = {474760}  # Symbiotic Bloom healing (logged as "Symbiotic Relationship")
-
-
 class ThrivingVegetationAttributor(DirectSpellAttributor):
     """Thriving Vegetation: Rejuvenation instantly heals for 15/30% of its total periodic effect."""
     name = "Thriving Vegetation"
     talent_node_id = 82068
     spell_ids = {447132}
-
-
-class SpiritOfTheThicketAttributor(DirectSpellAttributor):
-    """Spirit of the Thicket: Ironbark summons a Dryad that channels a healing beam.
-    The heal comes from a pet source, so we override the pet-source guard."""
-    name = "Spirit of the Thicket"
-    talent_node_id = 109712
-    spell_ids = {1264905}
-    allow_pet_source = True

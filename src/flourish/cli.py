@@ -12,8 +12,6 @@ from flourish.analysis.pipeline import Pipeline
 from flourish.analysis.talents.soul_of_the_forest import SoulOfTheForestAttributor
 from flourish.analysis.talents.direct_spells import (
     EverbloomAttributor,
-    GroveGuardiansAttributor,
-    DreamSurgeAttributor,
     EfflorescenceAttributor,
     VerdancyAttributor,
     NaturesBountyAttributor,
@@ -23,48 +21,60 @@ from flourish.analysis.talents.direct_spells import (
     EmbraceOfTheDreamAttributor,
     RampantGrowthAttributor,
     FlourishAttributor,
-    BurstingGrowthAttributor,
-    ThrivingGrowthAttributor,
-    SpiritOfTheThicketAttributor,
     ThrivingVegetationAttributor,
 )
 from flourish.analysis.talents.buff_multipliers import (
     ImprovedSwiftmendAttributor,
-    WildSynthesisAttributor,
-    WildstalkersPowerAttributor,
-    PatientCustodianAttributor,
     LifetreadingAttributor,
-    HarmonyOfTheGroveAttributor,
-    GrovesInspirationAttributor,
-    CenariusMightAttributor,
-    BountifulBloomAttributor,
     UnstoppableGrowthAttributor,
     IntensityAttributor,
     LivelinessAttributor,
     RegenesisAttributor,
-    PowerOfNatureAttributor,
 )
 from flourish.analysis.talents.tree_of_life import TreeOfLifeAttributor
 from flourish.analysis.talents.convoke import ConvokeAttributor
 from flourish.analysis.talents.improved_wild_growth import ImprovedWildGrowthAttributor
 from flourish.analysis.talents.reforestation import ReforestationAttributor
-from flourish.analysis.talents.wildstalker import (
+from flourish.analysis.talents.abundance import AbundanceAttributor
+from flourish.analysis.talents.photosynthesis import PhotosynthesisAttributor
+from flourish.analysis.talents.nurturing_dormancy import NurturingDormancyAttributor
+from flourish.analysis.talents.protective_growth import ProtectiveGrowthAttributor
+from flourish.analysis.talents.harmonious_blooming import HarmoniousBloomingAttributor
+# Keeper of the Grove hero talents
+from flourish.analysis.talents.keeper.direct_spells import (
+    GroveGuardiansAttributor,
+    DreamSurgeAttributor,
+    SpiritOfTheThicketAttributor,
+)
+from flourish.analysis.talents.keeper.buff_multipliers import (
+    WildSynthesisAttributor,
+    HarmonyOfTheGroveAttributor,
+    GrovesInspirationAttributor,
+    CenariusMightAttributor,
+    BountifulBloomAttributor,
+    PowerOfNatureAttributor,
+)
+from flourish.analysis.talents.keeper.sylvan_beckoning import SylvanBeckoningAttributor
+from flourish.analysis.talents.keeper.sm_cooldown_reduction import (
+    SmCooldownReductionAttributor,
+    WgCooldownReductionAttributor,
+)
+# Wildstalker hero talents
+from flourish.analysis.talents.wildstalker.direct_spells import (
+    BurstingGrowthAttributor,
+    ThrivingGrowthAttributor,
+)
+from flourish.analysis.talents.wildstalker.buff_multipliers import (
+    WildstalkersPowerAttributor,
+    PatientCustodianAttributor,
+)
+from flourish.analysis.talents.wildstalker.wildstalker import (
     VigorousCreepersAttributor,
     ImplantAttributor,
     RootNetworkAttributor,
     StrategicInfusionAttributor,
 )
-from flourish.analysis.talents.symbiotic_bloom_mastery import SymbioticBloomMasteryAttributor
-from flourish.analysis.talents.harmonious_blooming import HarmoniousBloomingAttributor
-from flourish.analysis.talents.sm_cooldown_reduction import (
-    SmCooldownReductionAttributor,
-    WgCooldownReductionAttributor,
-)
-from flourish.analysis.talents.sylvan_beckoning import SylvanBeckoningAttributor
-from flourish.analysis.talents.abundance import AbundanceAttributor
-from flourish.analysis.talents.photosynthesis import PhotosynthesisAttributor
-from flourish.analysis.talents.nurturing_dormancy import NurturingDormancyAttributor
-from flourish.analysis.talents.protective_growth import ProtectiveGrowthAttributor
+from flourish.analysis.talents.wildstalker.symbiotic_bloom_mastery import SymbioticBloomMasteryAttributor
 from flourish.output.table import render_results
 
 app = typer.Typer()

@@ -1,7 +1,7 @@
 import pytest
 
 from flourish.analysis.pipeline import Pipeline
-from flourish.analysis.talents.sm_cooldown_reduction import (
+from flourish.analysis.talents.keeper.sm_cooldown_reduction import (
     SmCooldownReductionAttributor,
     WgCooldownReductionAttributor,
     compute_effective_wg_cd,
@@ -13,7 +13,7 @@ from flourish.analysis.talents.sm_cooldown_reduction import (
     RENEWING_SURGE_NODE_ID,
 )
 from flourish.analysis.talents.soul_of_the_forest import SoulOfTheForestAttributor
-from flourish.analysis.talents.direct_spells import GroveGuardiansAttributor
+from flourish.analysis.talents.keeper.direct_spells import GroveGuardiansAttributor
 
 SWIFTMEND = 18562
 WILD_GROWTH = 48438
@@ -113,7 +113,7 @@ def test_ignores_player_source_heals():
 
 # --- compute_effective_cd tests ---
 
-from flourish.analysis.talents.sm_cooldown_reduction import compute_effective_cd
+from flourish.analysis.talents.keeper.sm_cooldown_reduction import compute_effective_cd
 
 
 def test_effective_cd_baseline_with_renewing_surge():

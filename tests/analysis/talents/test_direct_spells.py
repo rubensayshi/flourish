@@ -1,10 +1,12 @@
 from flourish.analysis.pipeline import Pipeline
 from flourish.analysis.talents.direct_spells import (
     EverbloomAttributor,
-    GroveGuardiansAttributor,
-    DreamSurgeAttributor,
     EfflorescenceAttributor,
     VerdancyAttributor,
+)
+from flourish.analysis.talents.keeper.direct_spells import (
+    GroveGuardiansAttributor,
+    DreamSurgeAttributor,
 )
 
 

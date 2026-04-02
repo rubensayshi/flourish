@@ -1,9 +1,10 @@
 import pytest
 from flourish.analysis.pipeline import Pipeline
 from flourish.analysis.talents.buff_multipliers import (
-    WildSynthesisAttributor, WildstalkersPowerAttributor,
     StaticBuffAttributor, LifetreadingAttributor,
 )
+from flourish.analysis.talents.keeper.buff_multipliers import WildSynthesisAttributor
+from flourish.analysis.talents.wildstalker.buff_multipliers import WildstalkersPowerAttributor
 
 
 def make_heal(ts, ability, amount, overheal=0):

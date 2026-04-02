@@ -1,7 +1,7 @@
 import pytest
 
 from flourish.analysis.pipeline import Pipeline
-from flourish.analysis.talents.wildstalker import (
+from flourish.analysis.talents.wildstalker.wildstalker import (
     VigorousCreepersAttributor,
     ImplantAttributor,
     RootNetworkAttributor,
