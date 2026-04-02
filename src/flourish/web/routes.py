@@ -82,6 +82,7 @@ def get_report(request: Request, code: str):
 
 @router.get("/analyze/{code}/{fight_id}/{player_name}")
 def analyze(request: Request, code: str, fight_id: int, player_name: str, base_stacks: int | None = None):
+    # Serve cached results without counting against anon limit
     if base_stacks is None:
         cached = result_cache.get(code, fight_id, player_name)
         if cached:
@@ -89,6 +90,7 @@ def analyze(request: Request, code: str, fight_id: int, player_name: str, base_s
 
     _check_rate_limit(request, _ANALYZE_LIMIT)
     _check_anon_analyze_limit(request)
+    # Only count against limit for fresh (non-cached) analyses
 
     client = get_wcl_client_for_request(request)
     try:

@@ -4,59 +4,54 @@
     <div class="max-w-5xl w-full">
       <LoadingSpinner v-if="loading">Loading report...</LoadingSpinner>
 
-      <div v-else-if="error && isLoginError" class="rounded-lg border border-amber-500/30 bg-amber-500/10 p-5 max-w-lg mx-auto text-center">
-        <p class="text-amber-300 font-semibold mb-2">Free analysis limit reached</p>
-        <p class="text-slate-300 text-sm mb-4">
-          To stay within WarcraftLogs API rate limits, we ask you to log in after 2 free analyses.
-          Your login is only used to analyze logs on your behalf — nothing else.
-        </p>
-        <button
-          @click="auth.login()"
-          class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition-colors"
-        >
-          Login with WarcraftLogs
-        </button>
-      </div>
+      <div v-else-if="error && !isLoginError" class="text-red-400">{{ error }}</div>
 
-      <div v-else-if="error" class="text-red-400">{{ error }}</div>
-
-      <template v-else-if="report">
-        <h2 class="text-xl font-bold mb-4">{{ report.title }}</h2>
-
-        <div class="grid grid-cols-2 gap-4 mb-6">
-          <FightSelector v-model="selectedFight" :fights="report.fights" />
-          <PlayerSelector v-model="selectedPlayer" :druids="report.druids" />
-        </div>
-
-        <button
-          @click="runAnalysis"
-          :disabled="!selectedFight || !selectedPlayer || analyzing"
-          class="rounded-lg bg-emerald-600 px-6 py-2.5 font-semibold text-white
-                 hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed"
-        >
-          {{ analyzing ? 'Analyzing...' : 'Run Analysis' }}
-        </button>
-
-        <div v-if="analyzeError && isLoginError" class="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/10 p-5 max-w-lg text-center">
-          <p class="text-amber-300 font-semibold mb-2">Free analysis limit reached</p>
-          <p class="text-slate-300 text-sm mb-4">
+      <template v-else>
+        <!-- Login prompt (shown for both page-load and mid-analysis limit errors) -->
+        <div v-if="isLoginError" class="mt-4 mb-6 rounded-lg border border-amber-500/30 bg-amber-950/50 p-6 max-w-md mx-auto text-center">
+          <div class="w-10 h-10 mx-auto mb-3 rounded-full bg-amber-500/20 flex items-center justify-center">
+            <svg class="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v.01M12 9v3m-7.938 5A9.968 9.968 0 0012 22a9.968 9.968 0 007.938-4M4.062 13A9.968 9.968 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10c0 1.105-.18 2.168-.512 3.162" />
+            </svg>
+          </div>
+          <p class="text-amber-300 font-semibold text-lg mb-2">Free analysis limit reached</p>
+          <p class="text-slate-400 text-sm mb-5 leading-relaxed">
             To stay within WarcraftLogs API rate limits, we ask you to log in after 2 free analyses.
-            Your login is only used to analyze logs on your behalf — nothing else.
+            We only use your login to analyze logs on your behalf — nothing else.
           </p>
           <button
             @click="auth.login()"
-            class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition-colors"
+            class="px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition-colors"
           >
             Login with WarcraftLogs
           </button>
         </div>
-        <div v-else-if="analyzeError" class="mt-4 text-red-400">{{ analyzeError }}</div>
 
-        <LoadingSpinner v-if="analyzing" class="mt-4">
-          Analyzing (this may take a few seconds)...
-        </LoadingSpinner>
+        <template v-if="report">
+          <h2 class="text-xl font-bold mb-4">{{ report.title }}</h2>
 
-        <ResultsTable v-if="results" :data="results" class="mt-6" />
+          <div class="grid grid-cols-2 gap-4 mb-6">
+            <FightSelector v-model="selectedFight" :fights="report.fights" />
+            <PlayerSelector v-model="selectedPlayer" :druids="report.druids" />
+          </div>
+
+          <button
+            @click="runAnalysis"
+            :disabled="!selectedFight || !selectedPlayer || analyzing || isLoginError"
+            class="rounded-lg bg-emerald-600 px-6 py-2.5 font-semibold text-white
+                   hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            {{ analyzing ? 'Analyzing...' : 'Run Analysis' }}
+          </button>
+
+          <div v-if="analyzeError && !isLoginError" class="mt-4 text-red-400">{{ analyzeError }}</div>
+
+          <LoadingSpinner v-if="analyzing" class="mt-4">
+            Analyzing (this may take a few seconds)...
+          </LoadingSpinner>
+
+          <ResultsTable v-if="results" :data="results" class="mt-6" />
+        </template>
       </template>
     </div>
 
