@@ -4,16 +4,21 @@
     <div class="max-w-5xl w-full">
       <LoadingSpinner v-if="loading">Loading report...</LoadingSpinner>
 
-      <div v-else-if="error" class="text-red-400">
-        {{ error }}
+      <div v-else-if="error && isLoginError" class="rounded-lg border border-amber-500/30 bg-amber-500/10 p-5 max-w-lg mx-auto text-center">
+        <p class="text-amber-300 font-semibold mb-2">Free analysis limit reached</p>
+        <p class="text-slate-300 text-sm mb-4">
+          To stay within WarcraftLogs API rate limits, we ask you to log in after 2 free analyses.
+          Your login is only used to analyze logs on your behalf — nothing else.
+        </p>
         <button
-          v-if="isLoginError"
           @click="auth.login()"
-          class="ml-3 text-sm px-3 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white transition-colors"
+          class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition-colors"
         >
           Login with WarcraftLogs
         </button>
       </div>
+
+      <div v-else-if="error" class="text-red-400">{{ error }}</div>
 
       <template v-else-if="report">
         <h2 class="text-xl font-bold mb-4">{{ report.title }}</h2>
@@ -31,6 +36,21 @@
         >
           {{ analyzing ? 'Analyzing...' : 'Run Analysis' }}
         </button>
+
+        <div v-if="analyzeError && isLoginError" class="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/10 p-5 max-w-lg text-center">
+          <p class="text-amber-300 font-semibold mb-2">Free analysis limit reached</p>
+          <p class="text-slate-300 text-sm mb-4">
+            To stay within WarcraftLogs API rate limits, we ask you to log in after 2 free analyses.
+            Your login is only used to analyze logs on your behalf — nothing else.
+          </p>
+          <button
+            @click="auth.login()"
+            class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition-colors"
+          >
+            Login with WarcraftLogs
+          </button>
+        </div>
+        <div v-else-if="analyzeError" class="mt-4 text-red-400">{{ analyzeError }}</div>
 
         <LoadingSpinner v-if="analyzing" class="mt-4">
           Analyzing (this may take a few seconds)...
@@ -65,16 +85,20 @@ import ReportHistory from '../components/ReportHistory.vue'
 const route = useRoute()
 const router = useRouter()
 const auth = useAuth()
-const isLoginError = computed(() => error.value && error.value.includes('Log in'))
 
 const report = ref(null)
 const loading = ref(true)
 const error = ref(null)
+const analyzeError = ref(null)
 const selectedFight = ref(0)
 const selectedPlayer = ref('')
 const analyzing = ref(false)
 const results = ref(null)
 const historyRefresh = ref(0)
+const isLoginError = computed(() => {
+  const msg = analyzeError.value || error.value || ''
+  return msg.includes('Log in')
+})
 
 onMounted(async () => {
   try {
@@ -94,7 +118,7 @@ onMounted(async () => {
 
 async function runAnalysis() {
   analyzing.value = true
-  error.value = null
+  analyzeError.value = null
   try {
     results.value = await fetchAnalysis(
       route.params.code, selectedFight.value, selectedPlayer.value, settings
@@ -110,7 +134,7 @@ async function runAnalysis() {
     historyRefresh.value++
     router.replace(`/results/${route.params.code}/${selectedFight.value}/${selectedPlayer.value}`)
   } catch (e) {
-    error.value = e.message
+    analyzeError.value = e.message
   } finally {
     analyzing.value = false
   }

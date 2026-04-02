@@ -16,9 +16,9 @@ router = APIRouter(prefix="/api/auth")
 # In-memory CSRF state tokens (short-lived, cleared after use)
 _pending_states: set[str] = set()
 
-# Track anonymous usage: {ip: set(report_codes)}
-_anon_usage: dict[str, set[str]] = {}
-ANON_REPORT_LIMIT = 2
+# Track anonymous usage: {ip: number of analyses}
+_anon_usage: dict[str, int] = {}
+ANON_ANALYZE_LIMIT = 2
 
 
 def _get_redirect_uri(request: Request) -> str:
@@ -37,17 +37,19 @@ def _get_frontend_url(request: Request) -> str:
     return str(request.base_url).rstrip("/")
 
 
-def check_anon_limit(ip: str, report_code: str) -> bool:
-    """Return True if this anonymous IP is allowed to access this report."""
-    used = _anon_usage.get(ip, set())
-    if report_code in used:
-        return True  # Already accessed this report
-    return len(used) < ANON_REPORT_LIMIT
+def check_anon_limit(ip: str) -> bool:
+    """Return True if this anonymous IP has analyses remaining."""
+    return _anon_usage.get(ip, 0) < ANON_ANALYZE_LIMIT
 
 
-def record_anon_usage(ip: str, report_code: str):
-    """Record that an anonymous IP accessed a report."""
-    _anon_usage.setdefault(ip, set()).add(report_code)
+def record_anon_usage(ip: str):
+    """Record that an anonymous IP ran an analysis."""
+    _anon_usage[ip] = _anon_usage.get(ip, 0) + 1
+
+
+def get_anon_remaining(ip: str) -> int:
+    """Return how many free analyses remain for this IP."""
+    return max(0, ANON_ANALYZE_LIMIT - _anon_usage.get(ip, 0))
 
 
 @router.get("/login")
