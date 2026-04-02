@@ -2,13 +2,25 @@ from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
 
-from rdruid_analyzer.web.routes import router
+from rdruid_analyzer.web.routes import router, limiter
 
 
 def create_app() -> FastAPI:
     app = FastAPI(title="Resto Druid Talent Analyzer")
+    app.state.limiter = limiter
+    app.add_middleware(SlowAPIMiddleware)
+
+    @app.exception_handler(RateLimitExceeded)
+    async def rate_limit_handler(request, exc):
+        return JSONResponse(
+            status_code=429,
+            content={"detail": "Rate limit exceeded. Try again in a minute."},
+        )
+
     app.include_router(router)
 
     static_dir = Path(__file__).parent.parent.parent.parent / "frontend" / "dist"

@@ -1,6 +1,8 @@
 import os
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 
 from rdruid_analyzer.web.dependencies import get_wcl_client
 from rdruid_analyzer.web.cache import ResultCache
@@ -9,6 +11,7 @@ from rdruid_analyzer.analysis.pipeline import Pipeline
 from rdruid_analyzer.cli import build_attributors
 
 router = APIRouter(prefix="/api")
+limiter = Limiter(key_func=get_remote_address)
 result_cache = ResultCache()
 
 DRUID_CLASS = "Druid"
@@ -48,7 +51,8 @@ def get_report(code: str):
 
 
 @router.get("/analyze/{code}/{fight_id}/{player_name}")
-def analyze(code: str, fight_id: int, player_name: str):
+@limiter.limit("10/minute")
+def analyze(request: Request, code: str, fight_id: int, player_name: str):
     cached = result_cache.get(code, fight_id, player_name)
     if cached:
         return cached
