@@ -163,7 +163,7 @@ Each Symbiotic Bloom adds 1 extra HoT stack for Mastery. Same DR-table calculati
 
 ## Power of Nature (Keeper)
 
-+10% healing per active Grove Guardian, but **only** to Rejuvenation, Efflorescence, and Lifebloom. Uses the same guardian lifecycle tracking as Harmony of the Grove.
+Flat +10% healing to Rejuvenation, Efflorescence, and Lifebloom while any Grove Guardian is active (does not stack per guardian). Uses the same guardian lifecycle tracking as Harmony of the Grove.
 
 ---
 

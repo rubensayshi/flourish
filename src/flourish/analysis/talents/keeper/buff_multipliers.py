@@ -108,5 +108,4 @@ class PowerOfNatureAttributor(_GuardianTrackingMixin, TalentAttributor):
     def process_heal(self, event: HealEvent, hot_tracker: HotTracker, buff_tracker: BuffTracker) -> float:
         if self._guardian_count <= 0 or event.ability_id not in self.SPELL_IDS:
             return 0.0
-        multiplier = 0.10 * self._guardian_count
-        return event.amount - event.amount / (1 + multiplier)
+        return event.amount - event.amount / (1 + 0.10)
