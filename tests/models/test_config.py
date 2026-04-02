@@ -4,7 +4,6 @@ from flourish.models.config import TalentConfig, load_config
 def test_load_config(tmp_path):
     yaml_content = """
 mastery:
-  pct: 30
   base_stacks: 4
 
 soul_of_the_forest:
@@ -17,7 +16,6 @@ wild_growth:
     p = tmp_path / "talents.yaml"
     p.write_text(yaml_content)
     config = load_config(str(p))
-    assert config.mastery.pct == 30
     assert config.mastery.base_stacks == 4
     assert not config.talents["soul_of_the_forest"].skip
     assert config.talents["soul_of_the_forest"].multiplier == 0.6

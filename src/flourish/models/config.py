@@ -5,7 +5,6 @@ import yaml
 
 @dataclass
 class MasteryConfig:
-    pct: float = 25.0
     base_stacks: int = 3
     dr_table: list[float] = field(default_factory=lambda: [1.0, 1.7, 2.3, 2.8, 3.2])
 
@@ -29,7 +28,6 @@ def load_config(path: str) -> Config:
 
     mastery_raw = raw.pop("mastery", {}) or {}
     mastery = MasteryConfig(
-        pct=mastery_raw.get("pct", 25.0),
         base_stacks=mastery_raw.get("base_stacks", 3),
         dr_table=mastery_raw.get("dr_table", [1.0, 1.7, 2.3, 2.8, 3.2]),
     )

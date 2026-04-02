@@ -86,7 +86,7 @@ def get_wcl_client() -> WCLClient:
 def build_attributors(config: Config, damage_taken_with_regrowth: int | None = None) -> list:
     talents = config.talents
     mastery = config.mastery
-    mastery_kwargs = {"mastery_pct": mastery.pct, "base_stacks": mastery.base_stacks, "dr_table": mastery.dr_table}
+    mastery_kwargs = {"base_stacks": mastery.base_stacks, "dr_table": mastery.dr_table}
 
     convoke_cfg = talents.get("convoke_the_spirits")
     convoke_ratio = convoke_cfg.multiplier if convoke_cfg and convoke_cfg.multiplier is not None else 0.7
