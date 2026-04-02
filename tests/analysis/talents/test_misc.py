@@ -1,9 +1,9 @@
 import pytest
 
-from rdruid_analyzer.analysis.pipeline import Pipeline
-from rdruid_analyzer.analysis.talents.abundance import AbundanceAttributor
-from rdruid_analyzer.analysis.talents.photosynthesis import PhotosynthesisAttributor
-from rdruid_analyzer.analysis.talents.nurturing_dormancy import NurturingDormancyAttributor
+from flourish.analysis.pipeline import Pipeline
+from flourish.analysis.talents.abundance import AbundanceAttributor
+from flourish.analysis.talents.photosynthesis import PhotosynthesisAttributor
+from flourish.analysis.talents.nurturing_dormancy import NurturingDormancyAttributor
 
 TARGET = 10
 TARGET2 = 20

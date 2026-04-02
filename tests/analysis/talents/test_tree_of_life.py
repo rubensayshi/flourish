@@ -1,7 +1,7 @@
 import pytest
 
-from rdruid_analyzer.analysis.pipeline import Pipeline
-from rdruid_analyzer.analysis.talents.tree_of_life import TreeOfLifeAttributor
+from flourish.analysis.pipeline import Pipeline
+from flourish.analysis.talents.tree_of_life import TreeOfLifeAttributor
 
 TOL_BUFF = 33891
 

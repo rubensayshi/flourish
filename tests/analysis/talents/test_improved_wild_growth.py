@@ -1,7 +1,7 @@
 import pytest
 
-from rdruid_analyzer.analysis.pipeline import Pipeline
-from rdruid_analyzer.analysis.talents.improved_wild_growth import ImprovedWildGrowthAttributor
+from flourish.analysis.pipeline import Pipeline
+from flourish.analysis.talents.improved_wild_growth import ImprovedWildGrowthAttributor
 
 WILD_GROWTH = 48438
 

@@ -25,4 +25,4 @@ COPY config/ config/
 COPY --from=frontend /app/frontend/dist frontend/dist
 
 EXPOSE 8080
-CMD ["uv", "run", "uvicorn", "rdruid_analyzer.web.app:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["uv", "run", "uvicorn", "flourish.web.app:app", "--host", "0.0.0.0", "--port", "8080"]

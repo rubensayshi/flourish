@@ -1,7 +1,7 @@
 import pytest
 
-from rdruid_analyzer.analysis.pipeline import Pipeline
-from rdruid_analyzer.analysis.talents.reforestation import ReforestationAttributor
+from flourish.analysis.pipeline import Pipeline
+from flourish.analysis.talents.reforestation import ReforestationAttributor
 
 SWIFTMEND = 18562
 

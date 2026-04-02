@@ -70,7 +70,7 @@ frontend/
 ## Backend Structure
 
 ```
-src/rdruid_analyzer/
+src/flourish/
   web/
     app.py           # FastAPI app, mounts static files, catch-all for Vue routing
     routes.py        # /api/report, /api/analyze, /api/health
@@ -108,7 +108,7 @@ FROM python:3.12-slim
 COPY --from=frontend /app/frontend/dist /app/static
 COPY . /app
 RUN pip install uv && cd /app && uv sync
-CMD ["uv", "run", "uvicorn", "rdruid_analyzer.web.app:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["uv", "run", "uvicorn", "flourish.web.app:app", "--host", "0.0.0.0", "--port", "8080"]
 ```
 
 ## WCL API Budget

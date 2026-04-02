@@ -1,4 +1,4 @@
-# Resto Druid Talent Analyzer
+# Flourish
 
 Analyzes WarcraftLogs data for a Restoration Druid and attributes effective healing to specific talents. Answers the question: **"How much healing would I lose if I dropped this talent?"**
 
@@ -16,7 +16,7 @@ Built for WoW Midnight Season 1 (12.0.1).
 
 ```bash
 git clone <repo-url>
-cd rdruid-talent-analyzer
+cd flourish
 uv sync --all-extras
 ```
 
@@ -34,7 +34,7 @@ WCL_CLIENT_SECRET=your-client-secret
 ### Basic (interactive)
 
 ```bash
-uv run rdruid-analyzer <report-code>
+uv run flourish <report-code>
 ```
 
 The report code is the alphanumeric string from a WarcraftLogs URL:
@@ -45,13 +45,13 @@ You'll be prompted to select a fight and player.
 ### Skip prompts
 
 ```bash
-uv run rdruid-analyzer Aq7RXDt8FHNcQwKk --fight 1 --player Saikó
+uv run flourish Aq7RXDt8FHNcQwKk --fight 1 --player Saikó
 ```
 
 ### Custom config
 
 ```bash
-uv run rdruid-analyzer Aq7RXDt8FHNcQwKk --config-path my-talents.yaml
+uv run flourish Aq7RXDt8FHNcQwKk --config-path my-talents.yaml
 ```
 
 ## Output

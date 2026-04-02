@@ -1,7 +1,7 @@
 import pytest
 
-from rdruid_analyzer.analysis.pipeline import Pipeline
-from rdruid_analyzer.analysis.talents.soul_of_the_forest import SoulOfTheForestAttributor
+from flourish.analysis.pipeline import Pipeline
+from flourish.analysis.talents.soul_of_the_forest import SoulOfTheForestAttributor
 
 SWIFTMEND = 18562
 REJUV = 774

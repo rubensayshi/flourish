@@ -15,7 +15,7 @@ Restoration Druid talent analyzer for World of Warcraft. Fetches combat log data
 uv sync --all-extras
 
 # Run CLI (single command, "analyze" subcommand can be omitted)
-uv run rdruid-analyzer <report_code> [--fight ID] [--player NAME] [--config-path PATH]
+uv run flourish <report_code> [--fight ID] [--player NAME] [--config-path PATH]
 
 # Tests
 uv run pytest                        # all tests

@@ -11,7 +11,7 @@
 ## File Structure
 
 ```
-src/rdruid_analyzer/
+src/flourish/
   web/
     __init__.py
     app.py           # FastAPI app, static mount, catch-all
@@ -54,8 +54,8 @@ fly.toml
 ## Task 1: Backend — Result Cache
 
 **Files:**
-- Create: `src/rdruid_analyzer/web/__init__.py`
-- Create: `src/rdruid_analyzer/web/cache.py`
+- Create: `src/flourish/web/__init__.py`
+- Create: `src/flourish/web/cache.py`
 - Create: `tests/web/__init__.py`
 - Create: `tests/web/test_cache.py`
 
@@ -64,7 +64,7 @@ fly.toml
 ```python
 # tests/web/test_cache.py
 import json
-from rdruid_analyzer.web.cache import ResultCache
+from flourish.web.cache import ResultCache
 
 
 def test_get_returns_none_when_missing(tmp_path):
@@ -94,7 +94,7 @@ Expected: ImportError — module doesn't exist yet
 - [ ] **Step 3: Implement**
 
 ```python
-# src/rdruid_analyzer/web/__init__.py
+# src/flourish/web/__init__.py
 # (empty)
 ```
 
@@ -104,7 +104,7 @@ Expected: ImportError — module doesn't exist yet
 ```
 
 ```python
-# src/rdruid_analyzer/web/cache.py
+# src/flourish/web/cache.py
 import json
 from pathlib import Path
 
@@ -137,7 +137,7 @@ Expected: 3 passed
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/rdruid_analyzer/web/ tests/web/
+git add src/flourish/web/ tests/web/
 git commit -m "feat(web): add disk-based result cache"
 ```
 
@@ -146,8 +146,8 @@ git commit -m "feat(web): add disk-based result cache"
 ## Task 2: Backend — API Routes
 
 **Files:**
-- Create: `src/rdruid_analyzer/web/dependencies.py`
-- Create: `src/rdruid_analyzer/web/routes.py`
+- Create: `src/flourish/web/dependencies.py`
+- Create: `src/flourish/web/routes.py`
 - Create: `tests/web/test_routes.py`
 
 - [ ] **Step 1: Write failing tests**
@@ -157,7 +157,7 @@ git commit -m "feat(web): add disk-based result cache"
 from unittest.mock import patch, MagicMock
 from fastapi.testclient import TestClient
 
-from rdruid_analyzer.web.app import create_app
+from flourish.web.app import create_app
 
 
 def _mock_wcl_client():
@@ -182,7 +182,7 @@ def _mock_wcl_client():
     return client
 
 
-@patch("rdruid_analyzer.web.dependencies.get_wcl_client")
+@patch("flourish.web.dependencies.get_wcl_client")
 def test_report_endpoint_returns_fights_and_druids(mock_get_client):
     mock_get_client.return_value = _mock_wcl_client()
     app = create_app()
@@ -200,7 +200,7 @@ def test_report_endpoint_returns_fights_and_druids(mock_get_client):
     assert data["druids"][0]["name"] == "Saikó"
 
 
-@patch("rdruid_analyzer.web.dependencies.get_wcl_client")
+@patch("flourish.web.dependencies.get_wcl_client")
 def test_report_endpoint_404_on_invalid_code(mock_get_client):
     mock_get_client.return_value = MagicMock(
         get_report=MagicMock(side_effect=Exception("not found"))
@@ -245,14 +245,14 @@ Run: `uv sync --all-extras`
 - [ ] **Step 4: Implement dependencies.py**
 
 ```python
-# src/rdruid_analyzer/web/dependencies.py
+# src/flourish/web/dependencies.py
 import os
 from functools import lru_cache
 
 from dotenv import load_dotenv
 
-from rdruid_analyzer.wcl.client import WCLClient
-from rdruid_analyzer.wcl.cache import CachedWCLClient
+from flourish.wcl.client import WCLClient
+from flourish.wcl.cache import CachedWCLClient
 
 
 @lru_cache
@@ -268,14 +268,14 @@ def get_wcl_client() -> CachedWCLClient:
 - [ ] **Step 5: Implement routes.py**
 
 ```python
-# src/rdruid_analyzer/web/routes.py
+# src/flourish/web/routes.py
 from fastapi import APIRouter, HTTPException
 
-from rdruid_analyzer.web.dependencies import get_wcl_client
-from rdruid_analyzer.web.cache import ResultCache
-from rdruid_analyzer.models.config import load_config, Config, MasteryConfig
-from rdruid_analyzer.analysis.pipeline import Pipeline
-from rdruid_analyzer.cli import build_attributors
+from flourish.web.dependencies import get_wcl_client
+from flourish.web.cache import ResultCache
+from flourish.models.config import load_config, Config, MasteryConfig
+from flourish.analysis.pipeline import Pipeline
+from flourish.cli import build_attributors
 
 import os
 
@@ -411,14 +411,14 @@ def analyze(code: str, fight_id: int, player_name: str):
 - [ ] **Step 6: Implement app.py**
 
 ```python
-# src/rdruid_analyzer/web/app.py
+# src/flourish/web/app.py
 from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
-from rdruid_analyzer.web.routes import router
+from flourish.web.routes import router
 
 
 def create_app() -> FastAPI:
@@ -448,7 +448,7 @@ Expected: All pass
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/rdruid_analyzer/web/ tests/web/ pyproject.toml
+git add src/flourish/web/ tests/web/ pyproject.toml
 git commit -m "feat(web): add FastAPI backend with report and analyze endpoints"
 ```
 
@@ -457,7 +457,7 @@ git commit -m "feat(web): add FastAPI backend with report and analyze endpoints"
 ## Task 3: Backend — Rate Limiting
 
 **Files:**
-- Modify: `src/rdruid_analyzer/web/app.py`
+- Modify: `src/flourish/web/app.py`
 
 - [ ] **Step 1: Add slowapi to dependencies**
 
@@ -517,18 +517,18 @@ def analyze(request: Request, code: str, fight_id: int, player_name: str):
 And in `app.py`, import the limiter from routes instead of defining it locally:
 
 ```python
-from rdruid_analyzer.web.routes import router, limiter
+from flourish.web.routes import router, limiter
 ```
 
 - [ ] **Step 3: Manual test**
 
-Run: `uv run uvicorn rdruid_analyzer.web.app:app --port 8080`
+Run: `uv run uvicorn flourish.web.app:app --port 8080`
 Hit `http://localhost:8080/api/health` — should return `{"status": "ok"}`
 
 - [ ] **Step 4: Commit**
 
 ```bash
-git add pyproject.toml src/rdruid_analyzer/web/
+git add pyproject.toml src/flourish/web/
 git commit -m "feat(web): add IP-based rate limiting on analyze endpoint"
 ```
 
@@ -685,7 +685,7 @@ createApp(App).use(router).mount('#app')
 
 - [ ] **Step 5: Verify dev server works**
 
-Run backend: `uv run uvicorn rdruid_analyzer.web.app:app --port 8080`
+Run backend: `uv run uvicorn flourish.web.app:app --port 8080`
 Run frontend: `cd frontend && npm run dev`
 
 Navigate to `http://localhost:5173/` — should show header + "Home (placeholder)"
@@ -1136,14 +1136,14 @@ COPY config/ config/
 COPY --from=frontend /app/frontend/dist frontend/dist
 
 EXPOSE 8080
-CMD ["uv", "run", "uvicorn", "rdruid_analyzer.web.app:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["uv", "run", "uvicorn", "flourish.web.app:app", "--host", "0.0.0.0", "--port", "8080"]
 ```
 
 - [ ] **Step 2: Create fly.toml**
 
 ```toml
 # fly.toml
-app = "rdruid-talent-analyzer"
+app = "flourish"
 primary_region = "ams"
 
 [build]
@@ -1182,13 +1182,13 @@ frontend/dist/
 
 - [ ] **Step 4: Update cache paths for Fly volume**
 
-In `src/rdruid_analyzer/web/cache.py`, update default:
+In `src/flourish/web/cache.py`, update default:
 ```python
 class ResultCache:
     def __init__(self, cache_dir: Path = Path("/data/results_cache")):
 ```
 
-In `src/rdruid_analyzer/wcl/cache.py`, check if `/data` exists for Fly:
+In `src/flourish/wcl/cache.py`, check if `/data` exists for Fly:
 ```python
 DEFAULT_CACHE_DIR = Path("/data/wcl_cache") if Path("/data").exists() else Path("data/cache")
 ```
@@ -1205,7 +1205,7 @@ Hit `http://localhost:8080/api/health` — should return 200.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add Dockerfile fly.toml .gitignore src/rdruid_analyzer/web/cache.py src/rdruid_analyzer/wcl/cache.py
+git add Dockerfile fly.toml .gitignore src/flourish/web/cache.py src/flourish/wcl/cache.py
 git commit -m "feat(web): add Dockerfile and fly.toml for deployment"
 ```
 
@@ -1216,7 +1216,7 @@ git commit -m "feat(web): add Dockerfile and fly.toml for deployment"
 - [ ] **Step 1: Create Fly app and volume**
 
 ```bash
-fly apps create rdruid-talent-analyzer
+fly apps create flourish
 fly volumes create data --region ams --size 1
 ```
 
@@ -1236,10 +1236,10 @@ fly deploy
 
 ```bash
 fly status
-curl https://rdruid-talent-analyzer.fly.dev/api/health
+curl https://flourish.fly.dev/api/health
 ```
 
-Open `https://rdruid-talent-analyzer.fly.dev/` in browser — should show the landing page.
+Open `https://flourish.fly.dev/` in browser — should show the landing page.
 
 - [ ] **Step 5: End-to-end test on production**
 

@@ -1,5 +1,5 @@
-from rdruid_analyzer.tracking.buff_tracker import BuffTracker
-from rdruid_analyzer.models.events import ApplyBuffEvent, RemoveBuffEvent
+from flourish.tracking.buff_tracker import BuffTracker
+from flourish.models.events import ApplyBuffEvent, RemoveBuffEvent
 
 SOTF_BUFF = 114108
 

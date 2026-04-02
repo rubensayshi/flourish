@@ -1,5 +1,5 @@
 import pytest
-from rdruid_analyzer.models.events import parse_event, HealEvent, CastEvent, ApplyBuffEvent
+from flourish.models.events import parse_event, HealEvent, CastEvent, ApplyBuffEvent
 
 
 def test_parse_heal_event():

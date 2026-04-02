@@ -1,6 +1,6 @@
 import pytest
-from rdruid_analyzer.analysis.pipeline import Pipeline
-from rdruid_analyzer.analysis.talents.direct_spells import RampantGrowthAttributor
+from flourish.analysis.pipeline import Pipeline
+from flourish.analysis.talents.direct_spells import RampantGrowthAttributor
 
 
 REGROWTH = 8936

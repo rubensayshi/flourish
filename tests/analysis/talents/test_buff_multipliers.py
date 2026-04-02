@@ -1,6 +1,6 @@
 import pytest
-from rdruid_analyzer.analysis.pipeline import Pipeline
-from rdruid_analyzer.analysis.talents.buff_multipliers import (
+from flourish.analysis.pipeline import Pipeline
+from flourish.analysis.talents.buff_multipliers import (
     WildSynthesisAttributor, WildstalkersPowerAttributor,
     StaticBuffAttributor, LifetreadingAttributor,
 )

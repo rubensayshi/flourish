@@ -1,4 +1,4 @@
-from rdruid_analyzer.models.events import parse_event, CombatantInfoEvent
+from flourish.models.events import parse_event, CombatantInfoEvent
 
 
 def test_parse_combatantinfo():
@@ -24,8 +24,8 @@ def test_parse_combatantinfo():
 
 
 def test_combatantinfo_passed_to_attributors():
-    from rdruid_analyzer.analysis.pipeline import Pipeline
-    from rdruid_analyzer.analysis.attributor import TalentAttributor
+    from flourish.analysis.pipeline import Pipeline
+    from flourish.analysis.attributor import TalentAttributor
 
     class TestAttributor(TalentAttributor):
         name = "Test"
@@ -67,8 +67,8 @@ def test_combatantinfo_passed_to_attributors():
 
 def test_talent_filtering_removes_unselected():
     """Pipeline filters out attributors whose talent node isn't in the player's loadout."""
-    from rdruid_analyzer.analysis.pipeline import Pipeline
-    from rdruid_analyzer.analysis.attributor import TalentAttributor
+    from flourish.analysis.pipeline import Pipeline
+    from flourish.analysis.attributor import TalentAttributor
 
     class SelectedAttr(TalentAttributor):
         name = "Selected"
@@ -103,8 +103,8 @@ def test_talent_filtering_removes_unselected():
 
 def test_choice_node_filtering():
     """For choice nodes, talent_id disambiguates which pick was made."""
-    from rdruid_analyzer.analysis.pipeline import Pipeline
-    from rdruid_analyzer.analysis.attributor import TalentAttributor
+    from flourish.analysis.pipeline import Pipeline
+    from flourish.analysis.attributor import TalentAttributor
 
     class ChoiceA(TalentAttributor):
         name = "Choice A"

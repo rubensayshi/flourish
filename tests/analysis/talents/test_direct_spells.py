@@ -1,5 +1,5 @@
-from rdruid_analyzer.analysis.pipeline import Pipeline
-from rdruid_analyzer.analysis.talents.direct_spells import (
+from flourish.analysis.pipeline import Pipeline
+from flourish.analysis.talents.direct_spells import (
     EverbloomAttributor,
     GroveGuardiansAttributor,
     DreamSurgeAttributor,

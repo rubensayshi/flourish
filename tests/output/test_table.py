@@ -1,5 +1,5 @@
-from rdruid_analyzer.output.table import render_results
-from rdruid_analyzer.analysis.pipeline import AnalysisResults
+from flourish.output.table import render_results
+from flourish.analysis.pipeline import AnalysisResults
 
 
 def test_render_results_returns_string():

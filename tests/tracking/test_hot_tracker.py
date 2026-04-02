@@ -1,5 +1,5 @@
-from rdruid_analyzer.tracking.hot_tracker import HotTracker, HotInstance
-from rdruid_analyzer.models.events import ApplyBuffEvent, RefreshBuffEvent, RemoveBuffEvent
+from flourish.tracking.hot_tracker import HotTracker, HotInstance
+from flourish.models.events import ApplyBuffEvent, RefreshBuffEvent, RemoveBuffEvent
 
 REJUV_ID = 774
 TARGET_A = 10

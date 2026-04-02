@@ -1,4 +1,4 @@
-app = "rdruid-talent-analyzer"
+app = "flourish"
 primary_region = "ams"
 
 [build]
@@ -16,7 +16,7 @@ primary_region = "ams"
 
 [[vm]]
   size = "shared-cpu-1x"
-  memory = "256mb"
+  memory = "512mb"
 
 [checks]
   [checks.health]

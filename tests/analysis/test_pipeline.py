@@ -1,6 +1,6 @@
-from rdruid_analyzer.analysis.pipeline import Pipeline
-from rdruid_analyzer.analysis.attributor import TalentAttributor
-from rdruid_analyzer.models.events import HealEvent
+from flourish.analysis.pipeline import Pipeline
+from flourish.analysis.attributor import TalentAttributor
+from flourish.models.events import HealEvent
 
 
 class FakeAttributor(TalentAttributor):

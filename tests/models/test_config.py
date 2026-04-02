@@ -1,4 +1,4 @@
-from rdruid_analyzer.models.config import TalentConfig, load_config
+from flourish.models.config import TalentConfig, load_config
 
 
 def test_load_config(tmp_path):

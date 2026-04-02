@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from unittest.mock import MagicMock
 
-from rdruid_analyzer.wcl.cache import CachedWCLClient
+from flourish.wcl.cache import CachedWCLClient
 
 
 def test_get_report_caches_to_disk(tmp_path):

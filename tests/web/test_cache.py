@@ -1,4 +1,4 @@
-from rdruid_analyzer.web.cache import ResultCache
+from flourish.web.cache import ResultCache
 
 
 def test_get_returns_none_when_missing(tmp_path):

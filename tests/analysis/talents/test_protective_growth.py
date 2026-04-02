@@ -1,4 +1,4 @@
-from rdruid_analyzer.analysis.talents.protective_growth import ProtectiveGrowthAttributor
+from flourish.analysis.talents.protective_growth import ProtectiveGrowthAttributor
 
 
 class TestProtectiveGrowth:

@@ -1,7 +1,7 @@
 import pytest
 
-from rdruid_analyzer.analysis.pipeline import Pipeline
-from rdruid_analyzer.analysis.talents.convoke import ConvokeAttributor
+from flourish.analysis.pipeline import Pipeline
+from flourish.analysis.talents.convoke import ConvokeAttributor
 
 CONVOKE = 391528
 CONVOKE_LEGACY = 323764

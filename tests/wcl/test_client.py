@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock
 
-from rdruid_analyzer.wcl.client import WCLClient
+from flourish.wcl.client import WCLClient
 
 
 def test_authenticate_and_query():
