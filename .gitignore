@@ -27,8 +27,8 @@ env/
 .coverage
 htmlcov/
 
-# Cache
-data/cache/
+# Data
+data/
 
 # OS
 .DS_Store
