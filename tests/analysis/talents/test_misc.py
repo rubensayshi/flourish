@@ -12,6 +12,7 @@ GERMINATION_REJUV = 155777
 REGROWTH = 8936
 LIFEBLOOM = 33763
 LIFEBLOOM_BLOOM = 33778
+SOTF_BUFF = 114108
 
 
 def make_apply(ts, ability, target=TARGET):
@@ -24,6 +25,10 @@ def make_remove(ts, ability, target=TARGET):
 
 def make_refresh(ts, ability, target=TARGET):
     return {"timestamp": ts, "type": "refreshbuff", "sourceID": 1, "targetID": target, "abilityGameID": ability}
+
+
+def make_cast(ts, ability, target=TARGET):
+    return {"timestamp": ts, "type": "cast", "sourceID": 1, "targetID": target, "abilityGameID": ability}
 
 
 def make_heal(ts, ability, amount, target=TARGET, overheal=0, hit_type=1):
@@ -103,33 +108,44 @@ class TestAbundance:
 
 class TestPhotosynthesis:
     def test_unexplained_bloom_attributed(self):
-        """Bloom without subsequent remove/refresh = Photosynthesis proc."""
+        """Bloom with no nearby remove/refresh = Photosynthesis proc."""
         events = [
             make_apply(100, LIFEBLOOM),
             make_heal(500, LIFEBLOOM_BLOOM, 15000),
-            # No removebuff follows — this is a photo proc
+            # No remove/refresh anywhere near this bloom
         ]
         pipeline = Pipeline(attributors=[PhotosynthesisAttributor()])
         results = pipeline.run(events)
         assert results.talent_healing["Photosynthesis"] == pytest.approx(15000.0)
 
     def test_bloom_from_expiry_not_attributed(self):
-        """Bloom followed by removebuff = natural expiry, not Photosynthesis."""
+        """Natural expiry: WCL orders removebuff BEFORE bloom heal."""
+        events = [
+            make_apply(100, LIFEBLOOM),
+            make_remove(499, LIFEBLOOM),  # remove arrives first in WCL
+            make_heal(500, LIFEBLOOM_BLOOM, 15000),
+        ]
+        pipeline = Pipeline(attributors=[PhotosynthesisAttributor()])
+        results = pipeline.run(events)
+        assert results.talent_healing["Photosynthesis"] == 0.0
+
+    def test_bloom_from_expiry_remove_after(self):
+        """Natural expiry: also handle remove AFTER bloom (rare ordering)."""
         events = [
             make_apply(100, LIFEBLOOM),
             make_heal(500, LIFEBLOOM_BLOOM, 15000),
-            make_remove(550, LIFEBLOOM),  # within 200ms
+            make_remove(501, LIFEBLOOM),
         ]
         pipeline = Pipeline(attributors=[PhotosynthesisAttributor()])
         results = pipeline.run(events)
         assert results.talent_healing["Photosynthesis"] == 0.0
 
     def test_bloom_from_refresh_not_attributed(self):
-        """Bloom followed by refreshbuff = pandemic refresh, not Photosynthesis."""
+        """Pandemic refresh: WCL orders refreshbuff BEFORE bloom heal."""
         events = [
             make_apply(100, LIFEBLOOM),
+            make_refresh(493, LIFEBLOOM),  # refresh arrives first
             make_heal(500, LIFEBLOOM_BLOOM, 15000),
-            make_refresh(550, LIFEBLOOM),  # within 200ms
         ]
         pipeline = Pipeline(attributors=[PhotosynthesisAttributor()])
         results = pipeline.run(events)
@@ -139,13 +155,52 @@ class TestPhotosynthesis:
         """Mix of photo procs and natural expiry."""
         events = [
             make_apply(100, LIFEBLOOM),
-            make_heal(500, LIFEBLOOM_BLOOM, 10000),    # photo proc (no remove follows)
-            make_heal(1000, LIFEBLOOM_BLOOM, 10000),   # natural expiry
-            make_remove(1050, LIFEBLOOM),
+            make_heal(500, LIFEBLOOM_BLOOM, 10000),    # photo proc (no remove nearby)
+            make_remove(999, LIFEBLOOM),                # natural expiry
+            make_heal(1000, LIFEBLOOM_BLOOM, 10000),   # explained by remove at 999
         ]
         pipeline = Pipeline(attributors=[PhotosynthesisAttributor()])
         results = pipeline.run(events)
         assert results.talent_healing["Photosynthesis"] == pytest.approx(10000.0)
+
+    def test_lb_recast_bloom_not_attributed(self):
+        """Bloom from LB recast (CastEvent on same target) is not a photo proc."""
+        events = [
+            make_apply(100, LIFEBLOOM),
+            make_cast(498, LIFEBLOOM),       # LB recast
+            make_heal(500, LIFEBLOOM_BLOOM, 15000),
+        ]
+        pipeline = Pipeline(attributors=[PhotosynthesisAttributor()])
+        results = pipeline.run(events)
+        assert results.talent_healing["Photosynthesis"] == 0.0
+
+    def test_everbloom_blooms_after_sotf_not_attributed(self):
+        """Everbloom: 5 rapid blooms after SotF consumption are not photo procs."""
+        events = [
+            make_apply(100, LIFEBLOOM),
+            make_apply(200, SOTF_BUFF),
+            make_remove(300, SOTF_BUFF),     # SotF consumed
+            make_heal(330, LIFEBLOOM_BLOOM, 10000),   # EB bloom 1
+            make_heal(580, LIFEBLOOM_BLOOM, 10000),   # EB bloom 2
+            make_heal(830, LIFEBLOOM_BLOOM, 10000),   # EB bloom 3
+            make_heal(1080, LIFEBLOOM_BLOOM, 10000),  # EB bloom 4
+            make_heal(1330, LIFEBLOOM_BLOOM, 10000),  # EB bloom 5
+        ]
+        pipeline = Pipeline(attributors=[PhotosynthesisAttributor()])
+        results = pipeline.run(events)
+        assert results.talent_healing["Photosynthesis"] == 0.0
+
+    def test_photo_proc_outside_sotf_window(self):
+        """Photo proc well after SotF window is attributed."""
+        events = [
+            make_apply(100, LIFEBLOOM),
+            make_apply(200, SOTF_BUFF),
+            make_remove(300, SOTF_BUFF),     # SotF consumed
+            make_heal(2000, LIFEBLOOM_BLOOM, 15000),  # well past 1200ms window
+        ]
+        pipeline = Pipeline(attributors=[PhotosynthesisAttributor()])
+        results = pipeline.run(events)
+        assert results.talent_healing["Photosynthesis"] == pytest.approx(15000.0)
 
 
 # --- Nurturing Dormancy ---
