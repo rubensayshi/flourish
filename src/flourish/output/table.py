@@ -20,8 +20,8 @@ HERO_TREES: dict[str, set[str]] = {
         "Control of the Dream", "Grove's Inspiration", "Cenarius' Might",
         "Protective Growth", "Expansiveness", "Potent Enchantments",
         "Spirit of the Thicket", "Dryad's Dance", "Sylvan Beckoning",
-        "SM Cooldown Reduction",
-        "WG Cooldown Reduction",
+        "Early Spring + Dryad's Dance",
+        "Early Spring (WG)",
     },
 }
 

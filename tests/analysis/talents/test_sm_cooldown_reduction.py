@@ -206,7 +206,7 @@ def test_full_attribution_on_cooldown():
     ratio = 1 - 11075.0 / 12075.0
     fraction = (ratio * 2) / 3
     expected = fraction * 26250
-    assert results.talent_healing["SM Cooldown Reduction"] == pytest.approx(expected, rel=0.01)
+    assert results.talent_healing["Early Spring + Dryad's Dance"] == pytest.approx(expected, rel=0.01)
 
 
 def test_no_attribution_when_not_on_cooldown():
@@ -235,7 +235,7 @@ def test_no_attribution_when_not_on_cooldown():
     ]
     pipeline = Pipeline(attributors=[sotf, sm_cd])
     results = pipeline.run(events)
-    assert results.talent_healing["SM Cooldown Reduction"] == 0.0
+    assert results.talent_healing["Early Spring + Dryad's Dance"] == 0.0
 
 
 def test_no_attribution_single_sm_cast():
@@ -255,7 +255,7 @@ def test_no_attribution_single_sm_cast():
     ]
     pipeline = Pipeline(attributors=[sotf, sm_cd])
     results = pipeline.run(events)
-    assert results.talent_healing["SM Cooldown Reduction"] == 0.0
+    assert results.talent_healing["Early Spring + Dryad's Dance"] == 0.0
 
 
 # --- 2-charge (Prosperity) tests ---
@@ -308,7 +308,7 @@ def test_two_charge_rapid_then_on_cooldown():
     fraction = ratio / 3
     downstream = 3 * (10000 - 10000 / 1.6) + 3 * 5000  # SotF + GG = 11250 + 15000
     expected = fraction * downstream
-    assert results.talent_healing["SM Cooldown Reduction"] == pytest.approx(expected, rel=0.01)
+    assert results.talent_healing["Early Spring + Dryad's Dance"] == pytest.approx(expected, rel=0.01)
 
 
 def test_two_charge_not_on_cooldown():
@@ -344,7 +344,7 @@ def test_two_charge_not_on_cooldown():
     ]
     pipeline = Pipeline(attributors=[sotf, sm_cd])
     results = pipeline.run(events)
-    assert results.talent_healing["SM Cooldown Reduction"] == 0.0
+    assert results.talent_healing["Early Spring + Dryad's Dance"] == 0.0
 
 
 def test_two_charge_sustained_on_cooldown():
@@ -409,7 +409,7 @@ def test_two_charge_sustained_on_cooldown():
     fraction = (ratio * 2) / 4
     downstream = 4 * (10000 - 10000 / 1.6) + 4 * 5000  # 15000 + 20000
     expected = fraction * downstream
-    assert results.talent_healing["SM Cooldown Reduction"] == pytest.approx(expected, rel=0.01)
+    assert results.talent_healing["Early Spring + Dryad's Dance"] == pytest.approx(expected, rel=0.01)
 
 
 # --- WG CD reduction tests ---
@@ -474,7 +474,7 @@ def test_wg_attribution_on_cooldown():
     ratio = 1 - 7000.0 / 8000.0
     fraction = (ratio * 2) / 3
     expected = fraction * 15000
-    assert results.talent_healing["WG Cooldown Reduction"] == pytest.approx(expected, rel=0.01)
+    assert results.talent_healing["Early Spring (WG)"] == pytest.approx(expected, rel=0.01)
 
 
 def test_wg_no_attribution_when_not_on_cooldown():
@@ -493,4 +493,4 @@ def test_wg_no_attribution_when_not_on_cooldown():
     ]
     pipeline = Pipeline(attributors=[gg, wg_cd])
     results = pipeline.run(events)
-    assert results.talent_healing["WG Cooldown Reduction"] == 0.0
+    assert results.talent_healing["Early Spring (WG)"] == 0.0

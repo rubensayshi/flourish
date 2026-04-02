@@ -63,7 +63,7 @@ class WgCooldownReductionAttributor(TalentAttributor):
     Tracks WG cast gaps, checks on-cooldown usage, and attributes
     a fraction of downstream GG healing."""
 
-    name = "WG Cooldown Reduction"
+    name = "Early Spring (WG)"
 
     def __init__(self, downstream_attributors=None, has_4pc=True):
         super().__init__()
@@ -132,7 +132,7 @@ class SmCooldownReductionAttributor(TalentAttributor):
     Computes effective CD per SM cast, checks if pressed on cooldown,
     and attributes a fraction of downstream healing (SotF, PotA, GG)."""
 
-    name = "SM Cooldown Reduction"
+    name = "Early Spring + Dryad's Dance"
 
     def __init__(self, downstream_attributors=None):
         super().__init__()

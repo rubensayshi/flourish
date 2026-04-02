@@ -44,10 +44,10 @@ export const SPELL_IDS = {
   'Potent Enchantments':        429420,
   'Power of Nature':            428859,
   'Protective Growth':          433748,
-  'SM Cooldown Reduction':      18562,    // Swiftmend (the spell benefiting from CD reduction)
+  "Early Spring + Dryad's Dance": 428937, // Early Spring
+  'Early Spring (WG)':          428937,   // Early Spring
   'Spirit of the Thicket':      1264899,
   'Sylvan Beckoning':           1264614,
-  'WG Cooldown Reduction':      48438,    // Wild Growth (the spell benefiting from CD reduction)
 
   // Wildstalker
   'Bursting Growth':            440120,

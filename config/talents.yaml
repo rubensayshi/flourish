@@ -237,10 +237,10 @@ dryads_dance:
   skip: true
   skip_reason: "Swiftmend CD reduction via Dryads"
 
-sm_cooldown_reduction:
+early_spring_dryads_dance:
   skip: false
 
-wg_cooldown_reduction:
+early_spring_wg:
   skip: false
 
 # === Always-take / base talents (skip) ===
