@@ -53,7 +53,7 @@
               </tr>
               <tr v-if="expandedTalents.has(t.name)" :key="t.name + '-info'">
                 <td colspan="4" class="px-3 py-3 bg-slate-800/80 border-b border-slate-700">
-                  <div class="text-xs text-slate-300 leading-relaxed whitespace-pre-line explanation-text">{{ getExplanation(t.name) }}</div>
+                  <div class="text-xs text-slate-300 leading-relaxed [&_code]:text-emerald-400 [&_code]:bg-slate-700/50 [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded" v-html="getExplanation(t.name)"></div>
                 </td>
               </tr>
             </template>
@@ -119,7 +119,7 @@
                 </tr>
                 <tr v-if="expandedTalents.has(t.name)" :key="t.name + '-info'">
                   <td colspan="4" class="px-3 py-3 bg-slate-800/80 border-b border-slate-700">
-                    <div class="text-xs text-slate-300 leading-relaxed whitespace-pre-line explanation-text">{{ getExplanation(t.name) }}</div>
+                    <div class="text-xs text-slate-300 leading-relaxed [&_code]:text-emerald-400 [&_code]:bg-slate-700/50 [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded" v-html="getExplanation(t.name)"></div>
                   </td>
                 </tr>
               </template>
