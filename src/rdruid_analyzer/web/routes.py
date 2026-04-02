@@ -9,6 +9,7 @@ from rdruid_analyzer.web.cache import ResultCache
 from rdruid_analyzer.models.config import load_config, Config, MasteryConfig
 from rdruid_analyzer.analysis.pipeline import Pipeline
 from rdruid_analyzer.cli import build_attributors
+from rdruid_analyzer.output.table import HERO_TREES
 
 router = APIRouter(prefix="/api")
 limiter = Limiter(key_func=get_remote_address)
@@ -110,28 +111,56 @@ def analyze(request: Request, code: str, fight_id: int, player_name: str):
     results = pipeline.run(raw_events)
 
     duration_sec = max(results.fight_duration_ms / 1000, 1)
-    talents = [
-        {
+    total = results.total_healing
+
+    def _talent_entry(name, amount):
+        return {
             "name": name,
             "attributed": round(amount),
-            "pct": round(amount / results.total_healing * 100, 1) if results.total_healing > 0 else 0,
+            "pct": round(amount / total * 100, 1) if total > 0 else 0,
             "hps": round(amount / duration_sec),
         }
-        for name, amount in sorted(
-            results.talent_healing.items(), key=lambda x: x[1], reverse=True
-        )
-        if amount > 0
-    ]
 
-    total_attributed = sum(t["attributed"] for t in talents)
-    unattributed = max(0, results.total_healing - total_attributed - results.wasted)
+    def _hero_tree_for(name):
+        for tree, talents in HERO_TREES.items():
+            if name in talents:
+                return tree
+        return None
+
+    non_hero = []
+    hero_groups = {}  # tree_name -> list of (name, amount)
+    for name, amount in results.talent_healing.items():
+        if amount <= 0:
+            continue
+        tree = _hero_tree_for(name)
+        if tree:
+            hero_groups.setdefault(tree, []).append((name, amount))
+        else:
+            non_hero.append((name, amount))
+
+    talents = [_talent_entry(n, a) for n, a in sorted(non_hero, key=lambda x: x[1], reverse=True)]
+
+    hero_trees = []
+    for tree_name, entries in sorted(hero_groups.items(), key=lambda x: sum(a for _, a in x[1]), reverse=True):
+        tree_total = sum(a for _, a in entries)
+        hero_trees.append({
+            "name": tree_name,
+            "attributed": round(tree_total),
+            "pct": round(tree_total / total * 100, 1) if total > 0 else 0,
+            "hps": round(tree_total / duration_sec),
+            "talents": [_talent_entry(n, a) for n, a in sorted(entries, key=lambda x: x[1], reverse=True)],
+        })
+
+    all_attributed = sum(a for _, a in non_hero) + sum(a for g in hero_groups.values() for _, a in g)
+    unattributed = max(0, total - round(all_attributed) - results.wasted)
 
     response = {
         "fight_name": selected_fight["name"],
         "player_name": selected_player["name"],
-        "total_healing": results.total_healing,
+        "total_healing": total,
         "duration_sec": round(duration_sec),
         "talents": talents,
+        "hero_trees": hero_trees,
         "wasted": results.wasted,
         "unattributed": unattributed,
     }

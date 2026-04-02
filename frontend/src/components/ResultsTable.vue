@@ -19,6 +19,7 @@
         </tr>
       </thead>
       <tbody>
+        <!-- Non-hero talents -->
         <tr
           v-for="(t, i) in data.talents"
           :key="t.name"
@@ -32,6 +33,30 @@
           </td>
           <td class="py-1.5 text-right font-mono">{{ fmt(t.hps) }}</td>
         </tr>
+
+        <!-- Hero tree groups -->
+        <template v-for="tree in data.hero_trees" :key="tree.name">
+          <tr class="border-t border-slate-600 bg-slate-800/80">
+            <td class="py-2 pr-4 font-bold">{{ tree.name }}</td>
+            <td class="py-2 pr-4 text-right font-mono font-bold">{{ fmt(tree.attributed) }}</td>
+            <td class="py-2 pr-4 text-right font-mono font-bold" :class="pctColor(tree.pct)">
+              {{ tree.pct.toFixed(1) }}%
+            </td>
+            <td class="py-2 text-right font-mono font-bold">{{ fmt(tree.hps) }}</td>
+          </tr>
+          <tr
+            v-for="t in tree.talents"
+            :key="t.name"
+            class="border-b border-slate-800/50"
+          >
+            <td class="py-1.5 pr-4 pl-4 text-slate-300">{{ t.name }}</td>
+            <td class="py-1.5 pr-4 text-right font-mono text-slate-300">{{ fmt(t.attributed) }}</td>
+            <td class="py-1.5 pr-4 text-right font-mono" :class="pctColor(t.pct)">
+              {{ t.pct.toFixed(1) }}%
+            </td>
+            <td class="py-1.5 text-right font-mono text-slate-300">{{ fmt(t.hps) }}</td>
+          </tr>
+        </template>
       </tbody>
       <tfoot class="text-slate-500">
         <tr class="border-t border-slate-700">
@@ -61,9 +86,11 @@ import { computed } from 'vue'
 
 const props = defineProps({ data: Object })
 
-const totalAttributed = computed(() =>
-  props.data.talents.reduce((sum, t) => sum + t.attributed, 0)
-)
+const totalAttributed = computed(() => {
+  const talentSum = props.data.talents.reduce((sum, t) => sum + t.attributed, 0)
+  const heroSum = (props.data.hero_trees || []).reduce((sum, tree) => sum + tree.attributed, 0)
+  return talentSum + heroSum
+})
 
 function fmt(n) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M'
