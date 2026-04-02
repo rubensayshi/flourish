@@ -30,19 +30,18 @@
         <template v-if="report">
           <h2 class="text-xl font-bold mb-4">{{ report.title }}</h2>
 
-          <div class="grid grid-cols-2 gap-4 mb-6">
-            <FightSelector v-model="selectedFight" :fights="report.fights" />
-            <PlayerSelector v-model="selectedPlayer" :druids="report.druids" />
+          <div class="flex items-end gap-4 mb-6">
+            <FightSelector v-model="selectedFight" :fights="report.fights" class="flex-1" />
+            <PlayerSelector v-model="selectedPlayer" :druids="report.druids" class="flex-1" />
+            <button
+              @click="runAnalysis"
+              :disabled="!selectedFight || !selectedPlayer || analyzing || isLoginError"
+              class="rounded-lg bg-emerald-600 px-6 py-2.5 font-semibold text-white whitespace-nowrap
+                     hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              {{ analyzing ? 'Analyzing...' : 'Run Analysis' }}
+            </button>
           </div>
-
-          <button
-            @click="runAnalysis"
-            :disabled="!selectedFight || !selectedPlayer || analyzing || isLoginError"
-            class="rounded-lg bg-emerald-600 px-6 py-2.5 font-semibold text-white
-                   hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            {{ analyzing ? 'Analyzing...' : 'Run Analysis' }}
-          </button>
 
           <div v-if="analyzeError && !isLoginError" class="mt-4 text-red-400">{{ analyzeError }}</div>
 
