@@ -63,10 +63,11 @@ def get_report(request: Request, code: str):
 
 
 @router.get("/analyze/{code}/{fight_id}/{player_name}")
-def analyze(request: Request, code: str, fight_id: int, player_name: str):
-    cached = result_cache.get(code, fight_id, player_name)
-    if cached:
-        return cached
+def analyze(request: Request, code: str, fight_id: int, player_name: str, base_stacks: int | None = None):
+    if base_stacks is None:
+        cached = result_cache.get(code, fight_id, player_name)
+        if cached:
+            return cached
 
     _check_rate_limit(request, _ANALYZE_LIMIT)
     client = get_wcl_client()
@@ -115,6 +116,9 @@ def analyze(request: Request, code: str, fight_id: int, player_name: str):
         if os.path.exists(config_path)
         else Config(mastery=MasteryConfig(), talents={})
     )
+
+    if base_stacks is not None:
+        config.mastery.base_stacks = max(1, min(base_stacks, 5))
 
     pet_ids = {a["id"] for a in all_actors if a.get("petOwner")}
     attributors = build_attributors(config, damage_taken_with_regrowth=damage_taken_with_regrowth)

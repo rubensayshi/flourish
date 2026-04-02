@@ -45,6 +45,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { fetchReport, fetchAnalysis } from '../api'
 import { addReportEntry } from '../composables/useReportHistory'
+import { settings } from '../composables/useSettings'
 import FightSelector from '../components/FightSelector.vue'
 import PlayerSelector from '../components/PlayerSelector.vue'
 import LoadingSpinner from '../components/LoadingSpinner.vue'
@@ -84,7 +85,7 @@ async function runAnalysis() {
   error.value = null
   try {
     results.value = await fetchAnalysis(
-      route.params.code, selectedFight.value, selectedPlayer.value
+      route.params.code, selectedFight.value, selectedPlayer.value, settings
     )
     const fight = report.value.fights.find(f => f.id === selectedFight.value)
     addReportEntry({
