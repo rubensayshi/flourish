@@ -10,8 +10,9 @@ from flourish.wcl.cache import CachedWCLClient
 from flourish.models.config import load_config, Config, MasteryConfig
 from flourish.analysis.pipeline import Pipeline
 from flourish.analysis.talents.soul_of_the_forest import SoulOfTheForestAttributor
+from flourish.analysis.talents.blooming_frenzy import BloomingFrenzyAttributor
 from flourish.analysis.talents.direct_spells import (
-    EverbloomAttributor,
+    EverbloomSplashAttributor,
     EfflorescenceAttributor,
     VerdancyAttributor,
     NaturesBountyAttributor,
@@ -108,7 +109,8 @@ def build_attributors(config: Config, damage_taken_with_regrowth: int | None = N
 
     all_attributors = [
         sotf,
-        EverbloomAttributor(),
+        EverbloomSplashAttributor(),
+        BloomingFrenzyAttributor(),
         gg,
         DreamSurgeAttributor(),
         EfflorescenceAttributor(),

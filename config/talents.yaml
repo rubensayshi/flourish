@@ -131,7 +131,10 @@ thriving_vegetation:
 nurturing_dormancy:
   skip: false
 
-everbloom:
+everbloom_(splash):
+  skip: false
+
+blooming_frenzy:
   skip: false
 
 renewing_surge:

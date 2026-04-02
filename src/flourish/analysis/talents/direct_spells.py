@@ -2,8 +2,8 @@ from flourish.analysis.attributor import TalentAttributor
 from flourish.analysis.talents.direct_spell import DirectSpellAttributor
 
 
-class EverbloomAttributor(DirectSpellAttributor):
-    name = "Everbloom"
+class EverbloomSplashAttributor(DirectSpellAttributor):
+    name = "Everbloom (Splash)"
     talent_node_id = 110424
     spell_ids = {1244341}
 
