@@ -1,7 +1,9 @@
 import os
 
 from fastapi import APIRouter, HTTPException, Request
+from limits import parse as parse_limit
 from slowapi import Limiter
+from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
 from rdruid_analyzer.web.dependencies import get_wcl_client
@@ -16,6 +18,14 @@ limiter = Limiter(key_func=get_remote_address)
 result_cache = ResultCache()
 
 DRUID_CLASS = "Druid"
+_ANALYZE_LIMIT = parse_limit("10/minute")
+_REPORT_LIMIT = parse_limit("15/minute")
+
+
+def _check_rate_limit(request: Request, rate_limit):
+    key = get_remote_address(request)
+    if not limiter.limiter.hit(rate_limit, key):
+        raise RateLimitExceeded(rate_limit)
 
 
 @router.get("/health")
@@ -24,7 +34,8 @@ def health():
 
 
 @router.get("/report/{code}")
-def get_report(code: str):
+def get_report(request: Request, code: str):
+    _check_rate_limit(request, _REPORT_LIMIT)
     client = get_wcl_client()
     try:
         report = client.get_report(code)
@@ -52,12 +63,12 @@ def get_report(code: str):
 
 
 @router.get("/analyze/{code}/{fight_id}/{player_name}")
-@limiter.limit("10/minute")
 def analyze(request: Request, code: str, fight_id: int, player_name: str):
     cached = result_cache.get(code, fight_id, player_name)
     if cached:
         return cached
 
+    _check_rate_limit(request, _ANALYZE_LIMIT)
     client = get_wcl_client()
     try:
         report = client.get_report(code)
