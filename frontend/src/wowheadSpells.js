@@ -10,8 +10,8 @@ export const SPELL_IDS = {
   'Cultivation':                200390,
   'Efflorescence':              145205,
   'Embrace of the Dream':       392124,
-  'Everbloom (Splash)':         1244341,
-  'Blooming Frenzy':            1244470,
+  'Everbloom: Splash':       1244331,  // talent spell (rank-aware), not heal spell 1244341
+  'Everbloom: Blooming Frenzy': 1244470,
   'Flourish':                   197721,
   'Grove Guardians':            1226140,
   'Harmonious Blooming':        392256,

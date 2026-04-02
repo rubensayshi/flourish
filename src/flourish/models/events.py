@@ -44,6 +44,7 @@ class HealEvent(BaseEvent):
 class CombatantInfoEvent(BaseEvent):
     talent_nodes: set[int]  # set of nodeIDs from talentTree
     talent_ids: set[int]  # set of talent IDs (distinguishes choice-node picks)
+    talent_ranks: dict[int, int]  # entryId -> rank invested
     crit_spell: float
     haste_spell: float
     mastery: float
@@ -92,12 +93,14 @@ def parse_event(raw: dict) -> BaseEvent | None:
         talent_tree = raw.get("talentTree", [])
         talent_nodes = {t["nodeID"] for t in talent_tree}
         talent_ids = {t["id"] for t in talent_tree}
+        talent_ranks = {t["id"]: t.get("rank", 1) for t in talent_tree}
         return CombatantInfoEvent(
             timestamp=raw["timestamp"],
             source_id=raw.get("sourceID", 0),
             type="combatantinfo",
             talent_nodes=talent_nodes,
             talent_ids=talent_ids,
+            talent_ranks=talent_ranks,
             crit_spell=raw.get("critSpell", 0),
             haste_spell=raw.get("hasteSpell", 0),
             mastery=raw.get("mastery", 0),

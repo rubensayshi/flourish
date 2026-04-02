@@ -12,8 +12,9 @@ FRENZY_MAX_BLOOMS = 5
 class BloomingFrenzyAttributor(TalentAttributor):
     """Everbloom rank 4: Lifebloom blooms 5 times rapidly when SotF is consumed."""
 
-    name = "Blooming Frenzy"
+    name = "Everbloom: Blooming Frenzy"
     talent_node_id = 110424
+    talent_id = 137038  # WCL entryId for rank 4
 
     def __init__(self):
         super().__init__()

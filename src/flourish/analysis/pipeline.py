@@ -18,6 +18,7 @@ class AnalysisResults:
     total_healing: int = 0
     wasted: int = 0
     talent_healing: dict[str, float] = field(default_factory=dict)
+    talent_ranks: dict[str, int] = field(default_factory=dict)  # talent name -> rank
     fight_duration_ms: int = 0
     combatant_info: CombatantInfoEvent | None = None
 
@@ -50,6 +51,10 @@ class Pipeline:
                     if event.talent_nodes:
                         self.attributors = [a for a in self.attributors if a.is_selected()]
                         results.talent_healing = {a.name: 0.0 for a in self.attributors}
+                        for a in self.attributors:
+                            rank = a.get_talent_rank()
+                            if rank is not None:
+                                results.talent_ranks[a.name] = rank
                 continue
 
             # Update trackers

@@ -3,8 +3,9 @@ from flourish.analysis.talents.direct_spell import DirectSpellAttributor
 
 
 class EverbloomSplashAttributor(DirectSpellAttributor):
-    name = "Everbloom (Splash)"
+    name = "Everbloom: Splash"
     talent_node_id = 110424
+    talent_id = 137039  # WCL entryId for ranks 2-3
     spell_ids = {1244341}
 
 

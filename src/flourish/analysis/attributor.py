@@ -31,6 +31,12 @@ class TalentAttributor:
             return self.talent_id in self.combatant_info.talent_ids
         return True
 
+    def get_talent_rank(self) -> int | None:
+        """Return the rank invested in this talent's entry, if available."""
+        if self.combatant_info and self.talent_id is not None:
+            return self.combatant_info.talent_ranks.get(self.talent_id)
+        return None
+
     def has_talent(self, node_id: int) -> bool:
         """Check if a specific talent node is active."""
         if self.combatant_info:

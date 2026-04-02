@@ -155,12 +155,15 @@ def analyze(request: Request, code: str, fight_id: int, player_name: str, base_s
     total = results.total_healing
 
     def _talent_entry(name, amount):
-        return {
+        entry = {
             "name": name,
             "attributed": round(amount),
             "pct": round(amount / total * 100, 1) if total > 0 else 0,
             "hps": round(amount / duration_sec),
         }
+        if name in results.talent_ranks:
+            entry["rank"] = results.talent_ranks[name]
+        return entry
 
     def _hero_tree_for(name):
         for tree, talents in HERO_TREES.items():
