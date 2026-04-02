@@ -9,11 +9,17 @@
       ({{ data.duration_sec }}s)
     </div>
 
-    <div class="flex gap-6">
+    <div class="flex gap-6 items-start">
       <!-- Class talents -->
       <div class="flex-1 min-w-0">
         <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wide mb-2">Class &amp; Spec Talents</h3>
-        <table class="w-full text-sm">
+        <table class="w-full text-sm table-fixed">
+          <colgroup>
+            <col class="w-auto" />
+            <col class="w-24" />
+            <col class="w-16" />
+            <col class="w-16" />
+          </colgroup>
           <thead>
             <tr class="text-left text-slate-400 border-b border-slate-700">
               <th class="py-2 pr-3">Talent</th>
@@ -121,7 +127,13 @@
       <div v-if="data.hero_trees?.length" class="flex-1 min-w-0">
         <div v-for="tree in data.hero_trees" :key="tree.name" class="mb-6 last:mb-0">
           <h3 class="text-sm font-semibold text-emerald-400 uppercase tracking-wide mb-2">{{ tree.name }}</h3>
-          <table class="w-full text-sm">
+          <table class="w-full text-sm table-fixed">
+            <colgroup>
+              <col class="w-auto" />
+              <col class="w-24" />
+              <col class="w-16" />
+              <col class="w-16" />
+            </colgroup>
             <thead>
               <tr class="text-left text-slate-400 border-b border-slate-700">
                 <th class="py-2 pr-3">Talent</th>
