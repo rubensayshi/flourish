@@ -1,0 +1,83 @@
+<template>
+  <div>
+    <LoadingSpinner v-if="loading">Loading report...</LoadingSpinner>
+
+    <div v-else-if="error" class="text-red-400">{{ error }}</div>
+
+    <template v-else-if="report">
+      <h2 class="text-xl font-bold mb-4">{{ report.title }}</h2>
+
+      <div class="grid grid-cols-2 gap-4 mb-6">
+        <FightSelector v-model="selectedFight" :fights="report.fights" />
+        <PlayerSelector v-model="selectedPlayer" :druids="report.druids" />
+      </div>
+
+      <button
+        @click="runAnalysis"
+        :disabled="!selectedFight || !selectedPlayer || analyzing"
+        class="rounded-lg bg-emerald-600 px-6 py-2.5 font-semibold text-white
+               hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed"
+      >
+        {{ analyzing ? 'Analyzing...' : 'Run Analysis' }}
+      </button>
+
+      <LoadingSpinner v-if="analyzing" class="mt-4">
+        Analyzing (this may take a few seconds)...
+      </LoadingSpinner>
+
+      <ResultsTable v-if="results" :data="results" class="mt-6" />
+    </template>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { fetchReport, fetchAnalysis } from '../api'
+import FightSelector from '../components/FightSelector.vue'
+import PlayerSelector from '../components/PlayerSelector.vue'
+import LoadingSpinner from '../components/LoadingSpinner.vue'
+import ResultsTable from '../components/ResultsTable.vue'
+
+const route = useRoute()
+const router = useRouter()
+
+const report = ref(null)
+const loading = ref(true)
+const error = ref(null)
+const selectedFight = ref(0)
+const selectedPlayer = ref('')
+const analyzing = ref(false)
+const results = ref(null)
+
+onMounted(async () => {
+  try {
+    report.value = await fetchReport(route.params.code)
+
+    if (route.params.fightId && route.params.player) {
+      selectedFight.value = Number(route.params.fightId)
+      selectedPlayer.value = route.params.player
+      await runAnalysis()
+    }
+  } catch (e) {
+    error.value = e.message
+  } finally {
+    loading.value = false
+  }
+})
+
+async function runAnalysis() {
+  analyzing.value = true
+  error.value = null
+  try {
+    results.value = await fetchAnalysis(
+      route.params.code, selectedFight.value, selectedPlayer.value
+    )
+    router.replace(`/results/${route.params.code}/${selectedFight.value}/${selectedPlayer.value}`)
+  } catch (e) {
+    error.value = e.message
+  } finally {
+    analyzing.value = false
+  }
+}
+</script>
