@@ -17,6 +17,11 @@
             <span class="text-slate-500 text-xs truncate block">{{ entry.fight }} &middot; {{ entry.player }}</span>
           </div>
           <span class="text-slate-600 text-xs ml-3 shrink-0">{{ timeAgo(entry.ts) }}</span>
+          <button
+            @click.prevent="handleRemove(i)"
+            class="ml-2 shrink-0 text-slate-600 hover:text-red-400 transition-colors"
+            title="Remove"
+          >&times;</button>
         </router-link>
       </li>
     </ul>
@@ -26,7 +31,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { getReportHistory, clearReportHistory } from '../composables/useReportHistory'
+import { getReportHistory, removeReportEntry, clearReportHistory } from '../composables/useReportHistory'
 
 const props = defineProps({
   sidebar: { type: Boolean, default: false },
@@ -44,6 +49,11 @@ function isActive(entry) {
   return route.params.code === entry.code
     && Number(route.params.fightId) === entry.fightId
     && route.params.player === entry.player
+}
+
+function handleRemove(index) {
+  removeReportEntry(index)
+  entries.value = getReportHistory()
 }
 
 function handleClear() {
