@@ -21,7 +21,6 @@ class SylvanBeckoningAttributor(TalentAttributor):
     def process_heal(self, event: HealEvent, hot_tracker: HotTracker, buff_tracker: BuffTracker) -> float:
         if event.ability_id not in DRYAD_SPELLS:
             return 0.0
-        # If source is not the player, it's from the Dryad pet
-        if self.combatant_info and event.source_id != self.combatant_info.source_id:
+        if self.is_player_pet(event.source_id):
             return float(event.amount)
         return 0.0

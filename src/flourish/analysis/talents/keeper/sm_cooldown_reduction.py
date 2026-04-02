@@ -165,8 +165,7 @@ class SmCooldownReductionAttributor(TalentAttributor):
         if (
             isinstance(event, HealEvent)
             and event.ability_id in all_dryad_spells
-            and self.combatant_info is not None
-            and event.source_id != self.combatant_info.source_id
+            and self.is_player_pet(event.source_id)
         ):
             # Close previous window if gap exceeded
             if (

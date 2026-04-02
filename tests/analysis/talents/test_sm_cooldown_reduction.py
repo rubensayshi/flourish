@@ -65,7 +65,7 @@ def test_tracks_sm_casts():
 
 def test_tracks_dryad_windows_from_pet_heals():
     attr = SmCooldownReductionAttributor()
-    pipeline = Pipeline(attributors=[attr])
+    pipeline = Pipeline(attributors=[attr], player_pet_ids={99})
     events = [
         make_combatant_info(0, talent_nodes=[DRYADS_DANCE_NODE_ID, EARLY_SPRING_NODE_ID],
                            talent_ids=[EARLY_SPRING_TALENT_ID]),
@@ -85,7 +85,7 @@ def test_tracks_dryad_windows_from_pet_heals():
 def test_dryad_window_closes_in_finalize():
     """Open Dryad window at end of fight should be closed in finalize."""
     attr = SmCooldownReductionAttributor()
-    pipeline = Pipeline(attributors=[attr])
+    pipeline = Pipeline(attributors=[attr], player_pet_ids={99})
     events = [
         make_combatant_info(0, talent_nodes=[DRYADS_DANCE_NODE_ID, EARLY_SPRING_NODE_ID],
                            talent_ids=[EARLY_SPRING_TALENT_ID]),
@@ -194,7 +194,7 @@ def test_full_attribution_on_cooldown():
         make_heal(23200, GG_NOURISH, 5000, source=99),
     ]
     # sm_cd must be LAST for finalize ordering
-    pipeline = Pipeline(attributors=[sotf, gg, sm_cd])
+    pipeline = Pipeline(attributors=[sotf, gg, sm_cd], player_pet_ids={99})
     results = pipeline.run(events)
 
     # SotF: 3 * (10000 - 10000/1.6) = 3 * 3750 = 11250
@@ -300,7 +300,7 @@ def test_two_charge_rapid_then_on_cooldown():
         make_heal(12600, REJUV, 10000, target=5),
         make_heal(12700, GG_NOURISH, 5000, source=99),
     ]
-    pipeline = Pipeline(attributors=[sotf, gg, sm_cd])
+    pipeline = Pipeline(attributors=[sotf, gg, sm_cd], player_pet_ids={99})
     results = pipeline.run(events)
 
     # 1 on-CD cast out of 3 total
@@ -401,7 +401,7 @@ def test_two_charge_sustained_on_cooldown():
         make_heal(23600, REJUV, 10000, target=6),
         make_heal(23700, GG_NOURISH, 5000, source=99),
     ]
-    pipeline = Pipeline(attributors=[sotf, gg, sm_cd])
+    pipeline = Pipeline(attributors=[sotf, gg, sm_cd], player_pet_ids={99})
     results = pipeline.run(events)
 
     # 2 on-CD casts (3rd and 4th), 4 total
@@ -464,7 +464,7 @@ def test_wg_attribution_on_cooldown():
         make_begincast(16000, WILD_GROWTH),
         make_heal(16100, GG_NOURISH, 5000, source=99),
     ]
-    pipeline = Pipeline(attributors=[gg, wg_cd])
+    pipeline = Pipeline(attributors=[gg, wg_cd], player_pet_ids={99})
     results = pipeline.run(events)
 
     # GG total: 3 * 5000 = 15000
@@ -491,6 +491,6 @@ def test_wg_no_attribution_when_not_on_cooldown():
         make_begincast(31000, WILD_GROWTH),
         make_heal(31100, GG_NOURISH, 5000, source=99),
     ]
-    pipeline = Pipeline(attributors=[gg, wg_cd])
+    pipeline = Pipeline(attributors=[gg, wg_cd], player_pet_ids={99})
     results = pipeline.run(events)
     assert results.talent_healing["Early Spring (WG)"] == 0.0

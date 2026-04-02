@@ -13,10 +13,15 @@ class TalentAttributor:
     def __init__(self):
         self.combatant_info: CombatantInfoEvent | None = None
         self.total_attributed: float = 0.0
+        self.player_pet_ids: set[int] = set()
 
     def set_combatant_info(self, info: CombatantInfoEvent):
         """Called once at fight start with player's talent/stat info."""
         self.combatant_info = info
+
+    def is_player_pet(self, source_id: int) -> bool:
+        """Check if a source_id belongs to one of the player's pets."""
+        return source_id in self.player_pet_ids
 
     def is_selected(self) -> bool:
         """Check if this talent is in the player's loadout."""

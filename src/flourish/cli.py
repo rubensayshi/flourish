@@ -243,8 +243,9 @@ def analyze(
 
     # Run analysis
     pet_ids = {a["id"] for a in all_actors if a.get("petOwner")}
+    player_pet_ids = {a["id"] for a in all_actors if a.get("petOwner") == selected_player["id"]}
     attributors = build_attributors(config, damage_taken_with_regrowth=damage_taken_with_regrowth)
-    pipeline = Pipeline(attributors=attributors, pet_ids=pet_ids)
+    pipeline = Pipeline(attributors=attributors, pet_ids=pet_ids, player_pet_ids=player_pet_ids)
     results = pipeline.run(raw_events)
 
     # Output

@@ -24,11 +24,15 @@ class AnalysisResults:
 
 
 class Pipeline:
-    def __init__(self, attributors: list[TalentAttributor], pet_ids: set[int] | None = None):
+    def __init__(self, attributors: list[TalentAttributor], pet_ids: set[int] | None = None,
+                 player_pet_ids: set[int] | None = None):
         self.attributors = attributors
         self.hot_tracker = HotTracker()
         self.buff_tracker = BuffTracker()
         self.pet_ids = pet_ids or set()
+        self.player_pet_ids = player_pet_ids or set()
+        for attr in self.attributors:
+            attr.player_pet_ids = self.player_pet_ids
 
     def run(self, raw_events: list[dict]) -> AnalysisResults:
         results = AnalysisResults()
