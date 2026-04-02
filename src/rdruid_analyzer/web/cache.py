@@ -2,8 +2,11 @@ import json
 from pathlib import Path
 
 
+_DEFAULT_DIR = Path("/data/results_cache") if Path("/data").exists() else Path("data/results_cache")
+
+
 class ResultCache:
-    def __init__(self, cache_dir: Path = Path("data/results_cache")):
+    def __init__(self, cache_dir: Path = _DEFAULT_DIR):
         self._dir = cache_dir
         self._dir.mkdir(parents=True, exist_ok=True)
 

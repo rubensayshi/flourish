@@ -3,7 +3,7 @@ from pathlib import Path
 
 from rdruid_analyzer.wcl.client import WCLClient
 
-DEFAULT_CACHE_DIR = Path("data/cache")
+DEFAULT_CACHE_DIR = Path("/data/wcl_cache") if Path("/data").exists() else Path("data/cache")
 
 
 class CachedWCLClient:
