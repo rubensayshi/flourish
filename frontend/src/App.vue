@@ -5,7 +5,7 @@
         Resto Druid Talent Analyzer
       </router-link>
     </header>
-    <main class="mx-auto max-w-3xl px-4 py-8">
+    <main class="mx-auto max-w-5xl px-4 py-8">
       <router-view />
     </main>
   </div>

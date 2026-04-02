@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="mb-4 text-slate-400">
+    <div class="mb-6 text-slate-400">
       <span class="font-bold text-slate-100">{{ data.fight_name }}</span>
       &mdash;
       <span class="font-bold text-slate-100">{{ data.player_name }}</span>
@@ -9,70 +9,93 @@
       ({{ data.duration_sec }}s)
     </div>
 
-    <table class="w-full text-sm">
-      <thead>
-        <tr class="text-left text-slate-400 border-b border-slate-700">
-          <th class="py-2 pr-4">Talent</th>
-          <th class="py-2 pr-4 text-right">Attributed</th>
-          <th class="py-2 pr-4 text-right">% Total</th>
-          <th class="py-2 text-right">HPS</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Non-hero talents -->
-        <tr
-          v-for="(t, i) in data.talents"
-          :key="t.name"
-          :class="i % 2 === 0 ? 'bg-slate-800/50' : ''"
-          class="border-b border-slate-800"
-        >
-          <td class="py-1.5 pr-4">{{ t.name }}</td>
-          <td class="py-1.5 pr-4 text-right font-mono">{{ fmt(t.attributed) }}</td>
-          <td class="py-1.5 pr-4 text-right font-mono" :class="pctColor(t.pct)">
-            {{ t.pct.toFixed(1) }}%
-          </td>
-          <td class="py-1.5 text-right font-mono">{{ fmt(t.hps) }}</td>
-        </tr>
+    <div class="flex gap-6">
+      <!-- Class talents -->
+      <div class="flex-1 min-w-0">
+        <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wide mb-2">Class &amp; Spec Talents</h3>
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="text-left text-slate-400 border-b border-slate-700">
+              <th class="py-2 pr-3">Talent</th>
+              <th class="py-2 pr-3 text-right">Attributed</th>
+              <th class="py-2 pr-3 text-right">%</th>
+              <th class="py-2 text-right">HPS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="(t, i) in data.talents"
+              :key="t.name"
+              :class="i % 2 === 0 ? 'bg-slate-800/50' : ''"
+              class="border-b border-slate-800"
+            >
+              <td class="py-1.5 pr-3">{{ t.name }}</td>
+              <td class="py-1.5 pr-3 text-right font-mono">{{ fmt(t.attributed) }}</td>
+              <td class="py-1.5 pr-3 text-right font-mono" :class="pctColor(t.pct)">
+                {{ t.pct.toFixed(1) }}%
+              </td>
+              <td class="py-1.5 text-right font-mono">{{ fmt(t.hps) }}</td>
+            </tr>
+          </tbody>
+          <tfoot class="text-slate-500">
+            <tr class="border-t border-slate-700">
+              <td class="py-1.5 pr-3">Wasted (&gt;50% OH)</td>
+              <td class="py-1.5 pr-3 text-right font-mono">{{ fmt(data.wasted) }}</td>
+              <td class="py-1.5 pr-3 text-right">&mdash;</td>
+              <td class="py-1.5 text-right">&mdash;</td>
+            </tr>
+            <tr>
+              <td class="py-1.5 pr-3">Unattributed</td>
+              <td class="py-1.5 pr-3 text-right font-mono">{{ fmt(data.unattributed) }}</td>
+              <td class="py-1.5 pr-3 text-right">&mdash;</td>
+              <td class="py-1.5 text-right">&mdash;</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
 
-        <!-- Hero tree groups -->
-        <template v-for="tree in data.hero_trees" :key="tree.name">
-          <tr class="border-t border-slate-600 bg-slate-800/80">
-            <td class="py-2 pr-4 font-bold">{{ tree.name }}</td>
-            <td class="py-2 pr-4 text-right font-mono font-bold">{{ fmt(tree.attributed) }}</td>
-            <td class="py-2 pr-4 text-right font-mono font-bold" :class="pctColor(tree.pct)">
-              {{ tree.pct.toFixed(1) }}%
-            </td>
-            <td class="py-2 text-right font-mono font-bold">{{ fmt(tree.hps) }}</td>
-          </tr>
-          <tr
-            v-for="t in tree.talents"
-            :key="t.name"
-            class="border-b border-slate-800/50"
-          >
-            <td class="py-1.5 pr-4 pl-4 text-slate-300">{{ t.name }}</td>
-            <td class="py-1.5 pr-4 text-right font-mono text-slate-300">{{ fmt(t.attributed) }}</td>
-            <td class="py-1.5 pr-4 text-right font-mono" :class="pctColor(t.pct)">
-              {{ t.pct.toFixed(1) }}%
-            </td>
-            <td class="py-1.5 text-right font-mono text-slate-300">{{ fmt(t.hps) }}</td>
-          </tr>
-        </template>
-      </tbody>
-      <tfoot class="text-slate-500">
-        <tr class="border-t border-slate-700">
-          <td class="py-1.5 pr-4">Wasted (&gt;50% OH)</td>
-          <td class="py-1.5 pr-4 text-right font-mono">{{ fmt(data.wasted) }}</td>
-          <td class="py-1.5 pr-4 text-right">&mdash;</td>
-          <td class="py-1.5 text-right">&mdash;</td>
-        </tr>
-        <tr>
-          <td class="py-1.5 pr-4">Unattributed</td>
-          <td class="py-1.5 pr-4 text-right font-mono">{{ fmt(data.unattributed) }}</td>
-          <td class="py-1.5 pr-4 text-right">&mdash;</td>
-          <td class="py-1.5 text-right">&mdash;</td>
-        </tr>
-      </tfoot>
-    </table>
+      <!-- Hero tree talents -->
+      <div v-if="data.hero_trees?.length" class="flex-1 min-w-0">
+        <div v-for="tree in data.hero_trees" :key="tree.name" class="mb-6 last:mb-0">
+          <h3 class="text-sm font-semibold text-emerald-400 uppercase tracking-wide mb-2">{{ tree.name }}</h3>
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-left text-slate-400 border-b border-slate-700">
+                <th class="py-2 pr-3">Talent</th>
+                <th class="py-2 pr-3 text-right">Attributed</th>
+                <th class="py-2 pr-3 text-right">%</th>
+                <th class="py-2 text-right">HPS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="(t, i) in tree.talents"
+                :key="t.name"
+                :class="i % 2 === 0 ? 'bg-slate-800/50' : ''"
+                class="border-b border-slate-800"
+              >
+                <td class="py-1.5 pr-3">{{ t.name }}</td>
+                <td class="py-1.5 pr-3 text-right font-mono">{{ fmt(t.attributed) }}</td>
+                <td class="py-1.5 pr-3 text-right font-mono" :class="pctColor(t.pct)">
+                  {{ t.pct.toFixed(1) }}%
+                </td>
+                <td class="py-1.5 text-right font-mono">{{ fmt(t.hps) }}</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr class="border-t border-slate-700 font-bold">
+                <td class="py-1.5 pr-3">Total</td>
+                <td class="py-1.5 pr-3 text-right font-mono">{{ fmt(tree.attributed) }}</td>
+                <td class="py-1.5 pr-3 text-right font-mono" :class="pctColor(tree.pct)">
+                  {{ tree.pct.toFixed(1) }}%
+                </td>
+                <td class="py-1.5 text-right font-mono">{{ fmt(tree.hps) }}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
 
     <p v-if="totalAttributed > data.total_healing" class="mt-4 text-xs text-slate-500">
       Talents can overlap (multiple talents buff the same heal).
