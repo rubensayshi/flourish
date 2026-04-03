@@ -7,7 +7,7 @@
 # base_stacks: typical number of HoTs on a target (excluding talent-added stacks)
 # dr_table: cumulative mastery multiplier per stack count (diminishing returns)
 mastery:
-  base_stacks: 3
+  base_stacks: 2
   dr_table: [1.0, 1.7, 2.3, 2.8, 3.2]
 
 # === Spec talents (analyze) ===

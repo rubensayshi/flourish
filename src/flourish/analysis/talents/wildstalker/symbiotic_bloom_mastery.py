@@ -16,7 +16,7 @@ class SymbioticBloomMasteryAttributor(TalentAttributor):
     # Thriving Growth — the talent that creates Symbiotic Blooms
     talent_node_id = 94626
 
-    def __init__(self, base_stacks: int = 3,
+    def __init__(self, base_stacks: int = 2,
                  dr_table: list[float] | None = None):
         super().__init__()
         self._mastery = 0.25  # default, overridden by combatantinfo

@@ -3,7 +3,7 @@ import { reactive, watch } from 'vue'
 const STORAGE_KEY = 'flourish-settings'
 
 const DEFAULTS = {
-  baseStacks: 3,
+  baseStacks: 2,
 }
 
 function load() {
