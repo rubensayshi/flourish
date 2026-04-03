@@ -241,9 +241,13 @@ func buildAttributors(config *models.Config, damageTaken int) []talents.TalentAt
 	smCd := talents.NewSmCooldownReductionAttributor([]talents.TalentAttributor{sotf, gg})
 	wgCd := talents.NewWgCooldownReductionAttributor([]talents.TalentAttributor{gg}, false)
 
+	baseStacks := config.Mastery.BaseStacks
+	drTable := config.Mastery.DRTable
+
 	all := []talents.TalentAttributor{
 		sotf,
 		talents.NewEverbloomSplashAttributor(),
+		talents.NewBloomingFrenzyAttributor(),
 		gg,
 		talents.NewDreamSurgeAttributor(),
 		talents.NewEfflorescenceAttributor(),
@@ -252,7 +256,15 @@ func buildAttributors(config *models.Config, damageTaken int) []talents.TalentAt
 		talents.NewFlourishAttributor(),
 		talents.NewCultivationAttributor(),
 		talents.NewWildSynthesisAttributor(),
+		talents.NewGrovesInspirationAttributor(),
+		talents.NewCenariusMightAttributor(),
+		talents.NewBountifulBloomAttributor(),
+		talents.NewHarmonyOfTheGroveAttributor(),
+		talents.NewPowerOfNatureAttributor(),
+		talents.NewSpiritOfTheThicketAttributor(),
+		talents.NewSylvanBeckoningAttributor(),
 		talents.NewWildstalkersPowerAttributor(),
+		talents.NewPatientCustodianAttributor(),
 		talents.NewLifetreadingAttributor(),
 		talents.NewTreeOfLifeAttributor(),
 		talents.NewConvokeAttributor(convokeRatio),
@@ -262,6 +274,13 @@ func buildAttributors(config *models.Config, damageTaken int) []talents.TalentAt
 		talents.NewImplantAttributor(),
 		talents.NewRootNetworkAttributor(),
 		talents.NewStrategicInfusionAttributor(),
+		talents.NewBurstingGrowthAttributor(),
+		talents.NewThrivingGrowthAttributor(),
+		talents.NewHarmoniousBloomingAttributor(baseStacks, drTable),
+		talents.NewSymbioticBloomMasteryAttributor(baseStacks, drTable),
+		talents.NewIntensityAttributor(),
+		talents.NewNaturesBountyAttributor(),
+		talents.NewRegenerativeHeartwoodAttributor(),
 		talents.NewAbundanceAttributor(),
 		talents.NewPhotosynthesisAttributor(),
 		talents.NewNurturingDormancyAttributor(),

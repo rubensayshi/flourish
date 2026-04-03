@@ -8,10 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const (
-	lifebloom      = 33763
-	lifebloomBloom = 33778
-)
+
 
 // --- Abundance ---
 

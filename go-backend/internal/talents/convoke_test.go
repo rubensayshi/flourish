@@ -8,10 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const (
-	convoke       = 391528
-	convokeLegacy = 323764
-)
+
 
 func TestConvokeAttributesDuringChannel(t *testing.T) {
 	events := []map[string]any{

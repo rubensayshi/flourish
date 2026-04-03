@@ -9,8 +9,7 @@ import (
 )
 
 const (
-	dryadTranq = 1264659
-	ggNourish  = 422090
+	ggNourish = 422090
 )
 
 func smCombatantInfo(ts int, nodeIDs []int, talentIDs []int) map[string]any {

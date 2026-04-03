@@ -8,8 +8,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const wildGrowth = 48438
-
 func TestIwgAttributesExtraTargetShare(t *testing.T) {
 	events := []map[string]any{makeHeal(100, wildGrowth, 7000)}
 	pipeline := analysis.NewPipeline([]talents.TalentAttributor{talents.NewImprovedWildGrowthAttributor()}, nil, nil)

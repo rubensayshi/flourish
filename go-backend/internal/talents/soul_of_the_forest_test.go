@@ -8,17 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const (
-	swiftmend        = 18562
-	rejuv            = 774
-	germinationRejuv = 155777
-	regrowth         = 8936
-	sotfBuffID       = 114108
-	player           = 1
-	target           = 10
-	spread1          = 20
-	spread2          = 30
-)
+
 
 func TestSotfAttributesBonusFromRejuv(t *testing.T) {
 	events := []map[string]any{

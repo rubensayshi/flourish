@@ -8,13 +8,12 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const symbioticBloom = 439530 // from Python SYMBIOTIC_BLOOM constant
 
 // --- Vigorous Creepers ---
 
 func TestVigorousCreepersBuffOnTargetBoostsHeal(t *testing.T) {
 	events := []map[string]any{
-		makeApply(100, symbioticBloom, withTarget(target)),
+		makeApply(100, symBloom, withTarget(target)),
 		makeHeal(200, rejuv, 12000, withTarget(target)),
 	}
 	pipeline := analysis.NewPipeline([]talents.TalentAttributor{talents.NewVigorousCreepersAttributor()}, nil, nil)
@@ -33,8 +32,8 @@ func TestVigorousCreepersNoBloomNoBonus(t *testing.T) {
 
 func TestVigorousCreepersBloomOwnHealingNotCounted(t *testing.T) {
 	events := []map[string]any{
-		makeApply(100, symbioticBloom, withTarget(target)),
-		makeHeal(200, symbioticBloom, 5000, withTarget(target)),
+		makeApply(100, symBloom, withTarget(target)),
+		makeHeal(200, symBloom, 5000, withTarget(target)),
 	}
 	pipeline := analysis.NewPipeline([]talents.TalentAttributor{talents.NewVigorousCreepersAttributor()}, nil, nil)
 	results := pipeline.Run(events)
@@ -43,8 +42,8 @@ func TestVigorousCreepersBloomOwnHealingNotCounted(t *testing.T) {
 
 func TestVigorousCreepersBloomRemovedNoBonus(t *testing.T) {
 	events := []map[string]any{
-		makeApply(100, symbioticBloom, withTarget(target)),
-		makeRemove(150, symbioticBloom, withTarget(target)),
+		makeApply(100, symBloom, withTarget(target)),
+		makeRemove(150, symBloom, withTarget(target)),
 		makeHeal(200, rejuv, 12000, withTarget(target)),
 	}
 	pipeline := analysis.NewPipeline([]talents.TalentAttributor{talents.NewVigorousCreepersAttributor()}, nil, nil)
@@ -57,8 +56,8 @@ func TestVigorousCreepersBloomRemovedNoBonus(t *testing.T) {
 func TestImplantSmTriggersBloom(t *testing.T) {
 	events := []map[string]any{
 		makeCast(100, swiftmend),
-		makeApply(200, symbioticBloom, withTarget(target)),
-		makeHeal(300, symbioticBloom, 8000, withTarget(target)),
+		makeApply(200, symBloom, withTarget(target)),
+		makeHeal(300, symBloom, 8000, withTarget(target)),
 	}
 	pipeline := analysis.NewPipeline([]talents.TalentAttributor{talents.NewImplantAttributor()}, nil, nil)
 	results := pipeline.Run(events)
@@ -68,8 +67,8 @@ func TestImplantSmTriggersBloom(t *testing.T) {
 func TestImplantWgTriggersBloom(t *testing.T) {
 	events := []map[string]any{
 		makeCast(100, wildGrowth, withTarget(target)),
-		makeApply(200, symbioticBloom, withTarget(20)),
-		makeHeal(300, symbioticBloom, 5000, withTarget(20)),
+		makeApply(200, symBloom, withTarget(20)),
+		makeHeal(300, symBloom, 5000, withTarget(20)),
 	}
 	pipeline := analysis.NewPipeline([]talents.TalentAttributor{talents.NewImplantAttributor()}, nil, nil)
 	results := pipeline.Run(events)
@@ -78,8 +77,8 @@ func TestImplantWgTriggersBloom(t *testing.T) {
 
 func TestImplantNaturalBloomNotAttributed(t *testing.T) {
 	events := []map[string]any{
-		makeApply(100, symbioticBloom, withTarget(target)),
-		makeHeal(200, symbioticBloom, 5000, withTarget(target)),
+		makeApply(100, symBloom, withTarget(target)),
+		makeHeal(200, symBloom, 5000, withTarget(target)),
 	}
 	pipeline := analysis.NewPipeline([]talents.TalentAttributor{talents.NewImplantAttributor()}, nil, nil)
 	results := pipeline.Run(events)
@@ -89,8 +88,8 @@ func TestImplantNaturalBloomNotAttributed(t *testing.T) {
 func TestImplantBloomOutsideWindowNotAttributed(t *testing.T) {
 	events := []map[string]any{
 		makeCast(100, swiftmend),
-		makeApply(700, symbioticBloom, withTarget(target)),
-		makeHeal(800, symbioticBloom, 5000, withTarget(target)),
+		makeApply(700, symBloom, withTarget(target)),
+		makeHeal(800, symBloom, 5000, withTarget(target)),
 	}
 	pipeline := analysis.NewPipeline([]talents.TalentAttributor{talents.NewImplantAttributor()}, nil, nil)
 	results := pipeline.Run(events)
@@ -100,7 +99,7 @@ func TestImplantBloomOutsideWindowNotAttributed(t *testing.T) {
 func TestImplantNonBloomHealingNotAttributed(t *testing.T) {
 	events := []map[string]any{
 		makeCast(100, swiftmend),
-		makeApply(200, symbioticBloom, withTarget(target)),
+		makeApply(200, symBloom, withTarget(target)),
 		makeHeal(300, rejuv, 10000, withTarget(target)),
 	}
 	pipeline := analysis.NewPipeline([]talents.TalentAttributor{talents.NewImplantAttributor()}, nil, nil)
@@ -112,7 +111,7 @@ func TestImplantNonBloomHealingNotAttributed(t *testing.T) {
 
 func TestRootNetworkSingleBloomGives2Pct(t *testing.T) {
 	events := []map[string]any{
-		makeApply(100, symbioticBloom, withTarget(target)),
+		makeApply(100, symBloom, withTarget(target)),
 		makeHeal(200, rejuv, 10000, withTarget(20)),
 	}
 	pipeline := analysis.NewPipeline([]talents.TalentAttributor{talents.NewRootNetworkAttributor()}, nil, nil)
@@ -123,8 +122,8 @@ func TestRootNetworkSingleBloomGives2Pct(t *testing.T) {
 
 func TestRootNetworkMultipleBlooms(t *testing.T) {
 	events := []map[string]any{
-		makeApply(100, symbioticBloom, withTarget(target)),
-		makeApply(110, symbioticBloom, withTarget(20)),
+		makeApply(100, symBloom, withTarget(target)),
+		makeApply(110, symBloom, withTarget(20)),
 		makeHeal(200, rejuv, 10000, withTarget(30)),
 	}
 	pipeline := analysis.NewPipeline([]talents.TalentAttributor{talents.NewRootNetworkAttributor()}, nil, nil)

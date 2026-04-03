@@ -1,7 +1,38 @@
 package talents_test
 
-// Shared test helpers for talent tests.
-// These construct raw event dicts matching WCL format.
+// Shared test helpers and constants for talent tests.
+
+// Spell IDs
+const (
+	swiftmend        = 18562
+	rejuv            = 774
+	germinationRejuv = 155777
+	regrowth         = 8936
+	wildGrowth       = 48438
+	lifebloom        = 33763
+	lifebloomBloom   = 33778
+	convoke          = 391528
+	convokeLegacy    = 323764
+	nourish          = 422090
+	treantHeal       = 142421
+	efflorescence    = 81269
+	dreamBloom       = 434141
+	dryadBeam        = 1264905
+	dryadTranq       = 1264659
+	dryadRegrowth    = 1264664
+	symBloom         = 439530
+	sotfBuffID       = 114108
+	guardianAbil     = 102693
+)
+
+// Actor IDs
+const (
+	player    = 1
+	target    = 10
+	spread1   = 20
+	spread2   = 30
+	petSource = 50
+)
 
 func makeHeal(ts, ability, amount int, opts ...func(map[string]any)) map[string]any {
 	m := map[string]any{
@@ -141,9 +172,20 @@ func withTalentTree(nodes []map[string]any) func(map[string]any) {
 	}
 }
 
-// runPipeline is a convenience wrapper for talent tests.
-func runPipeline(attributors []interface{ Name() string }, events []map[string]any) map[string]float64 {
-	// This will be replaced with the actual pipeline call once implemented.
-	// For now, tests reference analysis.NewPipeline directly.
-	return nil
+func makeSummon(ts, ability int, opts ...func(map[string]any)) map[string]any {
+	m := map[string]any{
+		"timestamp":     ts,
+		"type":          "summon",
+		"sourceID":      1,
+		"targetID":      2,
+		"abilityGameID": ability,
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+func withMastery(v float64) func(map[string]any) {
+	return func(m map[string]any) { m["mastery"] = v }
 }
