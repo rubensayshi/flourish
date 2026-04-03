@@ -7,24 +7,24 @@ import (
 )
 
 type AnalysisResults struct {
-	TotalHealing      int
-	Wasted            int
-	HighHealthHealing int
-	TalentHealing     map[string]float64
-	TalentRanks       map[string]int
-	FightDurationMs   int
-	CombatantInfo     *models.CombatantInfoEvent
+	TotalHealing        int
+	Wasted              int
+	HighHealthHealing   int
+	HighHealthThreshold float64 // the threshold used (0 = not tracked)
+	TalentHealing       map[string]float64
+	TalentRanks         map[string]int
+	FightDurationMs     int
+	CombatantInfo       *models.CombatantInfoEvent
 }
 
-const HighHealthThreshold = 0.8
-
 type Pipeline struct {
-	Attributors    []talents.TalentAttributor
-	HotTracker     *tracking.HotTracker
-	BuffTracker    *tracking.BuffTracker
-	HealthTracker  *tracking.HealthTracker
-	PetIDs         map[int]bool
-	PlayerPetIDs   map[int]bool
+	Attributors         []talents.TalentAttributor
+	HotTracker          *tracking.HotTracker
+	BuffTracker         *tracking.BuffTracker
+	HealthTracker       *tracking.HealthTracker
+	HighHealthThreshold float64 // heals on targets above this % are excluded (1.0 = disabled)
+	PetIDs              map[int]bool
+	PlayerPetIDs        map[int]bool
 }
 
 func NewPipeline(attributors []talents.TalentAttributor, petIDs, playerPetIDs map[int]bool) *Pipeline {
@@ -48,8 +48,9 @@ func NewPipeline(attributors []talents.TalentAttributor, petIDs, playerPetIDs ma
 
 func (p *Pipeline) Run(rawEvents []map[string]any) *AnalysisResults {
 	results := &AnalysisResults{
-		TalentHealing: make(map[string]float64),
-		TalentRanks:   make(map[string]int),
+		TalentHealing:       make(map[string]float64),
+		TalentRanks:         make(map[string]int),
+		HighHealthThreshold: p.HighHealthThreshold,
 	}
 	for _, attr := range p.Attributors {
 		results.TalentHealing[attr.Name()] = 0.0
@@ -119,10 +120,10 @@ func (p *Pipeline) Run(rawEvents []map[string]any) *AnalysisResults {
 				continue
 			}
 
-			// High-health filter: skip talent attribution for heals on targets >80% HP
-			if p.HealthTracker != nil {
+			// High-health filter: skip talent attribution for heals on targets above threshold
+			if p.HealthTracker != nil && p.HighHealthThreshold < 1.0 {
 				healthPct := p.HealthTracker.GetHealthPct(he.TargetID, he.Timestamp)
-				if healthPct > HighHealthThreshold {
+				if healthPct > p.HighHealthThreshold {
 					results.HighHealthHealing += he.Amount
 					continue
 				}

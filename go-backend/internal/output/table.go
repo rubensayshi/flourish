@@ -6,69 +6,275 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/charmbracelet/lipgloss"
+	"github.com/charmbracelet/lipgloss/table"
 	"github.com/rdruid-talent-analyzer/go-backend/internal/analysis"
+	"github.com/rdruid-talent-analyzer/go-backend/internal/web"
 )
+
+const barMax = 20
+
+var (
+	green  = lipgloss.Color("#4ade80")
+	dim    = lipgloss.Color("#555555")
+	yellow = lipgloss.Color("#facc15")
+	purple = lipgloss.Color("#c084fc")
+	cyan   = lipgloss.Color("#22d3ee")
+	orange = lipgloss.Color("#fb923c")
+	white  = lipgloss.Color("#e4e4e7")
+
+	headerStyle   = lipgloss.NewStyle().Bold(true).Foreground(white)
+	nameStyle     = lipgloss.NewStyle().Foreground(white)
+	numStyle      = lipgloss.NewStyle().Foreground(lipgloss.Color("#a1a1aa"))
+	summaryName   = lipgloss.NewStyle().Foreground(yellow).Italic(true)
+	titleStyle    = lipgloss.NewStyle().Bold(true).Foreground(purple).MarginBottom(1)
+	sectionColors = map[string]lipgloss.Color{
+		"Keeper of the Grove": cyan,
+		"Wildstalker":         orange,
+	}
+)
+
+func formatNum(n float64) string {
+	neg := ""
+	if n < 0 {
+		neg = "-"
+		n = -n
+	}
+	s := fmt.Sprintf("%.0f", n)
+	if len(s) <= 3 {
+		return neg + s
+	}
+	var parts []string
+	for len(s) > 3 {
+		parts = append([]string{s[len(s)-3:]}, parts...)
+		s = s[:len(s)-3]
+	}
+	parts = append([]string{s}, parts...)
+	return neg + strings.Join(parts, ",")
+}
+
+func bar(pct, maxPct float64) string {
+	ratio := 0.0
+	if maxPct > 0 {
+		ratio = pct / maxPct
+	}
+	filled := int(math.Round(ratio * barMax))
+	if filled > barMax {
+		filled = barMax
+	}
+	if filled < 0 {
+		filled = 0
+	}
+	filledStr := lipgloss.NewStyle().Foreground(green).Render(strings.Repeat("█", filled))
+	emptyStr := lipgloss.NewStyle().Foreground(dim).Render(strings.Repeat("░", barMax-filled))
+	return filledStr + emptyStr
+}
+
+type rowKind int
+
+const (
+	rowData rowKind = iota
+	rowSection
+	rowBlank
+	rowSummary
+)
+
+type tableRow struct {
+	kind    rowKind
+	section string // for section headers
+	cols    []string
+}
 
 func RenderResults(results *analysis.AnalysisResults, fightName, playerName string) string {
 	var sb strings.Builder
 
 	if fightName != "" || playerName != "" {
-		sb.WriteString(fmt.Sprintf("%s — %s\n", fightName, playerName))
+		sb.WriteString(titleStyle.Render(fmt.Sprintf("%s — %s", fightName, playerName)))
+		sb.WriteString("\n")
 	}
 
 	durationSec := math.Max(float64(results.FightDurationMs)/1000.0, 1.0)
 	total := float64(results.TotalHealing)
 
-	// Sort talents by healing descending
 	type entry struct {
 		name   string
 		amount float64
+		group  string // "", "Keeper of the Grove", "Wildstalker"
 	}
-	var entries []entry
+
+	var specEntries, heroEntries []entry
 	allAttributed := 0.0
+	detectedHeroTree := ""
 	for name, amount := range results.TalentHealing {
-		if amount > 0 {
-			entries = append(entries, entry{name, amount})
-			allAttributed += amount
+		if amount <= 0 {
+			continue
+		}
+		allAttributed += amount
+		tree := ""
+		for treeName, talents := range web.HeroTrees {
+			if talents[name] {
+				tree = treeName
+				detectedHeroTree = treeName
+				break
+			}
+		}
+		e := entry{name, amount, tree}
+		if tree != "" {
+			heroEntries = append(heroEntries, e)
+		} else {
+			specEntries = append(specEntries, e)
 		}
 	}
-	sort.Slice(entries, func(i, j int) bool { return entries[i].amount > entries[j].amount })
+	sort.Slice(specEntries, func(i, j int) bool { return specEntries[i].amount > specEntries[j].amount })
+	sort.Slice(heroEntries, func(i, j int) bool { return heroEntries[i].amount > heroEntries[j].amount })
 
-	sb.WriteString(fmt.Sprintf("%-30s %10s %6s %8s\n", "Talent", "Healing", "%", "HPS"))
-	sb.WriteString(strings.Repeat("-", 56) + "\n")
+	// Max pct across all entries for bar scaling
+	maxPct := 0.0
+	for _, e := range specEntries {
+		if pct := e.amount / math.Max(total, 1) * 100; pct > maxPct {
+			maxPct = pct
+		}
+	}
+	for _, e := range heroEntries {
+		if pct := e.amount / math.Max(total, 1) * 100; pct > maxPct {
+			maxPct = pct
+		}
+	}
 
-	for _, e := range entries {
+	makeRow := func(e entry) tableRow {
 		pct := 0.0
 		if total > 0 {
 			pct = e.amount / total * 100
 		}
 		hps := e.amount / durationSec
-		sb.WriteString(fmt.Sprintf("%-30s %10.0f %5.1f%% %8.0f\n", e.name, e.amount, pct, hps))
+		return tableRow{kind: rowData, cols: []string{
+			e.name,
+			formatNum(e.amount),
+			fmt.Sprintf("%.1f%%", pct),
+			formatNum(hps),
+			bar(pct, maxPct),
+		}}
 	}
 
-	sb.WriteString(strings.Repeat("-", 56) + "\n")
+	var tableRows []tableRow
 
-	// Wasted
+	// Spec talents
+	tableRows = append(tableRows, tableRow{kind: rowSection, section: "Spec Talents"})
+	for _, e := range specEntries {
+		tableRows = append(tableRows, makeRow(e))
+	}
+
+	// Hero talents
+	if len(heroEntries) > 0 {
+		heroSum := 0.0
+		for _, e := range heroEntries {
+			heroSum += e.amount
+		}
+		heroPct := 0.0
+		if total > 0 {
+			heroPct = heroSum / total * 100
+		}
+		heroHps := heroSum / durationSec
+		tableRows = append(tableRows, tableRow{kind: rowSection, section: detectedHeroTree, cols: []string{
+			detectedHeroTree,
+			formatNum(heroSum),
+			fmt.Sprintf("%.1f%%", heroPct),
+			formatNum(heroHps),
+			"",
+		}})
+		for _, e := range heroEntries {
+			tableRows = append(tableRows, makeRow(e))
+		}
+	}
+
+	// Summary
+	tableRows = append(tableRows, tableRow{kind: rowBlank})
 	if results.Wasted > 0 {
-		sb.WriteString(fmt.Sprintf("%-30s %10d\n", "Wasted (>50% OH)", results.Wasted))
+		tableRows = append(tableRows, tableRow{kind: rowSummary, cols: []string{"Wasted (>50% OH)", formatNum(float64(results.Wasted)), "", "", ""}})
 	}
-
-	// High health
 	if results.HighHealthHealing > 0 {
-		sb.WriteString(fmt.Sprintf("%-30s %10d\n", "High Health (>80% HP)", results.HighHealthHealing))
+		label := fmt.Sprintf("High Health (>%.0f%% HP)", results.HighHealthThreshold*100)
+		tableRows = append(tableRows, tableRow{kind: rowSummary, cols: []string{label, formatNum(float64(results.HighHealthHealing)), "", "", ""}})
 	}
-
-	// Unattributed
 	unattributed := total - allAttributed - float64(results.Wasted) - float64(results.HighHealthHealing)
 	if unattributed < 0 {
-		sb.WriteString(fmt.Sprintf("%-30s %10s\n", "Unattributed", "—"))
+		tableRows = append(tableRows, tableRow{kind: rowSummary, cols: []string{"Unattributed", "—", "", "", ""}})
 	} else {
-		sb.WriteString(fmt.Sprintf("%-30s %10.0f\n", "Unattributed", unattributed))
+		tableRows = append(tableRows, tableRow{kind: rowSummary, cols: []string{"Unattributed", formatNum(unattributed), "", "", ""}})
 	}
 
-	// Overlap disclaimer
+	// Convert to raw string rows for lipgloss table
+	var rawRows [][]string
+	for _, r := range tableRows {
+		switch r.kind {
+		case rowSection:
+			if len(r.cols) > 0 {
+				rawRows = append(rawRows, r.cols)
+			} else {
+				rawRows = append(rawRows, []string{r.section, "", "", "", ""})
+			}
+		case rowBlank:
+			rawRows = append(rawRows, []string{"", "", "", "", ""})
+		case rowData, rowSummary:
+			rawRows = append(rawRows, r.cols)
+		}
+	}
+
+	t := table.New().
+		Headers("Talent", "Healing", "%", "HPS", "").
+		Rows(rawRows...).
+		Border(lipgloss.RoundedBorder()).
+		BorderStyle(lipgloss.NewStyle().Foreground(dim)).
+		StyleFunc(func(row, col int) lipgloss.Style {
+			if row == table.HeaderRow {
+				return headerStyle.Padding(0, 1)
+			}
+			if row < 0 || row >= len(tableRows) {
+				return lipgloss.NewStyle().Padding(0, 1)
+			}
+			tr := tableRows[row]
+			base := lipgloss.NewStyle().Padding(0, 1)
+
+			switch tr.kind {
+			case rowSection:
+				color := lipgloss.Color("#818cf8") // indigo for spec
+				for prefix, c := range sectionColors {
+					if strings.HasPrefix(tr.section, prefix) {
+						color = c
+						break
+					}
+				}
+				s := base.Bold(true).Foreground(color).PaddingTop(1)
+				if col >= 1 && col <= 3 {
+					return s.Align(lipgloss.Right)
+				}
+				return s
+			case rowBlank:
+				return base.Height(0)
+			case rowSummary:
+				if col == 0 {
+					return summaryName.Padding(0, 1)
+				}
+				return numStyle.Padding(0, 1)
+			default: // rowData
+				switch col {
+				case 0:
+					return nameStyle.Padding(0, 1)
+				case 4:
+					return base
+				default:
+					return numStyle.Padding(0, 1).Align(lipgloss.Right)
+				}
+			}
+		})
+
+	sb.WriteString(t.Render())
+	sb.WriteString("\n")
+
 	if allAttributed > total {
-		sb.WriteString("\nTalents can overlap — total may exceed 100%.\n")
+		note := lipgloss.NewStyle().Foreground(dim).Italic(true)
+		sb.WriteString(note.Render("  Talents can overlap — total may exceed 100%."))
+		sb.WriteString("\n")
 	}
 
 	return sb.String()

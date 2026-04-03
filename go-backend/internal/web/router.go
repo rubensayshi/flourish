@@ -261,12 +261,21 @@ func NewRouterWithAuth(client wcl.Querier, cacheDir string, authState *AuthState
 		attributors := BuildAttributors(config, damageTaken)
 		pipeline := analysis.NewPipeline(attributors, petIDs, playerPetIDs)
 
-		if r.URL.Query().Get("trackHealth") == "true" {
-			fightEvents, err := reqClient.GetFightEvents(code, fightID, startTime, endTime)
-			if err == nil {
-				pipeline.HealthTracker = tracking.NewHealthTracker(fightEvents)
+		healthThreshold := 1.0
+			if ht := r.URL.Query().Get("healthThreshold"); ht != "" {
+				if v, err := strconv.ParseFloat(ht, 64); err == nil && v >= 0 && v <= 1 {
+					healthThreshold = v
+				}
+			} else if r.URL.Query().Get("trackHealth") == "true" {
+				healthThreshold = 0.8
 			}
-		}
+			if healthThreshold < 1.0 {
+				fightEvents, err := reqClient.GetFightEvents(code, fightID, startTime, endTime)
+				if err == nil {
+					pipeline.HealthTracker = tracking.NewHealthTracker(fightEvents)
+					pipeline.HighHealthThreshold = healthThreshold
+				}
+			}
 
 		results := pipeline.Run(events)
 

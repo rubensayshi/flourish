@@ -38,33 +38,33 @@ func main() {
 	// --- analyze command ---
 	var fightID int
 	var playerName string
-	var trackHealth bool
+	var healthThreshold float64
 
 	analyzeCmd := &cobra.Command{
 		Use:   "analyze <report_code>",
 		Short: "Analyze a WarcraftLogs report",
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			runAnalyze(args[0], fightID, playerName, trackHealth)
+			runAnalyze(args[0], fightID, playerName, healthThreshold)
 		},
 	}
 	analyzeCmd.Flags().IntVar(&fightID, "fight", 0, "Fight ID (interactive if omitted)")
 	analyzeCmd.Flags().StringVar(&playerName, "player", "", "Player name (interactive if omitted)")
-	analyzeCmd.Flags().BoolVar(&trackHealth, "track-health", false, "Track target health bars (fetches all fight events)")
+	analyzeCmd.Flags().Float64Var(&healthThreshold, "health-threshold", 1.0, "Exclude heals on targets above this HP% (e.g. 0.8 for 80%)")
 	rootCmd.AddCommand(analyzeCmd)
 
 	// Allow `flourish <code>` as shorthand for `flourish analyze <code>`
 	rootCmd.Args = cobra.ArbitraryArgs
 	rootCmd.Run = func(cmd *cobra.Command, args []string) {
 		if len(args) > 0 && !strings.HasPrefix(args[0], "-") {
-			runAnalyze(args[0], fightID, playerName, trackHealth)
+			runAnalyze(args[0], fightID, playerName, healthThreshold)
 			return
 		}
 		cmd.Help()
 	}
 	rootCmd.Flags().IntVar(&fightID, "fight", 0, "Fight ID")
 	rootCmd.Flags().StringVar(&playerName, "player", "", "Player name")
-	rootCmd.Flags().BoolVar(&trackHealth, "track-health", false, "Track target health bars")
+	rootCmd.Flags().Float64Var(&healthThreshold, "health-threshold", 1.0, "Exclude heals on targets above this HP% (e.g. 0.8 for 80%)")
 
 	// --- serve command ---
 	var port string
@@ -95,7 +95,7 @@ func newClient() wcl.Querier {
 	return wcl.NewCachedClient(inner, "data/cache")
 }
 
-func runAnalyze(reportCode string, fightID int, playerName string, trackHealth bool) {
+func runAnalyze(reportCode string, fightID int, playerName string, healthThreshold float64) {
 	client := newClient()
 
 	report, err := client.GetReport(reportCode)
@@ -249,8 +249,8 @@ func runAnalyze(reportCode string, fightID int, playerName string, trackHealth b
 
 	pipeline := analysis.NewPipeline(attributors, petIDs, playerPetIDs)
 
-	if trackHealth {
-		fmt.Println("Fetching all fight events for health tracking...")
+	if healthThreshold < 1.0 {
+		fmt.Printf("Fetching all fight events for health tracking (threshold: %.0f%%)...\n", healthThreshold*100)
 		fightEvents, err := client.GetFightEvents(reportCode, selectedFight.id, selectedFight.startTime, selectedFight.endTime)
 		if err != nil {
 			fmt.Printf("Error fetching fight events: %v\n", err)
@@ -258,6 +258,7 @@ func runAnalyze(reportCode string, fightID int, playerName string, trackHealth b
 		}
 		fmt.Printf("Fetched %d fight events\n", len(fightEvents))
 		pipeline.HealthTracker = tracking.NewHealthTracker(fightEvents)
+		pipeline.HighHealthThreshold = healthThreshold
 	}
 
 	results := pipeline.Run(events)
