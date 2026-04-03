@@ -60,6 +60,25 @@ func NewPatientCustodianAttributor() *StaticBuffAttributor {
 	return newStaticBuff("Patient Custodian", intPtr(94630), nil, []int{774, 155777, 8936, 48438, 33763, 33778, 1244341, 1264664}, 0.06)
 }
 
+func NewImprovedSwiftmendAttributor() *StaticBuffAttributor {
+	return newStaticBuff("Improved Swiftmend", intPtr(82063), nil, []int{18562}, 0.3)
+}
+
+func NewUnstoppableGrowthAttributor() *StaticBuffAttributor {
+	// Reduced falloff ≈ 27.7% average bonus
+	return newStaticBuff("Unstoppable Growth", intPtr(82061), nil, []int{48438}, 0.277)
+}
+
+func NewLivelinessAttributor() *StaticBuffAttributor {
+	return newStaticBuff("Liveliness", intPtr(82064), intPtr(103130),
+		[]int{774, 155777, 8936, 1264664, 48438, 33763, 33778, 1244341}, 0.05)
+}
+
+func NewRegenesisAttributor() *StaticBuffAttributor {
+	// Approximation of conditional low-health bonus as flat 15%
+	return newStaticBuff("Regenesis", intPtr(82062), nil, []int{774, 155777, 157982, 1264659}, 0.15)
+}
+
 // IntensityAttributor: Regrowth crits at 260% instead of 200%.
 // On Regrowth crits, bonus = amount - amount/1.3
 type IntensityAttributor struct {
