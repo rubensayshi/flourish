@@ -23,13 +23,6 @@ const (
 	dryadsDanceSpeedFactor   = 1.25
 	onCooldownToleranceMS    = 1500
 	dryadGapThresholdMS      = 2000
-
-	smSwiftmend = 18562
-	smWildGrowth = 48438
-
-	dryadTranqSpell    = 1264659
-	dryadRGSpell       = 1264664
-	spiritThicketSpell = 1264905
 )
 
 func ComputeEffectiveCd(hasRenewingSurge, hasEarlySpring bool, dryadOverlapMS float64) float64 {
@@ -97,7 +90,7 @@ func (a *SmCooldownReductionAttributor) closeDryadWindow() {
 }
 
 func isDryadHealSpell(id int) bool {
-	return id == dryadTranqSpell || id == dryadRGSpell || id == spiritThicketSpell
+	return id == DryadTranquility || id == DryadRegrowthSpell || id == SpiritOfTheThicket
 }
 
 func (a *SmCooldownReductionAttributor) ProcessEvent(event models.Event, hot *tracking.HotTracker, buff *tracking.BuffTracker) {
@@ -119,7 +112,7 @@ func (a *SmCooldownReductionAttributor) ProcessEvent(event models.Event, hot *tr
 		}
 	}
 
-	if ce, ok := event.(*models.CastEvent); ok && ce.AbilityID == smSwiftmend {
+	if ce, ok := event.(*models.CastEvent); ok && ce.AbilityID == Swiftmend {
 		a.smCasts = append(a.smCasts, ce.Timestamp)
 	}
 }
@@ -262,7 +255,7 @@ func (a *WgCooldownReductionAttributor) IsSelected() bool {
 func (a *WgCooldownReductionAttributor) WgCastTimestamps() []int { return a.wgCasts }
 
 func (a *WgCooldownReductionAttributor) ProcessEvent(event models.Event, hot *tracking.HotTracker, buff *tracking.BuffTracker) {
-	if ce, ok := event.(*models.CastEvent); ok && ce.Type == "begincast" && ce.AbilityID == smWildGrowth {
+	if ce, ok := event.(*models.CastEvent); ok && ce.Type == models.EventBeginCast && ce.AbilityID == WildGrowth {
 		a.wgCasts = append(a.wgCasts, ce.Timestamp)
 	}
 }

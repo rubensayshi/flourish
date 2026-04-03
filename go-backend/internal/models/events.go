@@ -2,6 +2,18 @@ package models
 
 const OverhealWasteThreshold = 0.5
 
+// Event type strings from WarcraftLogs.
+const (
+	EventCombatantInfo = "combatantinfo"
+	EventCast          = "cast"
+	EventBeginCast     = "begincast"
+	EventHeal          = "heal"
+	EventApplyBuff     = "applybuff"
+	EventRefreshBuff   = "refreshbuff"
+	EventRemoveBuff    = "removebuff"
+	EventSummon        = "summon"
+)
+
 // Event is the interface all parsed events implement.
 type Event interface {
 	GetBase() *BaseEvent
@@ -138,7 +150,7 @@ func getString(raw map[string]any, key string) string {
 func ParseEvent(raw map[string]any) Event {
 	eventType := getString(raw, "type")
 
-	if eventType == "combatantinfo" {
+	if eventType == EventCombatantInfo {
 		talentTree, _ := raw["talentTree"].([]any)
 		talentNodes := make(map[int]bool)
 		talentIDs := make(map[int]bool)
@@ -176,9 +188,9 @@ func ParseEvent(raw map[string]any) Event {
 	abilityID := getInt(raw, "abilityGameID", 0)
 
 	switch eventType {
-	case "cast", "begincast":
+	case EventCast, EventBeginCast:
 		return &CastEvent{BaseEvent: base, TargetID: targetID, AbilityID: abilityID}
-	case "heal":
+	case EventHeal:
 		return &HealEvent{
 			BaseEvent: base,
 			TargetID:  targetID,
@@ -189,13 +201,13 @@ func ParseEvent(raw map[string]any) Event {
 			HitType:   getInt(raw, "hitType", 1),
 			Tick:      getBool(raw, "tick"),
 		}
-	case "applybuff":
+	case EventApplyBuff:
 		return &ApplyBuffEvent{BaseEvent: base, TargetID: targetID, AbilityID: abilityID}
-	case "refreshbuff":
+	case EventRefreshBuff:
 		return &RefreshBuffEvent{BaseEvent: base, TargetID: targetID, AbilityID: abilityID}
-	case "removebuff":
+	case EventRemoveBuff:
 		return &RemoveBuffEvent{BaseEvent: base, TargetID: targetID, AbilityID: abilityID}
-	case "summon":
+	case EventSummon:
 		return &SummonEvent{BaseEvent: base, TargetID: targetID, AbilityID: abilityID}
 	default:
 		return nil

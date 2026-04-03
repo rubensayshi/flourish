@@ -34,7 +34,7 @@ func heroTreeFor(name string) string {
 // BuildAttributors creates the full set of talent attributors from config.
 func BuildAttributors(config *models.Config, damageTaken int) []talents.TalentAttributor {
 	convokeCfg := config.Talents["convoke_the_spirits"]
-	convokeRatio := 0.7
+	convokeRatio := talents.DefaultConvokeHealingRatio
 	if convokeCfg.Multiplier != nil {
 		convokeRatio = *convokeCfg.Multiplier
 	}

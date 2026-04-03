@@ -22,6 +22,15 @@ type Config struct {
 	Talents map[string]TalentConfig
 }
 
+var defaultDRTable = []float64{1.0, 1.7, 2.3, 2.8, 3.2}
+
+func DefaultConfig() *Config {
+	return &Config{
+		Mastery: MasteryConfig{BaseStacks: 2, DRTable: defaultDRTable},
+		Talents: map[string]TalentConfig{},
+	}
+}
+
 func LoadConfig(path string) (*Config, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
@@ -36,7 +45,7 @@ func LoadConfig(path string) (*Config, error) {
 	config := &Config{
 		Mastery: MasteryConfig{
 			BaseStacks: 2,
-			DRTable:    []float64{1.0, 1.7, 2.3, 2.8, 3.2},
+			DRTable:    defaultDRTable,
 		},
 		Talents: make(map[string]TalentConfig),
 	}

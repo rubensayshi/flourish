@@ -20,6 +20,7 @@ import (
 	"github.com/rdruid-talent-analyzer/go-backend/internal/analysis"
 	"github.com/rdruid-talent-analyzer/go-backend/internal/models"
 	"github.com/rdruid-talent-analyzer/go-backend/internal/output"
+	"github.com/rdruid-talent-analyzer/go-backend/internal/talents"
 	"github.com/rdruid-talent-analyzer/go-backend/internal/wcl"
 	"github.com/rdruid-talent-analyzer/go-backend/internal/web"
 )
@@ -217,7 +218,7 @@ func runAnalyze(reportCode string, fightID int, playerName string) {
 	}
 	fmt.Printf("Fetched %d events\n", len(events))
 
-	regrowthFilter := `IN RANGE FROM (type = "applybuff" OR type = "refreshbuff") AND ability.id = 8936 TO type = "removebuff" AND ability.id = 8936 GROUP BY target ON target END`
+	regrowthFilter := talents.RegrowthDamageTakenFilter
 	damageTaken, _ := client.GetDamageTaken(reportCode, selectedFight.id, selectedPlayer.id, selectedFight.startTime, selectedFight.endTime, regrowthFilter)
 
 	configPath := "config/talents.yaml"
@@ -226,10 +227,7 @@ func runAnalyze(reportCode string, fightID int, playerName string) {
 	}
 	config, err := models.LoadConfig(configPath)
 	if err != nil {
-		config = &models.Config{
-			Mastery: models.MasteryConfig{BaseStacks: 2, DRTable: []float64{1.0, 1.7, 2.3, 2.8, 3.2}},
-			Talents: map[string]models.TalentConfig{},
-		}
+		config = models.DefaultConfig()
 	}
 
 	attributors := web.BuildAttributors(config, damageTaken)

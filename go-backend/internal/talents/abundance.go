@@ -7,13 +7,7 @@ import (
 	"github.com/rdruid-talent-analyzer/go-backend/internal/tracking"
 )
 
-const (
-	abundRejuv          = 774
-	abundGermRejuv      = 155777
-	abundRegrowth       = 8936
-	abundCritPerRejuv   = 0.08
-	abundCritRatingPPct = 700.0
-)
+const abundCritPerRejuv = 0.08
 
 type AbundanceAttributor struct {
 	BaseAttributor
@@ -26,11 +20,11 @@ func NewAbundanceAttributor() *AbundanceAttributor {
 }
 
 func (a *AbundanceAttributor) ProcessHeal(event *models.HealEvent, hot *tracking.HotTracker, buff *tracking.BuffTracker) float64 {
-	if event.AbilityID != abundRegrowth || event.HitType != 2 {
+	if event.AbilityID != Regrowth || event.HitType != 2 {
 		return 0.0
 	}
 
-	rejuvCount := len(hot.GetAllBySpell(abundRejuv)) + len(hot.GetAllBySpell(abundGermRejuv))
+	rejuvCount := len(hot.GetAllBySpell(Rejuvenation)) + len(hot.GetAllBySpell(GerminationRejuv))
 	if rejuvCount <= 0 {
 		return 0.0
 	}
@@ -39,7 +33,7 @@ func (a *AbundanceAttributor) ProcessHeal(event *models.HealEvent, hot *tracking
 
 	baseCrit := 0.0
 	if a.CombatantInfo != nil {
-		baseCrit = a.CombatantInfo.CritSpell / abundCritRatingPPct
+		baseCrit = a.CombatantInfo.CritSpell / CritRatingPerPercent
 	}
 	baseCrit = math.Max(baseCrit, 0.05)
 

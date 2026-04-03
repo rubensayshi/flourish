@@ -36,15 +36,15 @@ func (a *DirectSpellAttributor) ProcessHeal(event *models.HealEvent, hot *tracki
 func intPtr(v int) *int { return &v }
 
 func NewEverbloomSplashAttributor() *DirectSpellAttributor {
-	return newDirectSpell("Everbloom: Splash", intPtr(110424), intPtr(137039), []int{1244341})
+	return newDirectSpell("Everbloom: Splash", intPtr(110424), intPtr(137039), []int{EverbloomSplash})
 }
 
 func NewEfflorescenceAttributor() *DirectSpellAttributor {
-	return newDirectSpell("Efflorescence", intPtr(82057), nil, []int{81269})
+	return newDirectSpell("Efflorescence", intPtr(82057), nil, []int{Efflorescence})
 }
 
 func NewVerdancyAttributor() *DirectSpellAttributor {
-	return newDirectSpell("Verdancy", intPtr(82059), nil, []int{392329})
+	return newDirectSpell("Verdancy", intPtr(82059), nil, []int{Verdancy})
 }
 
 // GroveGuardiansAttributor attributes treant pet healing, dividing out
@@ -55,25 +55,26 @@ type GroveGuardiansAttributor struct {
 }
 
 func NewGroveGuardiansAttributor() *GroveGuardiansAttributor {
-	base := newDirectSpell("Grove Guardians", intPtr(82043), nil, []int{422090, 142421})
+	base := newDirectSpell("Grove Guardians", intPtr(82043), nil, []int{GroveGuardianNourish, GroveGuardianHeal})
 	base.AllowPetSource = true
 	return &GroveGuardiansAttributor{DirectSpellAttributor: *base, divisor: 1.0}
 }
 
 const (
-	wildSynthesisNode    = 94535
-	bounteousBloomNode   = 94591
-	bounteousBloomEntry  = 117184
+	wildSynthesisNode      = 94535
+	bounteousBloomNode     = 94591
+	bounteousBloomEntry    = 117184
+	wildSynthesisMultDivisor = 1.3 // 1 + 0.3 (Wild Synthesis / Bounteous Bloom multiplier)
 )
 
 func (a *GroveGuardiansAttributor) SetCombatantInfo(info *models.CombatantInfoEvent) {
 	a.BaseAttributor.SetCombatantInfo(info)
 	a.divisor = 1.0
 	if a.HasTalent(wildSynthesisNode) {
-		a.divisor *= 1.3
+		a.divisor *= wildSynthesisMultDivisor
 	}
 	if info != nil && info.TalentNodes[bounteousBloomNode] && info.TalentIDs[bounteousBloomEntry] {
-		a.divisor *= 1.3
+		a.divisor *= wildSynthesisMultDivisor
 	}
 }
 
@@ -86,49 +87,49 @@ func (a *GroveGuardiansAttributor) ProcessHeal(event *models.HealEvent, hot *tra
 }
 
 func NewDreamSurgeAttributor() *DirectSpellAttributor {
-	return newDirectSpell("Dream Surge", intPtr(94600), nil, []int{434141})
+	return newDirectSpell("Dream Surge", intPtr(94600), nil, []int{DreamSurge})
 }
 
 func NewSpiritOfTheThicketAttributor() *DirectSpellAttributor {
-	a := newDirectSpell("Spirit of the Thicket", intPtr(109712), nil, []int{1264905})
+	a := newDirectSpell("Spirit of the Thicket", intPtr(109712), nil, []int{SpiritOfTheThicket})
 	a.AllowPetSource = true
 	return a
 }
 
 func NewBurstingGrowthAttributor() *DirectSpellAttributor {
-	return newDirectSpell("Bursting Growth", intPtr(109716), nil, []int{440121})
+	return newDirectSpell("Bursting Growth", intPtr(109716), nil, []int{BurstingGrowthSpell})
 }
 
 func NewThrivingGrowthAttributor() *DirectSpellAttributor {
-	return newDirectSpell("Thriving Growth", intPtr(94626), nil, []int{474760})
+	return newDirectSpell("Thriving Growth", intPtr(94626), nil, []int{ThrivingGrowthSpell})
 }
 
 func NewNaturesBountyAttributor() *DirectSpellAttributor {
-	return newDirectSpell("Nature's Bounty", intPtr(82072), nil, []int{1264376})
+	return newDirectSpell("Nature's Bounty", intPtr(82072), nil, []int{NaturesBountySpell})
 }
 
 func NewRegenerativeHeartwoodAttributor() *DirectSpellAttributor {
-	return newDirectSpell("Regenerative Heartwood", intPtr(82075), nil, []int{392117})
+	return newDirectSpell("Regenerative Heartwood", intPtr(82075), nil, []int{RegenerativeHeartwood})
 }
 
 func NewYserasGiftAttributor() *DirectSpellAttributor {
-	return newDirectSpell("Ysera's Gift", intPtr(82055), nil, []int{145108, 145109, 145110})
+	return newDirectSpell("Ysera's Gift", intPtr(82055), nil, []int{YserasGift1, YserasGift2, YserasGift3})
 }
 
 func NewEmbraceOfTheDreamAttributor() *DirectSpellAttributor {
-	return newDirectSpell("Embrace of the Dream", intPtr(82071), nil, []int{392124})
+	return newDirectSpell("Embrace of the Dream", intPtr(82071), nil, []int{EmbraceOfTheDream})
 }
 
 func NewThrivingVegetationAttributor() *DirectSpellAttributor {
-	return newDirectSpell("Thriving Vegetation", intPtr(103873), nil, []int{447132})
+	return newDirectSpell("Thriving Vegetation", intPtr(103873), nil, []int{ThrivingVegetation})
 }
 
 func NewCultivationAttributor() *DirectSpellAttributor {
-	return newDirectSpell("Cultivation", intPtr(82056), nil, []int{200390})
+	return newDirectSpell("Cultivation", intPtr(82056), nil, []int{CultivationSpell})
 }
 
 func NewFlourishAttributor() *DirectSpellAttributor {
-	return newDirectSpell("Flourish", intPtr(82053), intPtr(103106), []int{1264659})
+	return newDirectSpell("Flourish", intPtr(82053), intPtr(103106), []int{DryadTranquility})
 }
 
 // RampantGrowthAttributor credits bonus portion of Regrowth HoT ticks (+100%).
@@ -143,7 +144,7 @@ func NewRampantGrowthAttributor() *RampantGrowthAttributor {
 }
 
 func (a *RampantGrowthAttributor) ProcessHeal(event *models.HealEvent, hot *tracking.HotTracker, buff *tracking.BuffTracker) float64 {
-	if event.AbilityID == 8936 && event.Tick {
+	if event.AbilityID == Regrowth && event.Tick {
 		return float64(event.Amount) - float64(event.Amount)/2.0
 	}
 	return 0.0

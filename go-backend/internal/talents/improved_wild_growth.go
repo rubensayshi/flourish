@@ -6,9 +6,7 @@ import (
 )
 
 const (
-	iwgWildGrowth  = 48438
-	iwgTolBuff     = 33891
-	iwgBaseTargets = 5
+	iwgBaseTargets  = 5
 	iwgExtraTargets = 2
 )
 
@@ -23,10 +21,10 @@ func NewImprovedWildGrowthAttributor() *ImprovedWildGrowthAttributor {
 }
 
 func (a *ImprovedWildGrowthAttributor) ProcessHeal(event *models.HealEvent, hot *tracking.HotTracker, buff *tracking.BuffTracker) float64 {
-	if event.AbilityID != iwgWildGrowth {
+	if event.AbilityID != WildGrowth {
 		return 0.0
 	}
-	if buff.IsActive(iwgTolBuff) {
+	if buff.IsActive(TreeOfLifeBuff) {
 		return 0.0
 	}
 	totalTargets := iwgBaseTargets + iwgExtraTargets

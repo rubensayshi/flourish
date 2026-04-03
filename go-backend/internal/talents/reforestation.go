@@ -5,11 +5,7 @@ import (
 	"github.com/rdruid-talent-analyzer/go-backend/internal/tracking"
 )
 
-const (
-	refSwiftmend       = 18562
-	refTolBuff         = 33891
-	refTolDurationMS   = 10000
-)
+const refTolDurationMS = 10000
 
 type ReforestationAttributor struct {
 	BaseAttributor
@@ -25,13 +21,13 @@ func NewReforestationAttributor() *ReforestationAttributor {
 }
 
 func (a *ReforestationAttributor) ProcessEvent(event models.Event, hot *tracking.HotTracker, buff *tracking.BuffTracker) {
-	if ab, ok := event.(*models.ApplyBuffEvent); ok && ab.AbilityID == refTolBuff {
+	if ab, ok := event.(*models.ApplyBuffEvent); ok && ab.AbilityID == TreeOfLifeBuff {
 		a.realTolActive = true
 	}
-	if rb, ok := event.(*models.RemoveBuffEvent); ok && rb.AbilityID == refTolBuff {
+	if rb, ok := event.(*models.RemoveBuffEvent); ok && rb.AbilityID == TreeOfLifeBuff {
 		a.realTolActive = false
 	}
-	if ce, ok := event.(*models.CastEvent); ok && ce.AbilityID == refSwiftmend {
+	if ce, ok := event.(*models.CastEvent); ok && ce.AbilityID == Swiftmend {
 		a.smCount++
 		if a.smCount%4 == 0 && !a.realTolActive {
 			a.reforestationEnd = ce.Timestamp + refTolDurationMS
@@ -46,8 +42,8 @@ func (a *ReforestationAttributor) ProcessHeal(event *models.HealEvent, hot *trac
 	if event.Timestamp > a.reforestationEnd {
 		return 0.0
 	}
-	if event.AbilityID == sotfRejuv || event.AbilityID == sotfGermRejuv {
-		return float64(event.Amount) - float64(event.Amount)/1.5
+	if event.AbilityID == Rejuvenation || event.AbilityID == GerminationRejuv {
+		return float64(event.Amount) - float64(event.Amount)/TolRejuvDivisor
 	}
-	return float64(event.Amount) - float64(event.Amount)/1.1
+	return float64(event.Amount) - float64(event.Amount)/TolOtherDivisor
 }

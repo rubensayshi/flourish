@@ -5,12 +5,7 @@ import (
 	"github.com/rdruid-talent-analyzer/go-backend/internal/tracking"
 )
 
-const (
-	dryadTranq    = 1264659
-	dryadRegrowth = 1264664
-)
-
-var dryadSpells = map[int]bool{dryadTranq: true, dryadRegrowth: true}
+var dryadSpells = map[int]bool{DryadTranquility: true, DryadRegrowthSpell: true}
 
 // SylvanBeckoningAttributor attributes healing from Dryad pet casts.
 type SylvanBeckoningAttributor struct {

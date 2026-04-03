@@ -8,7 +8,6 @@ import (
 const (
 	frenzyWindowMs  = 1500
 	frenzyMaxBlooms = 5
-	lbBloom         = 33778
 )
 
 // BloomingFrenzyAttributor: Everbloom rank 4 — LB blooms 5 times rapidly when SotF is consumed.
@@ -25,7 +24,7 @@ func NewBloomingFrenzyAttributor() *BloomingFrenzyAttributor {
 }
 
 func (a *BloomingFrenzyAttributor) ProcessEvent(event models.Event, hot *tracking.HotTracker, buff *tracking.BuffTracker) {
-	if e, ok := event.(*models.RemoveBuffEvent); ok && e.AbilityID == sotfBuff {
+	if e, ok := event.(*models.RemoveBuffEvent); ok && e.AbilityID == SoulOfTheForestBuff {
 		ts := e.Timestamp
 		a.frenzyStart = &ts
 		a.frenzyCount = 0
@@ -41,7 +40,7 @@ func (a *BloomingFrenzyAttributor) ProcessEvent(event models.Event, hot *trackin
 }
 
 func (a *BloomingFrenzyAttributor) ProcessHeal(event *models.HealEvent, hot *tracking.HotTracker, buff *tracking.BuffTracker) float64 {
-	if event.AbilityID != lbBloom {
+	if event.AbilityID != LifebloomBloom {
 		return 0.0
 	}
 	if a.frenzyStart == nil {

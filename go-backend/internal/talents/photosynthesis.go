@@ -8,11 +8,8 @@ import (
 )
 
 const (
-	photoLifebloom      = 33763
-	photoLifebloomBloom = 33778
-	photoSotfBuff       = 114108
-	photoWindowMS       = 200
-	photoEverbloomMS    = 1200
+	photoWindowMS    = 200
+	photoEverbloomMS = 1200
 )
 
 type PhotosynthesisAttributor struct {
@@ -38,24 +35,24 @@ func NewPhotosynthesisAttributor() *PhotosynthesisAttributor {
 func (a *PhotosynthesisAttributor) ProcessEvent(event models.Event, hot *tracking.HotTracker, buff *tracking.BuffTracker) {
 	switch e := event.(type) {
 	case *models.RemoveBuffEvent:
-		if e.AbilityID == photoLifebloom {
+		if e.AbilityID == Lifebloom {
 			a.lbTransitions = append(a.lbTransitions, [2]int{e.Timestamp, e.TargetID})
-		} else if e.AbilityID == photoSotfBuff {
+		} else if e.AbilityID == SoulOfTheForestBuff {
 			a.sotfConsumptions = append(a.sotfConsumptions, e.Timestamp)
 		}
 	case *models.RefreshBuffEvent:
-		if e.AbilityID == photoLifebloom {
+		if e.AbilityID == Lifebloom {
 			a.lbTransitions = append(a.lbTransitions, [2]int{e.Timestamp, e.TargetID})
 		}
 	case *models.CastEvent:
-		if e.AbilityID == photoLifebloom {
+		if e.AbilityID == Lifebloom {
 			a.lbCasts = append(a.lbCasts, [2]int{e.Timestamp, e.TargetID})
 		}
 	}
 }
 
 func (a *PhotosynthesisAttributor) ProcessHeal(event *models.HealEvent, hot *tracking.HotTracker, buff *tracking.BuffTracker) float64 {
-	if event.AbilityID == photoLifebloomBloom {
+	if event.AbilityID == LifebloomBloom {
 		a.bloomEvents = append(a.bloomEvents, bloomEvent{event.Timestamp, event.TargetID, float64(event.Amount)})
 	}
 	return 0.0

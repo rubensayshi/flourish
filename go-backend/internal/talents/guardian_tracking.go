@@ -6,11 +6,12 @@ import (
 )
 
 const (
-	groveGuardianSummonID      = 102693
 	groveGuardianBaseDurationMs = 8000
-	guardianDurabilityBonus    = 0.2
-	durabilityOfNatureNode     = 94605
-	durabilityOfNatureTalentID = 117200
+	guardianDurabilityBonus     = 0.2
+	durabilityOfNatureNode      = 94605
+	durabilityOfNatureTalentID  = 117200
+	harmonyBonusPerGuardian     = 0.05
+	powerOfNatureBonus          = 0.10
 )
 
 // guardianTracker tracks active Grove Guardian count via summon events.
@@ -40,7 +41,7 @@ func (g *guardianTracker) updateGuardians(event models.Event) {
 	g.guardianCount = len(g.despawnTimes)
 
 	// Track new summons
-	if e, ok := event.(*models.SummonEvent); ok && e.AbilityID == groveGuardianSummonID {
+	if e, ok := event.(*models.SummonEvent); ok && e.AbilityID == GroveGuardianSummon {
 		g.despawnTimes = append(g.despawnTimes, ts+g.guardianDurationMs)
 		// Recount after adding
 		count := 0
@@ -79,7 +80,7 @@ func (a *HarmonyOfTheGroveAttributor) ProcessHeal(event *models.HealEvent, hot *
 	if a.guardianCount <= 0 {
 		return 0.0
 	}
-	multiplier := 0.05 * float64(a.guardianCount)
+	multiplier := harmonyBonusPerGuardian * float64(a.guardianCount)
 	return float64(event.Amount) - float64(event.Amount)/(1+multiplier)
 }
 
@@ -89,7 +90,7 @@ type PowerOfNatureAttributor struct {
 	guardianTracker
 }
 
-var powerOfNatureSpells = map[int]bool{774: true, 155777: true, 81269: true, 33763: true, 33778: true}
+var powerOfNatureSpells = map[int]bool{Rejuvenation: true, GerminationRejuv: true, Efflorescence: true, Lifebloom: true, LifebloomBloom: true}
 
 func NewPowerOfNatureAttributor() *PowerOfNatureAttributor {
 	return &PowerOfNatureAttributor{
@@ -111,5 +112,5 @@ func (a *PowerOfNatureAttributor) ProcessHeal(event *models.HealEvent, hot *trac
 	if a.guardianCount <= 0 || !powerOfNatureSpells[event.AbilityID] {
 		return 0.0
 	}
-	return float64(event.Amount) - float64(event.Amount)/(1+0.10)
+	return float64(event.Amount) - float64(event.Amount)/(1+powerOfNatureBonus)
 }

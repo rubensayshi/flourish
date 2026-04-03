@@ -8,13 +8,11 @@ import (
 )
 
 const (
-	wsSymbioticBloom = 439530
-	wsSwiftmend      = 18562
-	wsWildGrowth     = 48438
-	wsImplantTag     = "implant"
+	wsImplantTag      = "implant"
 	wsImplantWindowMS = 500
-	wsCritRatingPPct  = 700.0
 	wsSICritBonus     = 0.04
+	vigorousCreepers  = 1.2
+	rootNetworkPerBloom = 0.02
 )
 
 // VigorousCreepersAttributor: +20% healing to targets with Symbiotic Bloom.
@@ -29,11 +27,11 @@ func NewVigorousCreepersAttributor() *VigorousCreepersAttributor {
 }
 
 func (a *VigorousCreepersAttributor) ProcessHeal(event *models.HealEvent, hot *tracking.HotTracker, buff *tracking.BuffTracker) float64 {
-	if event.AbilityID == wsSymbioticBloom {
+	if event.AbilityID == SymbioticBloomSpell {
 		return 0.0
 	}
-	if hot.Get(event.TargetID, wsSymbioticBloom) != nil {
-		return float64(event.Amount) - float64(event.Amount)/1.2
+	if hot.Get(event.TargetID, SymbioticBloomSpell) != nil {
+		return float64(event.Amount) - float64(event.Amount)/vigorousCreepers
 	}
 	return 0.0
 }
@@ -52,7 +50,7 @@ func NewImplantAttributor() *ImplantAttributor {
 
 func (a *ImplantAttributor) ProcessEvent(event models.Event, hot *tracking.HotTracker, buff *tracking.BuffTracker) {
 	if ce, ok := event.(*models.CastEvent); ok {
-		if ce.AbilityID == wsSwiftmend || ce.AbilityID == wsWildGrowth {
+		if ce.AbilityID == Swiftmend || ce.AbilityID == WildGrowth {
 			a.recentCasts = append(a.recentCasts, ce.Timestamp)
 			// Clean old entries
 			var cleaned []int
@@ -65,10 +63,10 @@ func (a *ImplantAttributor) ProcessEvent(event models.Event, hot *tracking.HotTr
 		}
 	}
 
-	if ab, ok := event.(*models.ApplyBuffEvent); ok && ab.AbilityID == wsSymbioticBloom {
+	if ab, ok := event.(*models.ApplyBuffEvent); ok && ab.AbilityID == SymbioticBloomSpell {
 		for _, ts := range a.recentCasts {
 			if ab.Timestamp-ts < wsImplantWindowMS {
-				h := hot.Get(ab.TargetID, wsSymbioticBloom)
+				h := hot.Get(ab.TargetID, SymbioticBloomSpell)
 				if h != nil {
 					h.Tags[wsImplantTag] = true
 				}
@@ -79,10 +77,10 @@ func (a *ImplantAttributor) ProcessEvent(event models.Event, hot *tracking.HotTr
 }
 
 func (a *ImplantAttributor) ProcessHeal(event *models.HealEvent, hot *tracking.HotTracker, buff *tracking.BuffTracker) float64 {
-	if event.AbilityID != wsSymbioticBloom {
+	if event.AbilityID != SymbioticBloomSpell {
 		return 0.0
 	}
-	h := hot.Get(event.TargetID, wsSymbioticBloom)
+	h := hot.Get(event.TargetID, SymbioticBloomSpell)
 	if h != nil && h.Tags[wsImplantTag] {
 		return float64(event.Amount)
 	}
@@ -101,11 +99,11 @@ func NewRootNetworkAttributor() *RootNetworkAttributor {
 }
 
 func (a *RootNetworkAttributor) ProcessHeal(event *models.HealEvent, hot *tracking.HotTracker, buff *tracking.BuffTracker) float64 {
-	bloomCount := len(hot.GetAllBySpell(wsSymbioticBloom))
+	bloomCount := len(hot.GetAllBySpell(SymbioticBloomSpell))
 	if bloomCount <= 0 {
 		return 0.0
 	}
-	multiplier := 0.02 * float64(bloomCount)
+	multiplier := rootNetworkPerBloom * float64(bloomCount)
 	return float64(event.Amount) - float64(event.Amount)/(1+multiplier)
 }
 
@@ -127,7 +125,7 @@ func (a *StrategicInfusionAttributor) ProcessHeal(event *models.HealEvent, hot *
 
 	baseCrit := 0.0
 	if a.CombatantInfo != nil {
-		baseCrit = a.CombatantInfo.CritSpell / wsCritRatingPPct
+		baseCrit = a.CombatantInfo.CritSpell / CritRatingPerPercent
 	}
 	baseCrit = math.Max(baseCrit, 0.05)
 

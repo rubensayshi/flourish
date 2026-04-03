@@ -6,12 +6,9 @@ import (
 )
 
 const (
-	convokeSpellID       = 391528
-	convokeLegacyID      = 323764
 	convokeDurationMS    = 4000
 	convokeDurationCGMS  = 3000
 	cenariusGuidanceNode = 82063
-	defaultHealingRatio  = 0.7
 	convokeTag           = "convoke"
 )
 
@@ -23,7 +20,7 @@ type ConvokeAttributor struct {
 
 func NewConvokeAttributor(healingRatio float64) *ConvokeAttributor {
 	if healingRatio == 0 {
-		healingRatio = defaultHealingRatio
+		healingRatio = DefaultConvokeHealingRatio
 	}
 	return &ConvokeAttributor{
 		BaseAttributor: NewBaseAttributor("Convoke the Spirits", intPtr(82064), intPtr(103119)),
@@ -44,7 +41,7 @@ func (a *ConvokeAttributor) isChanneling(ts int) bool {
 
 func (a *ConvokeAttributor) ProcessEvent(event models.Event, hot *tracking.HotTracker, buff *tracking.BuffTracker) {
 	if ce, ok := event.(*models.CastEvent); ok {
-		if ce.AbilityID == convokeSpellID || ce.AbilityID == convokeLegacyID {
+		if ce.AbilityID == ConvokeTheSpirits || ce.AbilityID == ConvokeLegacy {
 			a.channelEnd = ce.Timestamp + a.channelDuration()
 		}
 	}

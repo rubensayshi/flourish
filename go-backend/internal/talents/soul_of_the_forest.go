@@ -6,15 +6,10 @@ import (
 )
 
 const (
-	sotfSwiftmend    = 18562
-	sotfRejuv        = 774
-	sotfGermRejuv    = 155777
-	sotfRegrowth     = 8936
-	sotfBuff         = 114108
-	sotfMultiplier   = 0.6
-	sotfTag          = "sotf"
-	potaTag          = "pota"
-	potaWindowMS     = 500
+	sotfMultiplier = 0.6
+	sotfTag        = "sotf"
+	potaTag        = "pota"
+	potaWindowMS   = 500
 )
 
 type SoulOfTheForestAttributor struct {
@@ -32,11 +27,7 @@ func NewSoulOfTheForestAttributor() *SoulOfTheForestAttributor {
 }
 
 func isSotfSpell(id int) bool {
-	return id == sotfRejuv || id == sotfGermRejuv || id == sotfRegrowth
-}
-
-func isRejuvID(id int) bool {
-	return id == sotfRejuv || id == sotfGermRejuv
+	return id == Rejuvenation || id == GerminationRejuv || id == Regrowth
 }
 
 func (a *SoulOfTheForestAttributor) ProcessEvent(event models.Event, hot *tracking.HotTracker, buff *tracking.BuffTracker) {
@@ -44,13 +35,13 @@ func (a *SoulOfTheForestAttributor) ProcessEvent(event models.Event, hot *tracki
 
 	// Track Rejuv/Regrowth casts as potential SotF consumers
 	if ce, ok := event.(*models.CastEvent); ok {
-		if ce.AbilityID == sotfRejuv || ce.AbilityID == sotfRegrowth {
+		if ce.AbilityID == Rejuvenation || ce.AbilityID == Regrowth {
 			a.pendingCast = &[3]int{ce.Timestamp, ce.TargetID, ce.AbilityID}
 		}
 	}
 
 	// SotF buff removal = consumed
-	if re, ok := event.(*models.RemoveBuffEvent); ok && re.AbilityID == sotfBuff {
+	if re, ok := event.(*models.RemoveBuffEvent); ok && re.AbilityID == SoulOfTheForestBuff {
 		if a.pendingCast != nil {
 			targetID := a.pendingCast[1]
 			spellID := a.pendingCast[2]
@@ -60,8 +51,8 @@ func (a *SoulOfTheForestAttributor) ProcessEvent(event models.Event, hot *tracki
 			a.pendingCast = nil
 
 			// Tag primary HoT
-			if isRejuvID(spellID) {
-				for _, sid := range []int{sotfRejuv, sotfGermRejuv} {
+			if IsRejuv(spellID) {
+				for _, sid := range []int{Rejuvenation, GerminationRejuv} {
 					h := hot.Get(targetID, sid)
 					if h != nil && !h.Tags[sotfTag] {
 						h.Tags[sotfTag] = true
@@ -91,7 +82,7 @@ func (a *SoulOfTheForestAttributor) ProcessEvent(event models.Event, hot *tracki
 			targetID != a.primaryTarget &&
 			timestamp-a.consumeTimestamp <= potaWindowMS {
 			// Check spell matches primary
-			if (isRejuvID(a.primarySpell) && isRejuvID(abilityID)) || abilityID == a.primarySpell {
+			if (IsRejuv(a.primarySpell) && IsRejuv(abilityID)) || abilityID == a.primarySpell {
 				h := hot.Get(targetID, abilityID)
 				if h != nil {
 					h.Tags[sotfTag] = true
@@ -115,8 +106,8 @@ func (a *SoulOfTheForestAttributor) ProcessHeal(event *models.HealEvent, hot *tr
 	}
 
 	// Regrowth direct heal before HoT is tagged
-	if event.AbilityID == sotfRegrowth && buff.IsActive(sotfBuff) &&
-		a.pendingCast != nil && event.TargetID == a.pendingCast[1] && a.pendingCast[2] == sotfRegrowth {
+	if event.AbilityID == Regrowth && buff.IsActive(SoulOfTheForestBuff) &&
+		a.pendingCast != nil && event.TargetID == a.pendingCast[1] && a.pendingCast[2] == Regrowth {
 		return float64(event.Amount) - float64(event.Amount)/(1+sotfMultiplier)
 	}
 

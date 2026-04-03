@@ -6,10 +6,8 @@ import (
 )
 
 const (
-	tolBuffID     = 33891
-	tolWildGrowth = 48438
-	iwgNodeID     = 82045
-	tickWindowMS  = 200
+	iwgNodeID    = 82045
+	tickWindowMS = 200
 )
 
 type TreeOfLifeAttributor struct {
@@ -44,7 +42,7 @@ func (a *TreeOfLifeAttributor) flushWGBuffer() float64 {
 		totalHealing += e.Amount
 	}
 	baseTargets := a.baseWGTargets()
-	baseBuff := float64(totalHealing) - float64(totalHealing)/1.1
+	baseBuff := float64(totalHealing) - float64(totalHealing)/TolOtherDivisor
 	extraShare := 0.0
 	targetCount := len(targets)
 	if targetCount > baseTargets {
@@ -55,10 +53,10 @@ func (a *TreeOfLifeAttributor) flushWGBuffer() float64 {
 }
 
 func (a *TreeOfLifeAttributor) ProcessEvent(event models.Event, hot *tracking.HotTracker, buff *tracking.BuffTracker) {
-	if ab, ok := event.(*models.ApplyBuffEvent); ok && ab.AbilityID == tolBuffID {
+	if ab, ok := event.(*models.ApplyBuffEvent); ok && ab.AbilityID == TreeOfLifeBuff {
 		a.tolActive = true
 	}
-	if rb, ok := event.(*models.RemoveBuffEvent); ok && rb.AbilityID == tolBuffID {
+	if rb, ok := event.(*models.RemoveBuffEvent); ok && rb.AbilityID == TreeOfLifeBuff {
 		a.tolActive = false
 		a.deferredWGHealing += a.flushWGBuffer()
 	}
@@ -69,11 +67,11 @@ func (a *TreeOfLifeAttributor) ProcessHeal(event *models.HealEvent, hot *trackin
 		return 0.0
 	}
 
-	if event.AbilityID == sotfRejuv || event.AbilityID == sotfGermRejuv {
-		return float64(event.Amount) - float64(event.Amount)/1.5
+	if event.AbilityID == Rejuvenation || event.AbilityID == GerminationRejuv {
+		return float64(event.Amount) - float64(event.Amount)/TolRejuvDivisor
 	}
 
-	if event.AbilityID == tolWildGrowth {
+	if event.AbilityID == WildGrowth {
 		flushed := 0.0
 		if len(a.wgBuffer) > 0 && event.Timestamp-a.bufferStart > tickWindowMS {
 			flushed = a.flushWGBuffer()
@@ -85,7 +83,7 @@ func (a *TreeOfLifeAttributor) ProcessHeal(event *models.HealEvent, hot *trackin
 		return flushed
 	}
 
-	return float64(event.Amount) - float64(event.Amount)/1.1
+	return float64(event.Amount) - float64(event.Amount)/TolOtherDivisor
 }
 
 func (a *TreeOfLifeAttributor) Finalize() float64 {

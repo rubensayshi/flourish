@@ -5,11 +5,7 @@ import (
 	"github.com/rdruid-talent-analyzer/go-backend/internal/tracking"
 )
 
-const (
-	ndRejuv           = 774
-	ndGermRejuv       = 155777
-	ndBaseDurationMS  = 17000
-)
+const ndBaseDurationMS = 17000
 
 type NurturingDormancyAttributor struct {
 	BaseAttributor
@@ -22,7 +18,7 @@ func NewNurturingDormancyAttributor() *NurturingDormancyAttributor {
 }
 
 func (a *NurturingDormancyAttributor) ProcessHeal(event *models.HealEvent, hot *tracking.HotTracker, buff *tracking.BuffTracker) float64 {
-	if event.AbilityID != ndRejuv && event.AbilityID != ndGermRejuv {
+	if event.AbilityID != Rejuvenation && event.AbilityID != GerminationRejuv {
 		return 0.0
 	}
 	h := hot.Get(event.TargetID, event.AbilityID)
