@@ -8,18 +8,9 @@ Built for WoW Midnight Season 1 (12.0.1).
 
 ### Prerequisites
 
-- Python 3.12+
-- [uv](https://docs.astral.sh/uv/) package manager
+- Go 1.25+
 - Node.js 18+ (for frontend development only)
 - A [WarcraftLogs](https://www.warcraftlogs.com) API v2 client (create one at [WCL API Clients](https://www.warcraftlogs.com/api/clients))
-
-### Install
-
-```bash
-git clone <repo-url>
-cd flourish
-uv sync --all-extras
-```
 
 ### Configure
 
@@ -35,15 +26,15 @@ WCL_CLIENT_SECRET=your-client-secret
 ### Web UI
 
 ```bash
-uv run uvicorn flourish.web.app:create_app --factory --reload
+cd go-backend && go run ./cmd/flourish/ serve
 ```
 
-Opens at `http://localhost:8000`. Paste a WarcraftLogs report URL, select a fight and player, and view results. Features rate limiting, result caching, and report history.
+Opens at `http://localhost:8000`. Paste a WarcraftLogs report URL, select a fight and player, and view results. Features rate limiting, result caching, OAuth login, and report history.
 
 ### CLI
 
 ```bash
-uv run flourish <report-code>
+cd go-backend && go run ./cmd/flourish/ <report-code>
 ```
 
 The report code is the alphanumeric string from a WarcraftLogs URL:
@@ -54,13 +45,7 @@ You'll be prompted to select a fight and player.
 ### Skip prompts
 
 ```bash
-uv run flourish Aq7RXDt8FHNcQwKk --fight 1 --player Saikó
-```
-
-### Custom config
-
-```bash
-uv run flourish Aq7RXDt8FHNcQwKk --config-path my-talents.yaml
+cd go-backend && go run ./cmd/flourish/ Aq7RXDt8FHNcQwKk --fight 1 --player Saikó
 ```
 
 ## Output
@@ -110,7 +95,7 @@ convoke_the_spirits:
 ## How it works
 
 1. Fetches combat events from WCL v2 GraphQL API (including pet/treant events)
-2. Parses events into typed dataclasses
+2. Parses events into typed structs
 3. Replays events through HoT and buff trackers
 4. Each talent attributor claims its portion of healing:
    - **Direct spell** — talent grants a unique spell (e.g., Grove Guardians → Nourish)
@@ -151,22 +136,28 @@ Any heal tick where more than 50% of the raw healing was overheal gets no talent
 ## Development
 
 ```bash
-# Run tests
-uv run pytest
-
-# Run with verbose output
-uv run pytest -v
+cd go-backend && go test ./...           # all tests
+cd go-backend && go test -v ./...        # verbose
+cd go-backend && go test -run TestName ./...  # single test
 ```
 
 ### Frontend
 
-The web UI is a Vue 3 + Vite + TailwindCSS SPA in `frontend/`. The built assets in `frontend/dist/` are served by FastAPI.
+The web UI is a Vue 3 + Vite + TailwindCSS SPA in `frontend/`. The built assets in `frontend/dist/` are served by the Go backend.
 
 ```bash
 cd frontend
 npm install
-npm run dev    # dev server with hot reload
+npm run dev    # dev server with hot reload (proxies /api to :8000)
 npm run build  # production build → dist/
+```
+
+### Deployment
+
+Deployed on [Fly.io](https://fly.io) via multi-stage Docker build (Node frontend + Go binary + Alpine runtime ≈ 10MB image).
+
+```bash
+fly deploy
 ```
 
 ## Limitations
