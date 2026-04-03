@@ -64,6 +64,38 @@ func (c *CachedClient) GetEvents(code string, fightID, sourceID int, startTime, 
 	return result, nil
 }
 
+func (c *CachedClient) GetFightEvents(code string, fightID int, startTime, endTime float64) ([]map[string]any, error) {
+	key := fmt.Sprintf("%s_%d_allevents.json", code, fightID)
+	if data, ok := c.readCache(key); ok {
+		var result []map[string]any
+		json.Unmarshal(data, &result)
+		return result, nil
+	}
+	result, err := c.inner.GetFightEvents(code, fightID, startTime, endTime)
+	if err != nil {
+		return nil, err
+	}
+	data, _ := json.Marshal(result)
+	c.writeCache(key, data)
+	return result, nil
+}
+
+func (c *CachedClient) GetResources(code string, fightID, sourceID int, startTime, endTime float64) ([]map[string]any, error) {
+	key := fmt.Sprintf("%s_%d_%d_resources.json", code, fightID, sourceID)
+	if data, ok := c.readCache(key); ok {
+		var result []map[string]any
+		json.Unmarshal(data, &result)
+		return result, nil
+	}
+	result, err := c.inner.GetResources(code, fightID, sourceID, startTime, endTime)
+	if err != nil {
+		return nil, err
+	}
+	data, _ := json.Marshal(result)
+	c.writeCache(key, data)
+	return result, nil
+}
+
 func (c *CachedClient) GetDamageTaken(code string, fightID, sourceID int, startTime, endTime float64, filter string) (int, error) {
 	return c.inner.GetDamageTaken(code, fightID, sourceID, startTime, endTime, filter)
 }

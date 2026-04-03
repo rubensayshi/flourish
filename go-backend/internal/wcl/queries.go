@@ -49,6 +49,45 @@ query($code: String!, $startTime: Float!, $endTime: Float!, $sourceID: Int!, $fi
 }
 `
 
+const FightEventsQuery = `
+query($code: String!, $startTime: Float!, $endTime: Float!, $fightIDs: [Int!]) {
+    reportData {
+        report(code: $code) {
+            events(
+                startTime: $startTime,
+                endTime: $endTime,
+                fightIDs: $fightIDs,
+                dataType: All,
+                limit: 10000
+            ) {
+                data
+                nextPageTimestamp
+            }
+        }
+    }
+}
+`
+
+const ResourcesQuery = `
+query($code: String!, $startTime: Float!, $endTime: Float!, $sourceID: Int!, $fightIDs: [Int!]) {
+    reportData {
+        report(code: $code) {
+            events(
+                startTime: $startTime,
+                endTime: $endTime,
+                sourceID: $sourceID,
+                fightIDs: $fightIDs,
+                dataType: Resources,
+                limit: 10000
+            ) {
+                data
+                nextPageTimestamp
+            }
+        }
+    }
+}
+`
+
 const DamageTakenTableQuery = `
 query($code: String!, $startTime: Float!, $endTime: Float!, $sourceID: Int!, $fightIDs: [Int!], $filterExpression: String) {
     reportData {

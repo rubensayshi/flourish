@@ -53,8 +53,13 @@ func RenderResults(results *analysis.AnalysisResults, fightName, playerName stri
 		sb.WriteString(fmt.Sprintf("%-30s %10d\n", "Wasted (>50% OH)", results.Wasted))
 	}
 
+	// High health
+	if results.HighHealthHealing > 0 {
+		sb.WriteString(fmt.Sprintf("%-30s %10d\n", "High Health (>80% HP)", results.HighHealthHealing))
+	}
+
 	// Unattributed
-	unattributed := total - allAttributed - float64(results.Wasted)
+	unattributed := total - allAttributed - float64(results.Wasted) - float64(results.HighHealthHealing)
 	if unattributed < 0 {
 		sb.WriteString(fmt.Sprintf("%-30s %10s\n", "Unattributed", "—"))
 	} else {

@@ -21,6 +21,7 @@ import (
 	"github.com/rdruid-talent-analyzer/go-backend/internal/models"
 	"github.com/rdruid-talent-analyzer/go-backend/internal/output"
 	"github.com/rdruid-talent-analyzer/go-backend/internal/talents"
+	"github.com/rdruid-talent-analyzer/go-backend/internal/tracking"
 	"github.com/rdruid-talent-analyzer/go-backend/internal/wcl"
 	"github.com/rdruid-talent-analyzer/go-backend/internal/web"
 )
@@ -37,30 +38,33 @@ func main() {
 	// --- analyze command ---
 	var fightID int
 	var playerName string
+	var trackHealth bool
 
 	analyzeCmd := &cobra.Command{
 		Use:   "analyze <report_code>",
 		Short: "Analyze a WarcraftLogs report",
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			runAnalyze(args[0], fightID, playerName)
+			runAnalyze(args[0], fightID, playerName, trackHealth)
 		},
 	}
 	analyzeCmd.Flags().IntVar(&fightID, "fight", 0, "Fight ID (interactive if omitted)")
 	analyzeCmd.Flags().StringVar(&playerName, "player", "", "Player name (interactive if omitted)")
+	analyzeCmd.Flags().BoolVar(&trackHealth, "track-health", false, "Track target health bars (fetches all fight events)")
 	rootCmd.AddCommand(analyzeCmd)
 
 	// Allow `flourish <code>` as shorthand for `flourish analyze <code>`
 	rootCmd.Args = cobra.ArbitraryArgs
 	rootCmd.Run = func(cmd *cobra.Command, args []string) {
 		if len(args) > 0 && !strings.HasPrefix(args[0], "-") {
-			runAnalyze(args[0], fightID, playerName)
+			runAnalyze(args[0], fightID, playerName, trackHealth)
 			return
 		}
 		cmd.Help()
 	}
 	rootCmd.Flags().IntVar(&fightID, "fight", 0, "Fight ID")
 	rootCmd.Flags().StringVar(&playerName, "player", "", "Player name")
+	rootCmd.Flags().BoolVar(&trackHealth, "track-health", false, "Track target health bars")
 
 	// --- serve command ---
 	var port string
@@ -91,7 +95,7 @@ func newClient() wcl.Querier {
 	return wcl.NewCachedClient(inner, "data/cache")
 }
 
-func runAnalyze(reportCode string, fightID int, playerName string) {
+func runAnalyze(reportCode string, fightID int, playerName string, trackHealth bool) {
 	client := newClient()
 
 	report, err := client.GetReport(reportCode)
@@ -244,6 +248,18 @@ func runAnalyze(reportCode string, fightID int, playerName string) {
 	}
 
 	pipeline := analysis.NewPipeline(attributors, petIDs, playerPetIDs)
+
+	if trackHealth {
+		fmt.Println("Fetching all fight events for health tracking...")
+		fightEvents, err := client.GetFightEvents(reportCode, selectedFight.id, selectedFight.startTime, selectedFight.endTime)
+		if err != nil {
+			fmt.Printf("Error fetching fight events: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Printf("Fetched %d fight events\n", len(fightEvents))
+		pipeline.HealthTracker = tracking.NewHealthTracker(fightEvents)
+	}
+
 	results := pipeline.Run(events)
 
 	fmt.Println()

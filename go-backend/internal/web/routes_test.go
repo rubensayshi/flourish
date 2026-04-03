@@ -41,6 +41,14 @@ func (m *MockReportClient) GetEvents(code string, fightID, sourceID int, startTi
 	return nil, nil
 }
 
+func (m *MockReportClient) GetFightEvents(code string, fightID int, startTime, endTime float64) ([]map[string]any, error) {
+	return nil, nil
+}
+
+func (m *MockReportClient) GetResources(code string, fightID, sourceID int, startTime, endTime float64) ([]map[string]any, error) {
+	return nil, nil
+}
+
 func (m *MockReportClient) GetDamageTaken(code string, fightID, sourceID int, startTime, endTime float64, filter string) (int, error) {
 	return 0, nil
 }

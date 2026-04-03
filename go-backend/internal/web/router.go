@@ -14,6 +14,7 @@ import (
 	"github.com/rdruid-talent-analyzer/go-backend/internal/analysis"
 	"github.com/rdruid-talent-analyzer/go-backend/internal/models"
 	"github.com/rdruid-talent-analyzer/go-backend/internal/talents"
+	"github.com/rdruid-talent-analyzer/go-backend/internal/tracking"
 	"github.com/rdruid-talent-analyzer/go-backend/internal/wcl"
 )
 
@@ -259,6 +260,14 @@ func NewRouterWithAuth(client wcl.Querier, cacheDir string, authState *AuthState
 
 		attributors := BuildAttributors(config, damageTaken)
 		pipeline := analysis.NewPipeline(attributors, petIDs, playerPetIDs)
+
+		if r.URL.Query().Get("trackHealth") == "true" {
+			fightEvents, err := reqClient.GetFightEvents(code, fightID, startTime, endTime)
+			if err == nil {
+				pipeline.HealthTracker = tracking.NewHealthTracker(fightEvents)
+			}
+		}
+
 		results := pipeline.Run(events)
 
 		// Format response
@@ -352,7 +361,7 @@ func NewRouterWithAuth(client wcl.Querier, cacheDir string, authState *AuthState
 				allAttributed += e.amount
 			}
 		}
-		unattributed := total - math.Round(allAttributed) - float64(results.Wasted)
+		unattributed := total - math.Round(allAttributed) - float64(results.Wasted) - float64(results.HighHealthHealing)
 		if unattributed < 0 {
 			unattributed = 0
 		}
@@ -365,6 +374,7 @@ func NewRouterWithAuth(client wcl.Querier, cacheDir string, authState *AuthState
 			"talents":       talentsList,
 			"hero_trees":    heroTreesList,
 			"wasted":        results.Wasted,
+			"high_health":   results.HighHealthHealing,
 			"unattributed":  int(unattributed),
 		}
 

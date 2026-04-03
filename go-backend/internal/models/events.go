@@ -12,6 +12,7 @@ const (
 	EventRefreshBuff   = "refreshbuff"
 	EventRemoveBuff    = "removebuff"
 	EventSummon        = "summon"
+	EventDamage        = "damage"
 )
 
 // Event is the interface all parsed events implement.
@@ -84,6 +85,15 @@ type SummonEvent struct {
 	AbilityID int
 }
 
+type DamageEvent struct {
+	BaseEvent
+	TargetID  int
+	AbilityID int
+	Amount    int
+	Absorbed  int
+	Overkill  int
+}
+
 type CombatantInfoEvent struct {
 	BaseEvent
 	TalentNodes map[int]bool
@@ -95,8 +105,8 @@ type CombatantInfoEvent struct {
 	SpecID      int
 }
 
-// getInt extracts an int from map[string]any, handling JSON float64.
-func getInt(raw map[string]any, key string, def int) int {
+// GetInt extracts an int from map[string]any, handling JSON float64.
+func GetInt(raw map[string]any, key string, def int) int {
 	v, ok := raw[key]
 	if !ok {
 		return def
@@ -135,7 +145,7 @@ func getBool(raw map[string]any, key string) bool {
 	return ok && b
 }
 
-func getString(raw map[string]any, key string) string {
+func GetString(raw map[string]any, key string) string {
 	v, ok := raw[key]
 	if !ok {
 		return ""
@@ -148,7 +158,7 @@ func getString(raw map[string]any, key string) string {
 }
 
 func ParseEvent(raw map[string]any) Event {
-	eventType := getString(raw, "type")
+	eventType := GetString(raw, "type")
 
 	if eventType == EventCombatantInfo {
 		talentTree, _ := raw["talentTree"].([]any)
@@ -160,32 +170,32 @@ func ParseEvent(raw map[string]any) Event {
 			if !ok {
 				continue
 			}
-			nodeID := getInt(t, "nodeID", 0)
-			id := getInt(t, "id", 0)
-			rank := getInt(t, "rank", 1)
+			nodeID := GetInt(t, "nodeID", 0)
+			id := GetInt(t, "id", 0)
+			rank := GetInt(t, "rank", 1)
 			talentNodes[nodeID] = true
 			talentIDs[id] = true
 			talentRanks[id] = rank
 		}
 		return &CombatantInfoEvent{
-			BaseEvent:   BaseEvent{Timestamp: getInt(raw, "timestamp", 0), SourceID: getInt(raw, "sourceID", 0), Type: eventType},
+			BaseEvent:   BaseEvent{Timestamp: GetInt(raw, "timestamp", 0), SourceID: GetInt(raw, "sourceID", 0), Type: eventType},
 			TalentNodes: talentNodes,
 			TalentIDs:   talentIDs,
 			TalentRanks: talentRanks,
 			CritSpell:   getFloat(raw, "critSpell", 0),
 			HasteSpell:  getFloat(raw, "hasteSpell", 0),
 			Mastery:     getFloat(raw, "mastery", 0),
-			SpecID:      getInt(raw, "specID", 0),
+			SpecID:      GetInt(raw, "specID", 0),
 		}
 	}
 
 	base := BaseEvent{
-		Timestamp: getInt(raw, "timestamp", 0),
-		SourceID:  getInt(raw, "sourceID", 0),
+		Timestamp: GetInt(raw, "timestamp", 0),
+		SourceID:  GetInt(raw, "sourceID", 0),
 		Type:      eventType,
 	}
-	targetID := getInt(raw, "targetID", 0)
-	abilityID := getInt(raw, "abilityGameID", 0)
+	targetID := GetInt(raw, "targetID", 0)
+	abilityID := GetInt(raw, "abilityGameID", 0)
 
 	switch eventType {
 	case EventCast, EventBeginCast:
@@ -195,10 +205,10 @@ func ParseEvent(raw map[string]any) Event {
 			BaseEvent: base,
 			TargetID:  targetID,
 			AbilityID: abilityID,
-			Amount:    getInt(raw, "amount", 0),
-			Overheal:  getInt(raw, "overheal", 0),
-			Absorb:    getInt(raw, "absorb", 0),
-			HitType:   getInt(raw, "hitType", 1),
+			Amount:    GetInt(raw, "amount", 0),
+			Overheal:  GetInt(raw, "overheal", 0),
+			Absorb:    GetInt(raw, "absorb", 0),
+			HitType:   GetInt(raw, "hitType", 1),
 			Tick:      getBool(raw, "tick"),
 		}
 	case EventApplyBuff:
@@ -209,6 +219,15 @@ func ParseEvent(raw map[string]any) Event {
 		return &RemoveBuffEvent{BaseEvent: base, TargetID: targetID, AbilityID: abilityID}
 	case EventSummon:
 		return &SummonEvent{BaseEvent: base, TargetID: targetID, AbilityID: abilityID}
+	case EventDamage:
+		return &DamageEvent{
+			BaseEvent: base,
+			TargetID:  targetID,
+			AbilityID: abilityID,
+			Amount:    GetInt(raw, "amount", 0),
+			Absorbed:  GetInt(raw, "absorbed", 0),
+			Overkill:  GetInt(raw, "overkill", 0),
+		}
 	default:
 		return nil
 	}

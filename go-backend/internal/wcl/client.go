@@ -21,6 +21,8 @@ const (
 type Querier interface {
 	GetReport(code string) (map[string]any, error)
 	GetEvents(code string, fightID, sourceID int, startTime, endTime float64) ([]map[string]any, error)
+	GetFightEvents(code string, fightID int, startTime, endTime float64) ([]map[string]any, error)
+	GetResources(code string, fightID, sourceID int, startTime, endTime float64) ([]map[string]any, error)
 	GetDamageTaken(code string, fightID, sourceID int, startTime, endTime float64, filter string) (int, error)
 }
 
@@ -83,14 +85,19 @@ func (c *Client) authenticate() error {
 	return nil
 }
 
-func (c *Client) query(query string, variables map[string]any) (map[string]any, error) {
+// Query executes a raw GraphQL query against the WCL API.
+func (c *Client) Query(q string, variables map[string]any) (map[string]any, error) {
+	return c.query(q, variables)
+}
+
+func (c *Client) query(q string, variables map[string]any) (map[string]any, error) {
 	if c.token == "" {
 		if err := c.authenticate(); err != nil {
 			return nil, err
 		}
 	}
 
-	body, _ := json.Marshal(map[string]any{"query": query, "variables": variables})
+	body, _ := json.Marshal(map[string]any{"query": q, "variables": variables})
 	req, err := http.NewRequest("POST", c.baseURL, bytes.NewReader(body))
 	if err != nil {
 		return nil, err
@@ -147,6 +154,95 @@ func (c *Client) GetEvents(code string, fightID, sourceID int, startTime, endTim
 
 	for {
 		data, err := c.query(EventsQuery, map[string]any{
+			"code":      code,
+			"startTime": currentStart,
+			"endTime":   endTime,
+			"sourceID":  sourceID,
+			"fightIDs":  []int{fightID},
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		eventsData := data["reportData"].(map[string]any)["report"].(map[string]any)["events"].(map[string]any)
+		eventsList := eventsData["data"].([]any)
+		for _, e := range eventsList {
+			allEvents = append(allEvents, e.(map[string]any))
+		}
+
+		nextPage := eventsData["nextPageTimestamp"]
+		if nextPage == nil {
+			break
+		}
+		switch v := nextPage.(type) {
+		case float64:
+			currentStart = v
+		default:
+			break
+		}
+		if currentStart == 0 {
+			break
+		}
+	}
+
+	sort.Slice(allEvents, func(i, j int) bool {
+		ti, _ := allEvents[i]["timestamp"].(float64)
+		tj, _ := allEvents[j]["timestamp"].(float64)
+		return ti < tj
+	})
+	return allEvents, nil
+}
+
+func (c *Client) GetFightEvents(code string, fightID int, startTime, endTime float64) ([]map[string]any, error) {
+	var allEvents []map[string]any
+	currentStart := startTime
+
+	for {
+		data, err := c.query(FightEventsQuery, map[string]any{
+			"code":      code,
+			"startTime": currentStart,
+			"endTime":   endTime,
+			"fightIDs":  []int{fightID},
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		eventsData := data["reportData"].(map[string]any)["report"].(map[string]any)["events"].(map[string]any)
+		eventsList := eventsData["data"].([]any)
+		for _, e := range eventsList {
+			allEvents = append(allEvents, e.(map[string]any))
+		}
+
+		nextPage := eventsData["nextPageTimestamp"]
+		if nextPage == nil {
+			break
+		}
+		switch v := nextPage.(type) {
+		case float64:
+			currentStart = v
+		default:
+			break
+		}
+		if currentStart == 0 {
+			break
+		}
+	}
+
+	sort.Slice(allEvents, func(i, j int) bool {
+		ti, _ := allEvents[i]["timestamp"].(float64)
+		tj, _ := allEvents[j]["timestamp"].(float64)
+		return ti < tj
+	})
+	return allEvents, nil
+}
+
+func (c *Client) GetResources(code string, fightID, sourceID int, startTime, endTime float64) ([]map[string]any, error) {
+	var allEvents []map[string]any
+	currentStart := startTime
+
+	for {
+		data, err := c.query(ResourcesQuery, map[string]any{
 			"code":      code,
 			"startTime": currentStart,
 			"endTime":   endTime,

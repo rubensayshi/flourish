@@ -25,6 +25,14 @@ func (m *MockWCLClient) GetEvents(code string, fightID, sourceID int, startTime,
 	return m.GetEventsResult, nil
 }
 
+func (m *MockWCLClient) GetFightEvents(code string, fightID int, startTime, endTime float64) ([]map[string]any, error) {
+	return m.GetEventsResult, nil
+}
+
+func (m *MockWCLClient) GetResources(code string, fightID, sourceID int, startTime, endTime float64) ([]map[string]any, error) {
+	return nil, nil
+}
+
 func (m *MockWCLClient) GetDamageTaken(code string, fightID, sourceID int, startTime, endTime float64, filter string) (int, error) {
 	return 0, nil
 }
