@@ -6,23 +6,23 @@ RUN npm ci
 COPY frontend/ .
 RUN npm run build
 
-# Stage 2: Python app
-FROM python:3.12-slim
+# Stage 2: Build Go binary
+FROM golang:1.24-alpine AS backend
+WORKDIR /app
+COPY go-backend/go.mod go-backend/go.sum ./
+RUN go mod download
+COPY go-backend/ .
+RUN CGO_ENABLED=0 go build -o /flourish ./cmd/flourish/
+
+# Stage 3: Final image
+FROM alpine:3.21
 WORKDIR /app
 
-# Install uv
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+RUN apk add --no-cache ca-certificates
 
-# Install Python deps
-COPY pyproject.toml uv.lock ./
-RUN uv sync --no-dev --frozen
-
-# Copy app code
-COPY src/ src/
+COPY --from=backend /flourish /usr/local/bin/flourish
 COPY config/ config/
-
-# Copy built frontend
 COPY --from=frontend /app/frontend/dist frontend/dist
 
 EXPOSE 8080
-CMD ["uv", "run", "uvicorn", "flourish.web.app:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["flourish", "serve", "--port", "8080"]

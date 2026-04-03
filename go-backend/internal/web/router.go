@@ -8,6 +8,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/rdruid-talent-analyzer/go-backend/internal/analysis"
@@ -40,6 +41,8 @@ func getFloatFromAny(v any) float64 {
 func NewRouter(client wcl.Querier, cacheDir string) http.Handler {
 	r := chi.NewRouter()
 	resultCache := NewResultCache(cacheDir)
+	reportLimiter := NewRateLimiter(15, time.Minute)
+	analyzeLimiter := NewRateLimiter(10, time.Minute)
 
 	r.Get("/api/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -47,6 +50,15 @@ func NewRouter(client wcl.Querier, cacheDir string) http.Handler {
 	})
 
 	r.Get("/api/report/{code}", func(w http.ResponseWriter, r *http.Request) {
+		ip := r.RemoteAddr
+		if fwd := r.Header.Get("X-Forwarded-For"); fwd != "" {
+			ip = fwd
+		}
+		if !reportLimiter.Allow(ip) {
+			http.Error(w, `{"detail":"Rate limit exceeded"}`, 429)
+			return
+		}
+
 		code := chi.URLParam(r, "code")
 		report, err := client.GetReport(code)
 		if err != nil {
@@ -110,13 +122,22 @@ func NewRouter(client wcl.Querier, cacheDir string) http.Handler {
 
 		baseStacksStr := r.URL.Query().Get("base_stacks")
 
-		// Check cache (only if no base_stacks override)
+		// Check cache first (doesn't count against rate limit)
 		if baseStacksStr == "" {
 			if cached := resultCache.Get(code, fightID, playerName); cached != nil {
 				w.Header().Set("Content-Type", "application/json")
 				json.NewEncoder(w).Encode(cached)
 				return
 			}
+		}
+
+		ip := r.RemoteAddr
+		if fwd := r.Header.Get("X-Forwarded-For"); fwd != "" {
+			ip = fwd
+		}
+		if !analyzeLimiter.Allow(ip) {
+			http.Error(w, `{"detail":"Rate limit exceeded"}`, 429)
+			return
 		}
 
 		report, err := client.GetReport(code)
