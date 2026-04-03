@@ -17,6 +17,20 @@
       <ReportInput @submit="goToReport" />
       <ReportHistory />
     </div>
+
+    <div class="mt-12 max-w-xl mx-auto text-sm text-slate-500 space-y-2">
+      <p>
+        Flourish analyzes your WarcraftLogs reports to break down how much healing each individual talent contributes.
+        Paste a report link above to get started.
+      </p>
+      <p class="text-amber-500/80">
+        This tool is a work in progress — results may not be perfectly accurate yet.
+      </p>
+      <p>
+        Questions or feedback? Find me as <span class="text-slate-400">saikodrakie</span> on Discord,
+        or come chat in the <span class="text-slate-400">Dreamgrove</span> server.
+      </p>
+    </div>
   </div>
 </template>
 
