@@ -39,10 +39,16 @@ func getFloatFromAny(v any) float64 {
 }
 
 func NewRouter(client wcl.Querier, cacheDir string) http.Handler {
+	return NewRouterWithAuth(client, cacheDir, NewAuthState())
+}
+
+func NewRouterWithAuth(client wcl.Querier, cacheDir string, authState *AuthState) http.Handler {
 	r := chi.NewRouter()
 	resultCache := NewResultCache(cacheDir)
 	reportLimiter := NewRateLimiter(15, time.Minute)
 	analyzeLimiter := NewRateLimiter(10, time.Minute)
+
+	MountAuthRoutes(r, authState)
 
 	r.Get("/api/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -50,17 +56,18 @@ func NewRouter(client wcl.Querier, cacheDir string) http.Handler {
 	})
 
 	r.Get("/api/report/{code}", func(w http.ResponseWriter, r *http.Request) {
-		ip := r.RemoteAddr
-		if fwd := r.Header.Get("X-Forwarded-For"); fwd != "" {
-			ip = fwd
-		}
+		ip := GetClientIP(r)
 		if !reportLimiter.Allow(ip) {
 			http.Error(w, `{"detail":"Rate limit exceeded"}`, 429)
 			return
 		}
 
 		code := chi.URLParam(r, "code")
-		report, err := client.GetReport(code)
+		reqClient := wcl.Querier(client)
+		if token := GetUserToken(r); token != "" {
+			reqClient = wcl.NewUserClient(token)
+		}
+		report, err := reqClient.GetReport(code)
 		if err != nil {
 			http.Error(w, `{"detail":"Report not found"}`, 404)
 			return
@@ -131,16 +138,31 @@ func NewRouter(client wcl.Querier, cacheDir string) http.Handler {
 			}
 		}
 
-		ip := r.RemoteAddr
-		if fwd := r.Header.Get("X-Forwarded-For"); fwd != "" {
-			ip = fwd
-		}
+		ip := GetClientIP(r)
 		if !analyzeLimiter.Allow(ip) {
 			http.Error(w, `{"detail":"Rate limit exceeded"}`, 429)
 			return
 		}
 
-		report, err := client.GetReport(code)
+		// Check anonymous limit
+		userToken := GetUserToken(r)
+		if userToken == "" && !authState.CheckAnonLimit(ip) {
+			w.WriteHeader(403)
+			json.NewEncoder(w).Encode(map[string]any{
+				"detail": "You've used your 2 free analyses. Log in with WarcraftLogs to continue. " +
+					"This helps us stay within API rate limits — we only use your login to " +
+					"analyze logs on your behalf, nothing else.",
+			})
+			return
+		}
+
+		// Use user-authenticated client if token provided
+		reqClient := wcl.Querier(client)
+		if userToken != "" {
+			reqClient = wcl.NewUserClient(userToken)
+		}
+
+		report, err := reqClient.GetReport(code)
 		if err != nil {
 			http.Error(w, `{"detail":"Report not found"}`, 404)
 			return
@@ -183,14 +205,19 @@ func NewRouter(client wcl.Querier, cacheDir string) http.Handler {
 		startTime := getFloatFromAny(selectedFight["startTime"])
 		endTime := getFloatFromAny(selectedFight["endTime"])
 
-		events, err := client.GetEvents(code, fightID, playerID, startTime, endTime)
+		// Record anonymous usage
+		if userToken == "" {
+			authState.RecordAnonUsage(ip)
+		}
+
+		events, err := reqClient.GetEvents(code, fightID, playerID, startTime, endTime)
 		if err != nil {
 			http.Error(w, `{"detail":"Error fetching events"}`, 500)
 			return
 		}
 
 		regrowthFilter := `IN RANGE FROM (type = "applybuff" OR type = "refreshbuff") AND ability.id = 8936 TO type = "removebuff" AND ability.id = 8936 GROUP BY target ON target END`
-		damageTaken, _ := client.GetDamageTaken(code, fightID, playerID, startTime, endTime, regrowthFilter)
+		damageTaken, _ := reqClient.GetDamageTaken(code, fightID, playerID, startTime, endTime, regrowthFilter)
 
 		// Load config
 		configPath := "config/talents.yaml"

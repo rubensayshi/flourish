@@ -10,8 +10,11 @@ import (
 )
 
 const (
-	defaultOAuthURL = "https://www.warcraftlogs.com/oauth/token"
-	defaultAPIURL   = "https://www.warcraftlogs.com/api/v2/client"
+	defaultOAuthURL    = "https://www.warcraftlogs.com/oauth/token"
+	defaultAPIURL      = "https://www.warcraftlogs.com/api/v2/client"
+	DefaultUserAPIURL  = "https://www.warcraftlogs.com/api/v2/user"
+	AuthorizeURL       = "https://www.warcraftlogs.com/oauth/authorize"
+	OAuthTokenURL      = "https://www.warcraftlogs.com/oauth/token"
 )
 
 // Querier is the interface for WCL API clients.
@@ -116,6 +119,17 @@ func (c *Client) query(query string, variables map[string]any) (map[string]any, 
 		return nil, fmt.Errorf("unexpected response format")
 	}
 	return data, nil
+}
+
+// NewUserClient creates a WCL client using a user's OAuth access token.
+// It hits the user API endpoint instead of the client endpoint.
+func NewUserClient(accessToken string) *Client {
+	return &Client{
+		token:      accessToken,
+		httpClient: &http.Client{},
+		baseURL:    DefaultUserAPIURL,
+		oauthURL:   defaultOAuthURL,
+	}
 }
 
 func (c *Client) GetReport(code string) (map[string]any, error) {
