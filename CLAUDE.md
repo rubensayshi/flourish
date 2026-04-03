@@ -11,23 +11,20 @@ Restoration Druid talent analyzer for World of Warcraft. Fetches combat log data
 ## Commands
 
 ```bash
-# Install (uses uv)
-uv sync --all-extras
-
 # Run CLI (single command, "analyze" subcommand can be omitted)
-uv run flourish <report_code> [--fight ID] [--player NAME] [--config-path PATH]
+cd go-backend && go run ./cmd/flourish/ <report_code> [--fight ID] [--player NAME]
 
-# Run web UI (FastAPI + Vue 3 frontend)
-uv run uvicorn flourish.web.app:create_app --factory --reload
+# Run web server
+cd go-backend && go run ./cmd/flourish/ serve [--port PORT]
 
 # Tests
-uv run pytest                        # all tests
-uv run pytest tests/analysis/        # specific module
-uv run pytest -k test_name           # single test by name
+cd go-backend && go test ./...                    # all tests
+cd go-backend && go test ./internal/talents/      # specific package
+cd go-backend && go test -run TestName ./...       # single test by name
 
 # Frontend (Vue 3 + Vite + TailwindCSS)
-cd frontend && npm install && npm run dev   # dev server
-cd frontend && npm run build                # build to dist/ (served by FastAPI)
+cd frontend && npm install && npm run dev          # dev server (proxies /api to :8000)
+cd frontend && npm run build                       # build to dist/ (served by Go server)
 
 # Environment
 cp .env.example .env          # then fill in WCL_CLIENT_ID / WCL_CLIENT_SECRET
@@ -37,33 +34,28 @@ cp .env.example .env          # then fill in WCL_CLIENT_ID / WCL_CLIENT_SECRET
 
 **Data flow:** WCL API → event parsing → tracking → attribution → output
 
-| Layer              | Package                          | Purpose                                                    |
-| ------------------ | -------------------------------- | ---------------------------------------------------------- |
-| API client         | `wcl/client.py`                  | OAuth2 + paginated GraphQL event fetching                  |
-| Event models       | `models/events.py`               | Typed dataclasses per WCL event type; `parse_event()` maps raw dicts |
-| Talent config      | `models/config.py`               | Loads `config/talents.yaml` → `dict[str, TalentConfig]`   |
-| State tracking     | `tracking/hot_tracker.py`        | Tracks active HoTs per (target, spell) with taggable `HotInstance` |
-| State tracking     | `tracking/buff_tracker.py`       | Tracks active self-buffs by buff_id                        |
-| Attribution        | `analysis/attributor.py`         | `TalentAttributor` ABC: `process_event()` + `process_heal()` |
-| Attribution        | `analysis/talents/`              | One subclass per talent (47 attributors across spec + hero trees) |
-| Attribution        | `analysis/talents/keeper/`       | Keeper of the Grove hero talent attributors                 |
-| Attribution        | `analysis/talents/wildstalker/`  | Wildstalker hero talent attributors                         |
-| Pipeline           | `analysis/pipeline.py`           | Orchestrates: parse → track → attribute → `AnalysisResults` |
-| Output             | `output/table.py`                | Rich table rendering with HPS and % total                  |
-| CLI                | `cli.py`                         | Typer app; interactive fight/player selection               |
-| Web API            | `web/app.py`                     | FastAPI app with rate limiting (SlowAPI) and result caching |
-| Web API            | `web/routes.py`                  | `/api/report/{code}`, `/api/analyze/{code}/{fight}/{player}` |
-| Frontend           | `frontend/`                      | Vue 3 + Vite + TailwindCSS SPA; served from `frontend/dist/` |
+| Layer           | Package                              | Purpose                                                    |
+| --------------- | ------------------------------------ | ---------------------------------------------------------- |
+| API client      | `go-backend/internal/wcl/`           | OAuth2 + paginated GraphQL event fetching, disk cache      |
+| Event models    | `go-backend/internal/models/`        | Typed structs per WCL event type; `ParseEvent()` maps raw dicts |
+| Talent config   | `go-backend/internal/models/`        | Loads `config/talents.yaml` → `Config` struct              |
+| State tracking  | `go-backend/internal/tracking/`      | HotTracker (active HoTs with tags) + BuffTracker           |
+| Attribution     | `go-backend/internal/talents/`       | `TalentAttributor` interface + `BaseAttributor` embedded struct |
+| Pipeline        | `go-backend/internal/analysis/`      | Orchestrates: parse → track → attribute → `AnalysisResults` |
+| Output          | `go-backend/internal/output/`        | Text table rendering with HPS and % total                  |
+| Web API         | `go-backend/internal/web/`           | chi router, rate limiting, OAuth, result caching           |
+| CLI             | `go-backend/cmd/flourish/`           | cobra CLI: `analyze` + `serve` subcommands                 |
+| Frontend        | `frontend/`                          | Vue 3 + Vite + TailwindCSS SPA; served from `frontend/dist/` |
 
 ### Key concepts
 
-- **Overheal filtering:** heals >50% overheal (`OVERHEAL_WASTE_THRESHOLD`) are excluded from attribution (`is_wasted` on `HealEvent`).
-- **HoT tagging:** attributors tag `HotInstance.tags` during `process_event` (e.g., `"sotf"` tag), then check tags during `process_heal` to calculate bonus healing.
-- **Mastery attribution:** Two mastery-aware attributors (Harmonious Blooming, Symbiotic Bloom) use configurable `base_stacks` and `dr_table` from `config/talents.yaml` to calculate diminishing-returns mastery bonus from extra HoT stacks.
-- **Adding a new talent:** create a `TalentAttributor` subclass in `analysis/talents/` (or `keeper/`/`wildstalker/` for hero talents), implement `process_event`/`process_heal`, and add it to the registry in `cli.py:build_attributors()`. The talent must also have an entry in `config/talents.yaml`.
+- **Overheal filtering:** heals >50% overheal are excluded from attribution (`IsWasted()` on `HealEvent`).
+- **HoT tagging:** attributors tag `HotInstance.Tags` during `ProcessEvent()` (e.g., `"sotf"` tag), then check tags during `ProcessHeal()` to calculate bonus healing.
+- **Mastery attribution:** Two mastery-aware attributors (Harmonious Blooming, Symbiotic Bloom) use configurable `BaseStacks` and `DRTable` from `config/talents.yaml`.
+- **Adding a new talent:** create a struct implementing `TalentAttributor` in `go-backend/internal/talents/`, implement `ProcessEvent`/`ProcessHeal`, and add it to `BuildAttributors()` in `go-backend/internal/web/attributors.go`. The talent must also have an entry in `config/talents.yaml`.
 - **Talent ID types — do not confuse:**
-  - `nodeID` — talent tree position. Used for `talent_node_id` on attributors. Same across all ID systems.
-  - WCL entry ID (`talentTree[].id`) — what WCL returns in combatantinfo. Used for `talent_id` on attributors to disambiguate choice nodes. Look these up in `docs/raidbots_druid_talents.json` under `entries[].id`.
+  - `nodeID` — talent tree position. Used for `TalentNodeID()` on attributors. Same across all ID systems.
+  - WCL entry ID (`talentTree[].id`) — what WCL returns in combatantinfo. Used for `TalentID()` on attributors to disambiguate choice nodes. Look these up in `docs/raidbots_druid_talents.json` under `entries[].id`.
   - Blizzard definition ID (`talent.id` in Blizzard API) — **not** the same as WCL entry ID. Shown in `docs/resto_druid_talents.md` as "Definition ID". Do **not** use these in attributor code.
 
 ## Config
