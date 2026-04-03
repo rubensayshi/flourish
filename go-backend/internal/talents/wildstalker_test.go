@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const symbioticBloom = 452496 // from Python SYMBIOTIC_BLOOM constant
+const symbioticBloom = 439530 // from Python SYMBIOTIC_BLOOM constant
 
 // --- Vigorous Creepers ---
 

@@ -24,7 +24,7 @@ func TestSotfAttributesBonusFromRejuv(t *testing.T) {
 	events := []map[string]any{
 		makeCast(100, swiftmend),
 		makeApply(100, sotfBuffID, withTarget(player)),
-		makeCast(150, rejuv),
+		makeCast(150, rejuv, withTarget(target)),
 		makeApply(150, rejuv, withTarget(target)),
 		makeRemove(150, sotfBuffID, withTarget(player)),
 		makeHeal(200, rejuv, 10000, withTarget(target)),
@@ -64,7 +64,7 @@ func TestSotfRegrowthDirectHealAttributed(t *testing.T) {
 	events := []map[string]any{
 		makeCast(100, swiftmend),
 		makeApply(100, sotfBuffID, withTarget(player)),
-		makeCast(150, regrowth),
+		makeCast(150, regrowth, withTarget(2)),
 		makeHeal(150, regrowth, 60000),
 		makeApply(150, regrowth),
 		makeRemove(150, sotfBuffID, withTarget(player)),
@@ -79,7 +79,7 @@ func TestSotfGerminationRejuv(t *testing.T) {
 	events := []map[string]any{
 		makeCast(100, swiftmend),
 		makeApply(100, sotfBuffID, withTarget(player)),
-		makeCast(150, rejuv),
+		makeCast(150, rejuv, withTarget(2)),
 		makeApply(150, germinationRejuv),
 		makeRemove(150, sotfBuffID, withTarget(player)),
 		makeHeal(200, germinationRejuv, 10000),
@@ -143,7 +143,7 @@ func TestSotfTagClearedOnRefresh(t *testing.T) {
 	events := []map[string]any{
 		makeCast(100, swiftmend),
 		makeApply(100, sotfBuffID, withTarget(player)),
-		makeCast(150, rejuv),
+		makeCast(150, rejuv, withTarget(2)),
 		makeApply(150, rejuv),
 		makeRemove(150, sotfBuffID, withTarget(player)),
 		makeHeal(200, rejuv, 10000),
