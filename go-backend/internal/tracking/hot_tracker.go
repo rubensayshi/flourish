@@ -62,6 +62,18 @@ func (t *HotTracker) GetAll(targetID int) []*HotInstance {
 	return result
 }
 
+// CountByTarget returns the number of active HoTs on a target whose spell IDs
+// are in the provided set. Pass nil to count all.
+func (t *HotTracker) CountByTarget(targetID int, spellIDs map[int]bool) int {
+	count := 0
+	for k := range t.hots {
+		if k[0] == targetID && (spellIDs == nil || spellIDs[k[1]]) {
+			count++
+		}
+	}
+	return count
+}
+
 func (t *HotTracker) GetAllBySpell(spellID int) []*HotInstance {
 	var result []*HotInstance
 	for k, h := range t.hots {

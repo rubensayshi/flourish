@@ -7,8 +7,7 @@ import (
 )
 
 type MasteryConfig struct {
-	BaseStacks int       `yaml:"base_stacks"`
-	DRTable    []float64 `yaml:"dr_table"`
+	DRTable []float64 `yaml:"dr_table"`
 }
 
 type TalentConfig struct {
@@ -22,11 +21,11 @@ type Config struct {
 	Talents map[string]TalentConfig
 }
 
-var defaultDRTable = []float64{1.0, 1.7, 2.3, 2.8, 3.2}
+var defaultDRTable = []float64{0, 1.0, 1.7, 2.3, 2.8, 3.2, 3.6, 4.0, 4.4, 4.8}
 
 func DefaultConfig() *Config {
 	return &Config{
-		Mastery: MasteryConfig{BaseStacks: 2, DRTable: defaultDRTable},
+		Mastery: MasteryConfig{DRTable: defaultDRTable},
 		Talents: map[string]TalentConfig{},
 	}
 }
@@ -44,8 +43,7 @@ func LoadConfig(path string) (*Config, error) {
 
 	config := &Config{
 		Mastery: MasteryConfig{
-			BaseStacks: 2,
-			DRTable:    defaultDRTable,
+			DRTable: defaultDRTable,
 		},
 		Talents: make(map[string]TalentConfig),
 	}

@@ -12,7 +12,7 @@ import (
 func TestLoadConfig(t *testing.T) {
 	yamlContent := `
 mastery:
-  base_stacks: 4
+  dr_table: [0, 1.0, 1.7, 2.3, 2.8, 3.2, 3.6, 4.0, 4.4, 4.8]
 
 soul_of_the_forest:
   skip: false
@@ -28,7 +28,7 @@ wild_growth:
 
 	config, err := models.LoadConfig(p)
 	require.NoError(t, err)
-	require.Equal(t, 4, config.Mastery.BaseStacks)
+	require.Equal(t, []float64{0, 1.0, 1.7, 2.3, 2.8, 3.2, 3.6, 4.0, 4.4, 4.8}, config.Mastery.DRTable)
 	require.False(t, config.Talents["soul_of_the_forest"].Skip)
 	require.NotNil(t, config.Talents["soul_of_the_forest"].Multiplier)
 	require.Equal(t, 0.6, *config.Talents["soul_of_the_forest"].Multiplier)

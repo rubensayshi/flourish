@@ -39,13 +39,20 @@ func BuildAttributors(config *models.Config, damageTaken int) []talents.TalentAt
 		convokeRatio = *convokeCfg.Multiplier
 	}
 
-	baseStacks := config.Mastery.BaseStacks
 	drTable := config.Mastery.DRTable
 
 	sotf := talents.NewSoulOfTheForestAttributor()
 	gg := talents.NewGroveGuardiansAttributor()
 	smCd := talents.NewSmCooldownReductionAttributor([]talents.TalentAttributor{sotf, gg})
 	wgCd := talents.NewWgCooldownReductionAttributor([]talents.TalentAttributor{gg}, false)
+
+	hb := talents.NewHarmoniousBloomingAttributor(drTable)
+	sb := talents.NewSymbioticBloomMasteryAttributor(drTable)
+	// SB needs to know if HB is active to account for LB's +2 virtual mastery stacks.
+	// Check if HB is not skipped in config.
+	if cfg, ok := config.Talents["harmonious_blooming"]; !ok || !cfg.Skip {
+		sb.SetHBActive(true)
+	}
 
 	all := []talents.TalentAttributor{
 		sotf,
@@ -88,8 +95,8 @@ func BuildAttributors(config *models.Config, damageTaken int) []talents.TalentAt
 		talents.NewStrategicInfusionAttributor(),
 		talents.NewBurstingGrowthAttributor(),
 		talents.NewThrivingGrowthAttributor(),
-		talents.NewHarmoniousBloomingAttributor(baseStacks, drTable),
-		talents.NewSymbioticBloomMasteryAttributor(baseStacks, drTable),
+		hb,
+		sb,
 		talents.NewIntensityAttributor(),
 		talents.NewAbundanceAttributor(),
 		talents.NewPhotosynthesisAttributor(),

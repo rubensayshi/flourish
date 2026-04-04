@@ -129,15 +129,11 @@ func NewRouterWithAuth(client wcl.Querier, cacheDir string, authState *AuthState
 		playerName := chi.URLParam(r, "playerName")
 		fightID, _ := strconv.Atoi(fightIDStr)
 
-		baseStacksStr := r.URL.Query().Get("base_stacks")
-
 		// Check cache first (doesn't count against rate limit)
-		if baseStacksStr == "" {
-			if cached := resultCache.Get(code, fightID, playerName); cached != nil {
-				w.Header().Set("Content-Type", "application/json")
-				json.NewEncoder(w).Encode(cached)
-				return
-			}
+		if cached := resultCache.Get(code, fightID, playerName); cached != nil {
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(cached)
+			return
 		}
 
 		ip := GetClientIP(r)
@@ -229,18 +225,6 @@ func NewRouterWithAuth(client wcl.Querier, cacheDir string, authState *AuthState
 		config, err := models.LoadConfig(configPath)
 		if err != nil {
 			config = models.DefaultConfig()
-		}
-
-		if baseStacksStr != "" {
-			if bs, err := strconv.Atoi(baseStacksStr); err == nil {
-				if bs < 1 {
-					bs = 1
-				}
-				if bs > 5 {
-					bs = 5
-				}
-				config.Mastery.BaseStacks = bs
-			}
 		}
 
 		// Build pet ID sets

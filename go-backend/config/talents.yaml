@@ -3,12 +3,11 @@
 # multiplier: fraction of healing attributable to this talent
 
 # Mastery: Harmony settings (used by Harmonious Blooming & Symbiotic Bloom Mastery)
-# pct: player's mastery percentage
-# base_stacks: typical number of HoTs on a target (excluding talent-added stacks)
-# dr_table: cumulative mastery multiplier per stack count (diminishing returns)
+# dr_table: cumulative mastery coefficient per HoT stack count (index = stack count)
+# Increments: 1.0, 0.7, 0.6, 0.5, then plateaus at 0.4 per additional stack.
+# Actual stack counts are computed dynamically from active HoTs on each target.
 mastery:
-  base_stacks: 2
-  dr_table: [1.0, 1.7, 2.3, 2.8, 3.2]
+  dr_table: [0, 1.0, 1.7, 2.3, 2.8, 3.2, 3.6, 4.0, 4.4, 4.8]
 
 # === Spec talents (analyze) ===
 

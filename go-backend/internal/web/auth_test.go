@@ -1,6 +1,7 @@
 package web_test
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -42,9 +43,10 @@ func TestAnonLimitEnforced(t *testing.T) {
 	authState := web.NewAuthState()
 	router := web.NewRouterWithAuth(&MockReportClient{}, t.TempDir(), authState)
 
-	// Use base_stacks param to bypass cache
+	// Use different report codes to avoid cache hits
 	for i := 0; i < 2; i++ {
-		req := httptest.NewRequest("GET", "/api/analyze/ABC123/1/Saik%C3%B3?base_stacks=2", nil)
+		url := fmt.Sprintf("/api/analyze/REPORT%d/1/Saik%%C3%%B3", i)
+		req := httptest.NewRequest("GET", url, nil)
 		req.RemoteAddr = "1.2.3.4:1234"
 		w := httptest.NewRecorder()
 		router.ServeHTTP(w, req)
@@ -52,7 +54,7 @@ func TestAnonLimitEnforced(t *testing.T) {
 	}
 
 	// Third request should be blocked
-	req := httptest.NewRequest("GET", "/api/analyze/ABC123/1/Saik%C3%B3?base_stacks=2", nil)
+	req := httptest.NewRequest("GET", "/api/analyze/REPORT9/1/Saik%C3%B3", nil)
 	req.RemoteAddr = "1.2.3.4:1234"
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
