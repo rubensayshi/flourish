@@ -21,7 +21,6 @@ export async function fetchReport(code) {
 
 export async function fetchAnalysis(code, fightId, player, settings = {}) {
   const params = new URLSearchParams()
-  if (settings.baseStacks != null && settings.baseStacks !== 2) params.set('base_stacks', settings.baseStacks)
 
   const qs = params.toString()
   const url = `${API_BASE}/analyze/${code}/${fightId}/${encodeURIComponent(player)}${qs ? '?' + qs : ''}`

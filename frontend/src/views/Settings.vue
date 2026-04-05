@@ -1,35 +1,6 @@
 <template>
   <div class="max-w-3xl mx-auto">
-    <h2 class="text-xl font-bold mb-6">Settings</h2>
-
-    <div class="max-w-lg">
-      <div v-for="(meta, key) in SETTINGS_META" :key="key" class="mb-6">
-        <label class="block font-semibold mb-1">
-          {{ meta.label }}
-          <span class="ml-2 text-emerald-400 font-mono">{{ settings[key] }}</span>
-        </label>
-        <p class="text-sm text-slate-400 mb-2">{{ meta.description }}</p>
-        <div class="flex items-center gap-3">
-          <span class="text-xs text-slate-500">{{ meta.min }}</span>
-          <input
-            type="range"
-            :min="meta.min"
-            :max="meta.max"
-            :step="meta.step"
-            v-model.number="settings[key]"
-            class="w-full accent-emerald-500"
-          />
-          <span class="text-xs text-slate-500">{{ meta.max }}</span>
-        </div>
-      </div>
-
-      <p class="text-xs text-slate-500 mt-8">
-        Settings are saved in your browser and applied to future analyses.
-      </p>
-    </div>
-
-    <!-- Skipped Talents -->
-    <div class="mt-12 border-t border-slate-700 pt-8">
+    <div>
       <h2 class="text-xl font-bold mb-2">Skipped Talents</h2>
       <p class="text-slate-400 text-sm mb-6">
         These talents are excluded from the analysis. They either can't be meaningfully attributed,
@@ -69,7 +40,6 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { settings, SETTINGS_META } from '../composables/useSettings'
 
 const skippedTalents = ref([])
 const skippedLoading = ref(true)
