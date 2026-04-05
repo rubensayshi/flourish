@@ -11,7 +11,8 @@ export const TALENT_EXPLANATIONS = {
 <br><br>On Regrowth crits, we calculate Abundance's share: <code>abundance_crit / total_crit \u00d7 crit_bonus_healing</code>.`,
 
   'Convoke the Spirits': `During Convoke's channel (4s, or 3s with Cenarius' Guidance):
-<br><br><b>Direct heals</b> during channel: attributed at 70%.<br><b>HoTs applied</b> during channel: tagged, subsequent ticks attributed at 70%.<br>Pre-existing HoT ticks during the channel are excluded.`,
+<br><br><b>Direct heals</b> during channel: attributed at 100%.<br><b>HoTs applied</b> during channel: tagged, subsequent ticks attributed at 100%.<br>Pre-existing HoT ticks during the channel are excluded.
+<br><br><b>Opportunity cost:</b> first 3 Rejuv/Regrowth casts are skipped (you could have cast those yourself).`,
 
   'Incarnation: Tree of Life': `While Tree of Life is active:
 <br><br><b>Rejuvenation:</b> +50% healing bonus.<br><b>Wild Growth:</b> +10% base bonus, plus extra-target healing calculated as <code>(actual_targets \u2212 base_targets) / actual_targets \u00d7 total_healing</code>.`,
