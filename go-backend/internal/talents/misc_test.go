@@ -214,11 +214,25 @@ func TestNurturingDormancyRefreshResetsBaseDuration(t *testing.T) {
 	require.Equal(t, 0.0, results.TalentHealing["Nurturing Dormancy"])
 }
 
-func TestNurturingDormancyRefreshThenTickPastBase(t *testing.T) {
+func TestNurturingDormancyRefreshThenTickWithinPandemic(t *testing.T) {
+	// Refresh at 5s → 12s remaining → pandemic cap 5.1s → expiry = 5000+17000+5100 = 27100
+	// Tick at 23s is within pandemic window, NOT ND.
 	events := []map[string]any{
 		makeApply(0, rejuv),
 		makeRefresh(5000, rejuv),
 		makeHeal(23000, rejuv, 5000),
+	}
+	pipeline := analysis.NewPipeline([]talents.TalentAttributor{talents.NewNurturingDormancyAttributor()}, nil, nil)
+	results := pipeline.Run(events)
+	require.Equal(t, 0.0, results.TalentHealing["Nurturing Dormancy"])
+}
+
+func TestNurturingDormancyRefreshThenTickPastPandemic(t *testing.T) {
+	// Refresh at 5s → pandemic expiry = 27100. Tick at 28s > 27100 → ND.
+	events := []map[string]any{
+		makeApply(0, rejuv),
+		makeRefresh(5000, rejuv),
+		makeHeal(28000, rejuv, 5000),
 	}
 	pipeline := analysis.NewPipeline([]talents.TalentAttributor{talents.NewNurturingDormancyAttributor()}, nil, nil)
 	results := pipeline.Run(events)
