@@ -27,7 +27,8 @@ inner_peace:
   skip_reason: "CD reduction only"
 
 flourish:
-  skip: false
+  skip: true
+  skip_reason: "Tranquility HoT extension, too complex to attribute"
 
 germination:
   skip: true

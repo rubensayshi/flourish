@@ -36,7 +36,7 @@ const (
 	GroveGuardianSummon  = 102693
 
 	// Dryad / pet spells
-	DryadTranquility   = 1264659 // also used by Flourish attributor
+	DryadTranquility   = 1264659
 	DryadRegrowthSpell = 1264664
 	SpiritOfTheThicket = 1264905
 
@@ -55,9 +55,6 @@ const (
 
 	// Crit rating per percent (shared by Abundance and Strategic Infusion)
 	CritRatingPerPercent = 700.0
-
-	// Default Convoke healing ratio
-	DefaultConvokeHealingRatio = 0.7
 )
 
 // RegrowthDamageTakenFilter is the WCL filter for damage taken while Regrowth HoT is active.

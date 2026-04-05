@@ -33,12 +33,6 @@ func heroTreeFor(name string) string {
 
 // BuildAttributors creates the full set of talent attributors from config.
 func BuildAttributors(config *models.Config, damageTaken int) []talents.TalentAttributor {
-	convokeCfg := config.Talents["convoke_the_spirits"]
-	convokeRatio := talents.DefaultConvokeHealingRatio
-	if convokeCfg.Multiplier != nil {
-		convokeRatio = *convokeCfg.Multiplier
-	}
-
 	drTable := config.Mastery.DRTable
 
 	sotf := talents.NewSoulOfTheForestAttributor()
@@ -65,7 +59,6 @@ func BuildAttributors(config *models.Config, damageTaken int) []talents.TalentAt
 		talents.NewNaturesBountyAttributor(),
 		talents.NewRegenerativeHeartwoodAttributor(),
 		talents.NewRampantGrowthAttributor(),
-		talents.NewFlourishAttributor(),
 		talents.NewCultivationAttributor(),
 		talents.NewYserasGiftAttributor(),
 		talents.NewEmbraceOfTheDreamAttributor(),
@@ -86,7 +79,7 @@ func BuildAttributors(config *models.Config, damageTaken int) []talents.TalentAt
 		talents.NewPatientCustodianAttributor(),
 		talents.NewLifetreadingAttributor(),
 		talents.NewTreeOfLifeAttributor(),
-		talents.NewConvokeAttributor(convokeRatio),
+		talents.NewConvokeAttributor(),
 		talents.NewImprovedWildGrowthAttributor(),
 		talents.NewReforestationAttributor(),
 		talents.NewVigorousCreepersAttributor(),

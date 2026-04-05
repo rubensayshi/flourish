@@ -128,10 +128,6 @@ func NewCultivationAttributor() *DirectSpellAttributor {
 	return newDirectSpell("Cultivation", intPtr(82056), nil, []int{CultivationSpell})
 }
 
-func NewFlourishAttributor() *DirectSpellAttributor {
-	return newDirectSpell("Flourish", intPtr(82053), intPtr(103106), []int{DryadTranquility})
-}
-
 // RampantGrowthAttributor credits bonus portion of Regrowth HoT ticks (+100%).
 type RampantGrowthAttributor struct {
 	BaseAttributor
