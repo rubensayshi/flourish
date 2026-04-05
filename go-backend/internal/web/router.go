@@ -57,6 +57,46 @@ func NewRouterWithAuth(client wcl.Querier, cacheDir string, authState *AuthState
 		json.NewEncoder(w).Encode(map[string]any{"status": "ok"})
 	})
 
+	r.Get("/api/skipped-talents", func(w http.ResponseWriter, r *http.Request) {
+		configPath := "config/talents.yaml"
+		if _, err := os.Stat(configPath); os.IsNotExist(err) {
+			configPath = "../config/talents.yaml"
+		}
+		config, err := models.LoadConfig(configPath)
+		if err != nil {
+			http.Error(w, `{"detail":"Failed to load config"}`, 500)
+			return
+		}
+
+		type skippedTalent struct {
+			Name     string `json:"name"`
+			Reason   string `json:"reason"`
+			Category string `json:"category"`
+		}
+
+		var skipped []skippedTalent
+		for name, tc := range config.Talents {
+			if !tc.Skip {
+				continue
+			}
+			category := categorizeSkippedTalent(tc.SkipReason)
+			skipped = append(skipped, skippedTalent{
+				Name:     formatTalentName(name),
+				Reason:   tc.SkipReason,
+				Category: category,
+			})
+		}
+		sort.Slice(skipped, func(i, j int) bool {
+			if skipped[i].Category != skipped[j].Category {
+				return skipped[i].Category < skipped[j].Category
+			}
+			return skipped[i].Name < skipped[j].Name
+		})
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(skipped)
+	})
+
 	r.Get("/api/report/{code}", func(w http.ResponseWriter, r *http.Request) {
 		ip := GetClientIP(r)
 		if !reportLimiter.Allow(ip) {
@@ -378,4 +418,40 @@ func NewRouterWithAuth(client wcl.Querier, cacheDir string, authState *AuthState
 	})
 
 	return r
+}
+
+func formatTalentName(key string) string {
+	// Handle colon-separated names like "everbloom:_splash"
+	key = strings.ReplaceAll(key, ":_", ": ")
+	key = strings.ReplaceAll(key, ":", ": ")
+	key = strings.ReplaceAll(key, "_", " ")
+	words := strings.Fields(key)
+	for i, w := range words {
+		if len(w) > 0 {
+			words[i] = strings.ToUpper(w[:1]) + w[1:]
+		}
+	}
+	return strings.Join(words, " ")
+}
+
+func categorizeSkippedTalent(reason string) string {
+	r := strings.ToLower(reason)
+	switch {
+	case strings.Contains(r, "baseline") || strings.Contains(r, "always take"):
+		return "Baseline / Always Taken"
+	case strings.Contains(r, "utility") || strings.Contains(r, "damage reduction") ||
+		strings.Contains(r, "mana") || strings.Contains(r, "cc ") ||
+		strings.Contains(r, "cast speed") || strings.Contains(r, "damage only") ||
+		strings.Contains(r, "not direct healing") || strings.Contains(r, "not healing") ||
+		strings.Contains(r, "not group healing") || strings.Contains(r, "self-heal") ||
+		strings.Contains(r, "self damage") || strings.Contains(r, "cat form"):
+		return "Non-Healing / Utility"
+	case strings.Contains(r, "hard to attribute") || strings.Contains(r, "hard to separate") ||
+		strings.Contains(r, "can't separate") || strings.Contains(r, "complex") ||
+		strings.Contains(r, "cd reduction") || strings.Contains(r, "indirect") ||
+		strings.Contains(r, "proc rate") || strings.Contains(r, "proc chance"):
+		return "Too Complex to Attribute"
+	default:
+		return "Other"
+	}
 }
