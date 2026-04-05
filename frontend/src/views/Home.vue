@@ -41,7 +41,11 @@ import ReportHistory from '../components/ReportHistory.vue'
 
 const router = useRouter()
 
-function goToReport(code) {
-  router.push(`/analyze/${code}`)
+function goToReport({ code, fightId, sourceId }) {
+  if (fightId && sourceId) {
+    router.push(`/analyze/${code}?fight=${fightId}&source=${sourceId}`)
+  } else {
+    router.push(`/analyze/${code}`)
+  }
 }
 </script>

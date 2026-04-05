@@ -24,19 +24,15 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { parseReportUrl } from '../utils/parseReportUrl'
 
 const emit = defineEmits(['submit'])
 const input = ref('')
 
-const code = computed(() => {
-  const text = input.value.trim()
-  const match = text.match(/warcraftlogs\.com\/reports\/([A-Za-z0-9]+)/)
-  if (match) return match[1]
-  if (/^[A-Za-z0-9]{10,20}$/.test(text)) return text
-  return null
-})
+const parsed = computed(() => parseReportUrl(input.value))
+const code = computed(() => parsed.value.code)
 
 function submit() {
-  if (code.value) emit('submit', code.value)
+  if (parsed.value.code) emit('submit', parsed.value)
 }
 </script>

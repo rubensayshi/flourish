@@ -102,10 +102,26 @@ async function loadFromRoute() {
   try {
     report.value = await fetchReport(route.params.code)
 
+    // Pre-select from /results/:code/:fightId/:player route
     if (route.params.fightId && route.params.player) {
       selectedFight.value = Number(route.params.fightId)
       selectedPlayer.value = route.params.player
       await runAnalysis()
+    }
+    // Pre-select from ?fight=X&source=Y query params (from WCL URL)
+    else if (route.query.fight && route.query.source) {
+      const fights = report.value.fights
+      if (route.query.fight === 'last') {
+        selectedFight.value = fights.length ? fights[fights.length - 1].id : 0
+      } else {
+        selectedFight.value = Number(route.query.fight)
+      }
+      const sourceId = Number(route.query.source)
+      const druid = report.value.druids.find(d => d.id === sourceId)
+      if (druid) {
+        selectedPlayer.value = druid.name
+        await runAnalysis()
+      }
     }
   } catch (e) {
     error.value = e.message

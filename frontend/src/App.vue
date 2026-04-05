@@ -67,6 +67,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuth } from './composables/useAuth.js'
+import { parseReportUrl } from './utils/parseReportUrl'
 import WelcomeModal from './components/WelcomeModal.vue'
 
 const route = useRoute()
@@ -74,17 +75,17 @@ const router = useRouter()
 const auth = useAuth()
 
 const headerInput = ref('')
-const headerCode = computed(() => {
-  const text = headerInput.value.trim()
-  const match = text.match(/warcraftlogs\.com\/reports\/([A-Za-z0-9]+)/)
-  if (match) return match[1]
-  if (/^[A-Za-z0-9]{10,20}$/.test(text)) return text
-  return null
-})
+const headerParsed = computed(() => parseReportUrl(headerInput.value))
+const headerCode = computed(() => headerParsed.value.code)
 
 function goToReport() {
-  if (headerCode.value) {
-    router.push(`/analyze/${headerCode.value}`)
+  const { code, fightId, sourceId } = headerParsed.value
+  if (code) {
+    if (fightId && sourceId) {
+      router.push(`/analyze/${code}?fight=${fightId}&source=${sourceId}`)
+    } else {
+      router.push(`/analyze/${code}`)
+    }
     headerInput.value = ''
   }
 }

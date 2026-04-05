@@ -138,7 +138,7 @@ func NewRouterWithAuth(client wcl.Querier, cacheDir string, authState *AuthState
 		var druids []map[string]any
 		for _, a := range rawActors {
 			actor := a.(map[string]any)
-			if actor["subType"] == "Druid" {
+			if actor["type"] == "Player" && actor["subType"] == "Druid" {
 				id := getIntFromAny(actor["id"])
 				druids = append(druids, map[string]any{
 					"id":     id,
