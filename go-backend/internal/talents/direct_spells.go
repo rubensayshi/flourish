@@ -113,15 +113,15 @@ func NewRegenerativeHeartwoodAttributor() *DirectSpellAttributor {
 }
 
 func NewYserasGiftAttributor() *DirectSpellAttributor {
-	return newDirectSpell("Ysera's Gift", intPtr(82055), nil, []int{YserasGift1, YserasGift2, YserasGift3})
+	return newDirectSpell("Ysera's Gift", intPtr(82048), nil, []int{YserasGift1, YserasGift2, YserasGift3})
 }
 
 func NewEmbraceOfTheDreamAttributor() *DirectSpellAttributor {
-	return newDirectSpell("Embrace of the Dream", intPtr(82071), nil, []int{EmbraceOfTheDream})
+	return newDirectSpell("Embrace of the Dream", intPtr(82070), nil, []int{EmbraceOfTheDream})
 }
 
 func NewThrivingVegetationAttributor() *DirectSpellAttributor {
-	return newDirectSpell("Thriving Vegetation", intPtr(103873), nil, []int{ThrivingVegetation})
+	return newDirectSpell("Thriving Vegetation", intPtr(82068), nil, []int{ThrivingVegetation})
 }
 
 func NewCultivationAttributor() *DirectSpellAttributor {

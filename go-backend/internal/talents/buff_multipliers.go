@@ -61,16 +61,16 @@ func NewPatientCustodianAttributor() *StaticBuffAttributor {
 }
 
 func NewImprovedSwiftmendAttributor() *StaticBuffAttributor {
-	return newStaticBuff("Improved Swiftmend", intPtr(82063), nil, []int{Swiftmend}, 0.3)
+	return newStaticBuff("Improved Swiftmend", intPtr(103873), nil, []int{Swiftmend}, 0.3)
 }
 
 func NewUnstoppableGrowthAttributor() *StaticBuffAttributor {
 	// Reduced falloff ≈ 27.7% average bonus
-	return newStaticBuff("Unstoppable Growth", intPtr(82061), nil, []int{WildGrowth}, 0.277)
+	return newStaticBuff("Unstoppable Growth", intPtr(82080), nil, []int{WildGrowth}, 0.277)
 }
 
 func NewLivelinessAttributor() *StaticBuffAttributor {
-	return newStaticBuff("Liveliness", intPtr(82064), intPtr(103130),
+	return newStaticBuff("Liveliness", intPtr(82074), intPtr(103130),
 		[]int{Rejuvenation, GerminationRejuv, Regrowth, DryadRegrowthSpell, WildGrowth, Lifebloom, LifebloomBloom, EverbloomSplash}, 0.05)
 }
 
