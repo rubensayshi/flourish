@@ -9,6 +9,24 @@
         Flourish
       </router-link>
       <div class="flex items-center gap-4">
+        <form v-if="route.path !== '/'" @submit.prevent="goToReport" class="flex gap-2">
+          <input
+            v-model="headerInput"
+            type="text"
+            placeholder="Paste report URL or code..."
+            class="w-64 rounded bg-slate-800 border border-slate-600 px-3 py-1.5 text-sm
+                   text-slate-100 placeholder-slate-500
+                   focus:outline-none focus:border-emerald-500"
+          />
+          <button
+            type="submit"
+            :disabled="!headerCode"
+            class="rounded bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white
+                   hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Go
+          </button>
+        </form>
         <router-link to="/skipped-talents" class="text-sm text-slate-400 hover:text-emerald-400">
           Skipped Talents
         </router-link>
@@ -49,11 +67,30 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useAuth } from './composables/useAuth.js'
 import WelcomeModal from './components/WelcomeModal.vue'
 
+const route = useRoute()
+const router = useRouter()
 const auth = useAuth()
+
+const headerInput = ref('')
+const headerCode = computed(() => {
+  const text = headerInput.value.trim()
+  const match = text.match(/warcraftlogs\.com\/reports\/([A-Za-z0-9]+)/)
+  if (match) return match[1]
+  if (/^[A-Za-z0-9]{10,20}$/.test(text)) return text
+  return null
+})
+
+function goToReport() {
+  if (headerCode.value) {
+    router.push(`/analyze/${headerCode.value}`)
+    headerInput.value = ''
+  }
+}
 
 onMounted(() => {
   const result = auth.handleCallback()
