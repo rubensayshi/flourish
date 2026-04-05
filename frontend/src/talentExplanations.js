@@ -46,6 +46,8 @@ export const TALENT_EXPLANATIONS = {
 
   'Implant': `When Swiftmend or Wild Growth is cast, any Symbiotic Bloom applied within 500ms is tagged as an Implant proc. Full healing of tagged blooms is attributed (they wouldn't exist without the talent).`,
 
+  'Twin Sprouts': `Detects Twin Sprouts procs by finding Symbiotic Bloom applications within 50ms of another bloom on a different target. Full healing of proc'd blooms is attributed. Note: may slightly over-count if two natural blooms proc simultaneously (e.g. from WG ticks).`,
+
   'Symbiotic Bloom Mastery': `Each Symbiotic Bloom adds 1 extra HoT stack for Mastery. Same DR-table calculation as Harmonious Blooming but per bloom:
 <br><br><code>fraction = 1 \u2212 (mult_at_base / mult_at_base+bloom_count)</code>`,
 

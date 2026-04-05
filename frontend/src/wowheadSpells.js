@@ -54,6 +54,7 @@ export const SPELL_IDS = {
   // Wildstalker
   'Bursting Growth':            440120,
   'Implant':                    440118,
+  'Twin Sprouts':               440117,
   'Patient Custodian':          1270592,
   'Root Network':               439882,
   'Strategic Infusion':         439890,

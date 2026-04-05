@@ -8,11 +8,13 @@ import (
 )
 
 const (
-	wsImplantTag      = "implant"
-	wsImplantWindowMS = 500
-	wsSICritBonus     = 0.04
-	vigorousCreepers  = 1.2
-	rootNetworkPerBloom = 0.02
+	wsImplantTag           = "implant"
+	wsImplantWindowMS      = 500
+	wsTwinSproutsTag       = "twin_sprouts"
+	wsTwinSproutsWindowMS  = 50
+	wsSICritBonus          = 0.04
+	vigorousCreepers       = 1.2
+	rootNetworkPerBloom    = 0.02
 )
 
 // VigorousCreepersAttributor: +20% healing to targets with Symbiotic Bloom.
@@ -82,6 +84,58 @@ func (a *ImplantAttributor) ProcessHeal(event *models.HealEvent, hot *tracking.H
 	}
 	h := hot.Get(event.TargetID, SymbioticBloomSpell)
 	if h != nil && h.Tags[wsImplantTag] {
+		return float64(event.Amount)
+	}
+	return 0.0
+}
+
+// TwinSproutsAttributor: 30% chance for bloom growth to spawn another on a nearby target.
+// Detected by finding bloom applications within 50ms of another bloom on a different target.
+// WCL has no distinct event for the proc, so we use timestamp proximity as a heuristic.
+type TwinSproutsAttributor struct {
+	BaseAttributor
+	lastBloomTime   int
+	lastBloomTarget int
+}
+
+func NewTwinSproutsAttributor() *TwinSproutsAttributor {
+	return &TwinSproutsAttributor{
+		BaseAttributor: NewBaseAttributor("Twin Sprouts", intPtr(94628), intPtr(117230)),
+	}
+}
+
+func (a *TwinSproutsAttributor) processBloomEvent(timestamp, targetID int, hot *tracking.HotTracker) {
+	if a.lastBloomTime > 0 && targetID != a.lastBloomTarget {
+		if timestamp-a.lastBloomTime <= wsTwinSproutsWindowMS {
+			h := hot.Get(targetID, SymbioticBloomSpell)
+			if h != nil {
+				h.Tags[wsTwinSproutsTag] = true
+			}
+		}
+	}
+	a.lastBloomTime = timestamp
+	a.lastBloomTarget = targetID
+}
+
+func (a *TwinSproutsAttributor) ProcessEvent(event models.Event, hot *tracking.HotTracker, buff *tracking.BuffTracker) {
+	switch e := event.(type) {
+	case *models.ApplyBuffEvent:
+		if e.AbilityID == SymbioticBloomSpell {
+			a.processBloomEvent(e.Timestamp, e.TargetID, hot)
+		}
+	case *models.RefreshBuffEvent:
+		if e.AbilityID == SymbioticBloomSpell {
+			a.processBloomEvent(e.Timestamp, e.TargetID, hot)
+		}
+	}
+}
+
+func (a *TwinSproutsAttributor) ProcessHeal(event *models.HealEvent, hot *tracking.HotTracker, buff *tracking.BuffTracker) float64 {
+	if event.AbilityID != SymbioticBloomSpell {
+		return 0.0
+	}
+	h := hot.Get(event.TargetID, SymbioticBloomSpell)
+	if h != nil && h.Tags[wsTwinSproutsTag] {
 		return float64(event.Amount)
 	}
 	return 0.0

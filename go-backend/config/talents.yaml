@@ -172,8 +172,7 @@ root_network:
   skip: false
 
 twin_sprouts:
-  skip: true
-  skip_reason: "proc chance for extra Symbiotic Bloom, hard to attribute"
+  skip: false
 
 implant:
   skip: false

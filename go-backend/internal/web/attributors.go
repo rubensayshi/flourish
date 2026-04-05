@@ -11,7 +11,7 @@ import (
 var HeroTrees = map[string]map[string]bool{
 	"Wildstalker": {
 		"Wildstalker's Power": true, "Patient Custodian": true, "Vigorous Creepers": true,
-		"Bursting Growth": true, "Root Network": true, "Implant": true,
+		"Bursting Growth": true, "Root Network": true, "Implant": true, "Twin Sprouts": true,
 		"Thriving Growth": true, "Symbiotic Bloom Mastery": true, "Strategic Infusion": true,
 	},
 	"Keeper of the Grove": {
@@ -85,6 +85,7 @@ func BuildAttributors(config *models.Config, damageTaken int) []talents.TalentAt
 		talents.NewReforestationAttributor(),
 		talents.NewVigorousCreepersAttributor(),
 		talents.NewImplantAttributor(),
+		talents.NewTwinSproutsAttributor(),
 		talents.NewRootNetworkAttributor(),
 		talents.NewStrategicInfusionAttributor(),
 		talents.NewBurstingGrowthAttributor(),
