@@ -210,10 +210,6 @@ durability_of_nature:
 bounteous_bloom:
   skip: false
 
-early_spring:
-  skip: true
-  skip_reason: "CD reduction (Swiftmend/WG -1s)"
-
 power_of_the_dream:
   skip: true
   skip_reason: "extra Dream Surge target, same spell ID, can't separate"
@@ -324,7 +320,7 @@ protective_growth:
 
 hunt_beneath_the_open_skies:
   skip: true
-  skip_reason: "Cat Form buff, Resto rarely uses Cat Form"
+  skip_reason: "Cat Form buff, not direct healing"
 
 strategic_infusion:
   skip: false
