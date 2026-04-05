@@ -124,7 +124,10 @@ dream_of_cenarius:
   skip: true
   skip_reason: "damage-to-healing, niche"
 
-thriving_vegetation:
+thriving_vegetation:_rejuv:
+  skip: false
+
+thriving_vegetation:_regrowth:
   skip: false
 
 nurturing_dormancy:

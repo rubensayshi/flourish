@@ -69,6 +69,9 @@ export const TALENT_EXPLANATIONS = {
 <br><br><code>ratio = 1 \u2212 (reduced_cd / unreduced_cd)</code>. Sum of ratios \u00d7 downstream healing (Efflorescence uptime from extra WG casts).`,
 
   'Sylvan Beckoning': `Identifies healing done by the Keeper's Dryad pet by checking <code>source_id \u2260 player_source_id</code>. The Dryad's spells share IDs with other sources, so pet source discrimination is essential.`,
+
+  'Thriving Vegetation: Regrowth': `Regrowth HoT duration is increased by 3 sec per rank. Tracks where the HoT would expire without this bonus (base 12s + pandemic), and attributes ticks beyond that point.
+<br><br>On refresh: if the non-TV HoT would have already expired, the refresh is treated as a fresh application (no pandemic carry-over).`,
 }
 
 export function hasExplanation(name) {

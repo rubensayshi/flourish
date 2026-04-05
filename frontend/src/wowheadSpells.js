@@ -30,7 +30,8 @@ export const SPELL_IDS = {
   'Regenerative Heartwood':     392116,
   'Regenesis':                  383191,
   'SotF + PotA':                158478,   // Soul of the Forest
-  'Thriving Vegetation':        447131,
+  'Thriving Vegetation: Rejuv':  447131,
+  'Thriving Vegetation: Regrowth': 447131,
   'Unstoppable Growth':         382559,
   'Verdancy':                   392325,
   'Wild Synthesis':             400533,

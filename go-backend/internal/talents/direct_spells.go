@@ -120,8 +120,8 @@ func NewEmbraceOfTheDreamAttributor() *DirectSpellAttributor {
 	return newDirectSpell("Embrace of the Dream", intPtr(82070), nil, []int{EmbraceOfTheDream})
 }
 
-func NewThrivingVegetationAttributor() *DirectSpellAttributor {
-	return newDirectSpell("Thriving Vegetation", intPtr(82068), nil, []int{ThrivingVegetation})
+func NewThrivingVegetationRejuvAttributor() *DirectSpellAttributor {
+	return newDirectSpell("Thriving Vegetation: Rejuv", intPtr(82068), nil, []int{ThrivingVegetation})
 }
 
 func NewCultivationAttributor() *DirectSpellAttributor {
