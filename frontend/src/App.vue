@@ -44,12 +44,14 @@
     <main class="px-4 py-8">
       <router-view />
     </main>
+    <WelcomeModal />
   </div>
 </template>
 
 <script setup>
 import { onMounted } from 'vue'
 import { useAuth } from './composables/useAuth.js'
+import WelcomeModal from './components/WelcomeModal.vue'
 
 const auth = useAuth()
 
