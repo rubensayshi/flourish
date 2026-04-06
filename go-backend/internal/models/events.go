@@ -96,13 +96,15 @@ type DamageEvent struct {
 
 type CombatantInfoEvent struct {
 	BaseEvent
-	TalentNodes map[int]bool
-	TalentIDs   map[int]bool
-	TalentRanks map[int]int
-	CritSpell   float64
-	HasteSpell  float64
-	Mastery     float64
-	SpecID      int
+	TalentNodes   map[int]bool
+	TalentIDs     map[int]bool
+	TalentRanks   map[int]int
+	Intellect     int
+	CritSpell     float64
+	HasteSpell    float64
+	Mastery       float64
+	Versatility   float64 // versatilityHealingDone rating
+	SpecID        int
 }
 
 // GetInt extracts an int from map[string]any, handling JSON float64.
@@ -182,9 +184,11 @@ func ParseEvent(raw map[string]any) Event {
 			TalentNodes: talentNodes,
 			TalentIDs:   talentIDs,
 			TalentRanks: talentRanks,
+			Intellect:   GetInt(raw, "intellect", 0),
 			CritSpell:   getFloat(raw, "critSpell", 0),
 			HasteSpell:  getFloat(raw, "hasteSpell", 0),
 			Mastery:     getFloat(raw, "mastery", 0),
+			Versatility: getFloat(raw, "versatilityHealingDone", 0),
 			SpecID:      GetInt(raw, "specID", 0),
 		}
 	}

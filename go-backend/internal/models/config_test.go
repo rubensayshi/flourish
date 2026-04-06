@@ -40,3 +40,34 @@ func TestMissingTalentUsesDefaults(t *testing.T) {
 	require.False(t, tc.Skip)
 	require.Nil(t, tc.Multiplier)
 }
+
+func TestLoadSpellCoefficients(t *testing.T) {
+	dir, _ := os.Getwd()
+	path := filepath.Join(dir, "..", "..", "config", "spell_coefficients.yaml")
+	sc, err := models.LoadSpellCoefficients(path)
+	require.NoError(t, err)
+	require.NotNil(t, sc)
+
+	// Rejuvenation (774)
+	rejuv, ok := sc.Spells[774]
+	require.True(t, ok, "Rejuvenation should be in spell coefficients")
+	require.Equal(t, "Rejuvenation", rejuv.Name)
+	require.Equal(t, 12000, rejuv.DurationMS)
+	require.Len(t, rejuv.Effects, 1)
+	require.Equal(t, "periodic", rejuv.Effects[0].Type)
+	require.InDelta(t, 0.803, rejuv.Effects[0].Coefficient, 0.001)
+	require.Equal(t, 3000, rejuv.Effects[0].PeriodMS)
+
+	// Regrowth (8936) — has both direct and periodic
+	regrowth, ok := sc.Spells[8936]
+	require.True(t, ok)
+	require.Len(t, regrowth.Effects, 2)
+	require.Equal(t, "direct", regrowth.Effects[0].Type)
+	require.InDelta(t, 5.36, regrowth.Effects[0].Coefficient, 0.01)
+	require.Equal(t, "periodic", regrowth.Effects[1].Type)
+
+	// Swiftmend (18562)
+	sm, ok := sc.Spells[18562]
+	require.True(t, ok)
+	require.InDelta(t, 10.37, sm.Effects[0].Coefficient, 0.01)
+}

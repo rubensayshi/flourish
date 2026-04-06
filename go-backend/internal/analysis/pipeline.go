@@ -13,6 +13,7 @@ type AnalysisResults struct {
 	HighHealthThreshold float64 // the threshold used (0 = not tracked)
 	TalentHealing       map[string]float64
 	TalentRanks         map[string]int
+	BaseSpellHealing    map[string]float64 // per-spell unattributed (base) healing
 	FightDurationMs     int
 	CombatantInfo       *models.CombatantInfoEvent
 }
@@ -50,6 +51,7 @@ func (p *Pipeline) Run(rawEvents []map[string]any) *AnalysisResults {
 	results := &AnalysisResults{
 		TalentHealing:       make(map[string]float64),
 		TalentRanks:         make(map[string]int),
+		BaseSpellHealing:    make(map[string]float64),
 		HighHealthThreshold: p.HighHealthThreshold,
 	}
 	for _, attr := range p.Attributors {
@@ -129,10 +131,16 @@ func (p *Pipeline) Run(rawEvents []map[string]any) *AnalysisResults {
 				}
 			}
 
+			totalAttrForHeal := 0.0
 			for _, attr := range p.Attributors {
 				attributed := attr.ProcessHeal(he, p.HotTracker, p.BuffTracker)
 				results.TalentHealing[attr.Name()] += attributed
 				attr.AddTotalAttributed(attributed)
+				totalAttrForHeal += attributed
+			}
+			base := float64(he.Amount) - totalAttrForHeal
+			if base > 0 {
+				results.BaseSpellHealing[talents.SpellName(he.AbilityID)] += base
 			}
 		}
 	}

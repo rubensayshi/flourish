@@ -1,5 +1,7 @@
 package talents
 
+import "fmt"
+
 // Spell and ability IDs from World of Warcraft used across talent attributors.
 const (
 	// Core restoration spells
@@ -63,4 +65,68 @@ const RegrowthDamageTakenFilter = `IN RANGE FROM (type = "applybuff" OR type = "
 // IsRejuv returns true if the spell ID is Rejuvenation or Germination Rejuvenation.
 func IsRejuv(id int) bool {
 	return id == Rejuvenation || id == GerminationRejuv
+}
+
+// SpellName returns a human-readable name for known restoration druid spell IDs.
+func SpellName(id int) string {
+	if name, ok := spellNames[id]; ok {
+		return name
+	}
+	return fmt.Sprintf("Unknown (%d)", id)
+}
+
+var spellNames = map[int]string{
+	Rejuvenation:          "Rejuvenation",
+	GerminationRejuv:      "Rejuvenation (Germ)",
+	Regrowth:              "Regrowth",
+	WildGrowth:            "Wild Growth",
+	Swiftmend:             "Swiftmend",
+	Lifebloom:             "Lifebloom",
+	LifebloomBloom:        "Lifebloom (Bloom)",
+	Efflorescence:         "Efflorescence",
+	CenarionWard:          "Cenarion Ward",
+	SymbioticBloomSpell:   "Symbiotic Bloom",
+	EverbloomSplash:       "Everbloom",
+	Verdancy:              "Verdancy",
+	DreamSurge:            "Dream Surge",
+	BurstingGrowthSpell:   "Bursting Growth",
+	ThrivingGrowthSpell:   "Thriving Growth",
+	NaturesBountySpell:    "Nature's Bounty",
+	RegenerativeHeartwood: "Regenerative Heartwood",
+	EmbraceOfTheDream:     "Embrace of the Dream",
+	ThrivingVegetation:    "Thriving Vegetation",
+	CultivationSpell:      "Cultivation",
+	GroveGuardianNourish:  "Grove Guardian (Nourish)",
+	GroveGuardianHeal:     "Grove Guardian (Heal)",
+	DryadTranquility:      "Dryad Tranquility",
+	DryadRegrowthSpell:    "Dryad Regrowth",
+	SpiritOfTheThicket:    "Spirit of the Thicket",
+	YserasGift1:           "Ysera's Gift",
+	YserasGift2:           "Ysera's Gift",
+	YserasGift3:           "Ysera's Gift",
+	ConvokeTheSpirits:     "Convoke",
+	ConvokeLegacy:         "Convoke",
+	// Tranquility
+	740:   "Tranquility",
+	44203: "Tranquility",
+	// Nature's Swiftness Regrowth
+	132158: "Nature's Swiftness",
+
+	// Other druid talents / abilities
+	22842:  "Frenzied Regeneration",
+	474683: "Aessina's Renewal",
+	439902: "Flower Walk",
+	455474: "Lethal Preservation",
+	455470: "Lethal Preservation",
+
+	// External / consumable healing
+	143924:  "Leech",
+	1265145: "Refreshing Drink",
+	1234768: "Health Potion",
+	6262:    "Healthstone",
+	361509:  "Living Flame",
+	374251:  "Cauterizing Flame",
+	361195:  "Verdant Embrace",
+	130654:  "Chi Burst",
+	413786:  "Fate Mirror",
 }

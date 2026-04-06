@@ -31,6 +31,7 @@ var (
 	sectionColors = map[string]lipgloss.Color{
 		"Keeper of the Grove": cyan,
 		"Wildstalker":         orange,
+		"Base Healing":        dim,
 	}
 )
 
@@ -187,6 +188,52 @@ func RenderResults(results *analysis.AnalysisResults, fightName, playerName stri
 		}
 	}
 
+	// Base spell breakdown
+	if len(results.BaseSpellHealing) > 0 {
+		type spellEntry struct {
+			name   string
+			amount float64
+		}
+		var baseEntries []spellEntry
+		for name, amount := range results.BaseSpellHealing {
+			if amount > 0 {
+				baseEntries = append(baseEntries, spellEntry{name, amount})
+			}
+		}
+		sort.Slice(baseEntries, func(i, j int) bool { return baseEntries[i].amount > baseEntries[j].amount })
+
+		baseTotal := 0.0
+		for _, e := range baseEntries {
+			baseTotal += e.amount
+		}
+		basePct := 0.0
+		if total > 0 {
+			basePct = baseTotal / total * 100
+		}
+		baseHps := baseTotal / durationSec
+		tableRows = append(tableRows, tableRow{kind: rowSection, section: "Base Healing", cols: []string{
+			"Base Healing",
+			formatNum(baseTotal),
+			fmt.Sprintf("%.1f%%", basePct),
+			formatNum(baseHps),
+			"",
+		}})
+		for _, e := range baseEntries {
+			pct := 0.0
+			if total > 0 {
+				pct = e.amount / total * 100
+			}
+			hps := e.amount / durationSec
+			tableRows = append(tableRows, tableRow{kind: rowData, cols: []string{
+				e.name,
+				formatNum(e.amount),
+				fmt.Sprintf("%.1f%%", pct),
+				formatNum(hps),
+				bar(pct, maxPct),
+			}})
+		}
+	}
+
 	// Summary
 	tableRows = append(tableRows, tableRow{kind: rowBlank})
 	if results.Wasted > 0 {
@@ -196,7 +243,11 @@ func RenderResults(results *analysis.AnalysisResults, fightName, playerName stri
 		label := fmt.Sprintf("High Health (>%.0f%% HP)", results.HighHealthThreshold*100)
 		tableRows = append(tableRows, tableRow{kind: rowSummary, cols: []string{label, formatNum(float64(results.HighHealthHealing)), "", "", ""}})
 	}
-	unattributed := total - allAttributed - float64(results.Wasted) - float64(results.HighHealthHealing)
+	baseTotal := 0.0
+	for _, amount := range results.BaseSpellHealing {
+		baseTotal += amount
+	}
+	unattributed := total - allAttributed - baseTotal - float64(results.Wasted) - float64(results.HighHealthHealing)
 	if unattributed < 0 {
 		tableRows = append(tableRows, tableRow{kind: rowSummary, cols: []string{"Unattributed", "—", "", "", ""}})
 	} else {

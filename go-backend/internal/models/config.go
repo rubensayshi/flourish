@@ -16,9 +16,26 @@ type TalentConfig struct {
 	Multiplier *float64 `yaml:"multiplier"`
 }
 
+type SpellEffectConfig struct {
+	Type        string  `yaml:"type"`        // "direct" or "periodic"
+	Coefficient float64 `yaml:"coefficient"` // SP coefficient per tick/cast
+	PeriodMS    int     `yaml:"period_ms"`   // tick interval (periodic only)
+}
+
+type SpellConfig struct {
+	Name       string             `yaml:"name"`
+	DurationMS int                `yaml:"duration_ms"`
+	Effects    []SpellEffectConfig `yaml:"effects"`
+}
+
+type SpellCoefficients struct {
+	Spells map[int]SpellConfig `yaml:"spells"`
+}
+
 type Config struct {
-	Mastery MasteryConfig
-	Talents map[string]TalentConfig
+	Mastery          MasteryConfig
+	Talents          map[string]TalentConfig
+	SpellCoefficients *SpellCoefficients
 }
 
 var defaultDRTable = []float64{0, 1.0, 1.7, 2.3, 2.8, 3.2, 3.6, 4.0, 4.4, 4.8}
@@ -28,6 +45,18 @@ func DefaultConfig() *Config {
 		Mastery: MasteryConfig{DRTable: defaultDRTable},
 		Talents: map[string]TalentConfig{},
 	}
+}
+
+func LoadSpellCoefficients(path string) (*SpellCoefficients, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	var sc SpellCoefficients
+	if err := yaml.Unmarshal(data, &sc); err != nil {
+		return nil, err
+	}
+	return &sc, nil
 }
 
 func LoadConfig(path string) (*Config, error) {
