@@ -386,6 +386,17 @@ func NewRouterWithAuth(client wcl.Querier, cacheDir string, authState *AuthState
 			heroTreesList = append(heroTreesList, entry)
 		}
 
+		// Build stats list
+		statOrder := []string{"Spell Power", "Versatility", "Mastery: Harmony", "Critical Strike"}
+		statsList := make([]map[string]any, 0)
+		statTotalHealing := 0.0
+		for _, name := range statOrder {
+			if amount, ok := results.StatHealing[name]; ok && amount > 0 {
+				statTotalHealing += amount
+				statsList = append(statsList, talentEntry(name, amount))
+			}
+		}
+
 		allAttributed := 0.0
 		for _, t := range nonHero {
 			allAttributed += t.amount
@@ -395,7 +406,7 @@ func NewRouterWithAuth(client wcl.Querier, cacheDir string, authState *AuthState
 				allAttributed += e.amount
 			}
 		}
-		unattributed := total - math.Round(allAttributed) - float64(results.Wasted) - float64(results.HighHealthHealing)
+		unattributed := total - math.Round(allAttributed) - statTotalHealing - float64(results.Wasted) - float64(results.HighHealthHealing)
 		if unattributed < 0 {
 			unattributed = 0
 		}
@@ -407,6 +418,7 @@ func NewRouterWithAuth(client wcl.Querier, cacheDir string, authState *AuthState
 			"duration_sec":  int(math.Round(durationSec)),
 			"talents":       talentsList,
 			"hero_trees":    heroTreesList,
+			"stats":         statsList,
 			"wasted":        results.Wasted,
 			"high_health":   results.HighHealthHealing,
 			"unattributed":  int(unattributed),
