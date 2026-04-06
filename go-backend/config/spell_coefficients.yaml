@@ -1,0 +1,99 @@
+# Auto-generated from SimulationCraft spell data dump (Midnight 12.0+).
+# Re-generate with: python scripts/parse_simc_spells.py
+#
+# In Midnight, raw SimC coefficients = effective PvE coefficients.
+# coefficient is the fraction of spell power per tick/cast.
+# Example: Rejuv coefficient 0.803 means each tick heals for 80.3% of SP.
+
+spells:
+  774:  # Rejuvenation
+    name: "Rejuvenation"
+    duration_ms: 12000
+    effects:
+      - type: periodic
+        coefficient: 0.803
+        period_ms: 3000
+  8936:  # Regrowth
+    name: "Regrowth"
+    duration_ms: 6000
+    effects:
+      - type: direct
+        coefficient: 5.36
+      - type: periodic
+        coefficient: 0.224968
+        period_ms: 2000
+  18562:  # Swiftmend
+    name: "Swiftmend"
+    effects:
+      - type: direct
+        coefficient: 10.37
+  33763:  # Lifebloom
+    name: "Lifebloom"
+    duration_ms: 15000
+    effects:
+      - type: periodic
+        coefficient: 0.2684
+        period_ms: 1000
+  33778:  # Lifebloom (Bloom)
+    name: "Lifebloom (Bloom)"
+    effects:
+      - type: direct
+        coefficient: 2.18868
+  48438:  # Wild Growth
+    name: "Wild Growth"
+    duration_ms: 7000
+    effects:
+      - type: periodic
+        coefficient: 0.3641
+        period_ms: 1000
+  81269:  # Efflorescence
+    name: "Efflorescence"
+    effects:
+      - type: direct
+        coefficient: 0.5856
+  102352:  # Cenarion Ward
+    name: "Cenarion Ward"
+    duration_ms: 8000
+    effects:
+      - type: periodic
+        coefficient: 1.3272
+        period_ms: 2000
+  155777:  # Rejuvenation (Germination)
+    name: "Rejuvenation (Germination)"
+    duration_ms: 12000
+    effects:
+      - type: periodic
+        coefficient: 0.803
+        period_ms: 3000
+  157982:  # Cenarion Ward (trigger)
+    name: "Cenarion Ward (trigger)"
+    effects:
+      - type: direct
+        coefficient: 10.1992
+  200389:  # Cultivation
+    name: "Cultivation"
+    effects:
+      - type: direct
+        coefficient: 0.305
+  392329:  # Verdancy
+    name: "Verdancy"
+    effects:
+      - type: direct
+        coefficient: 0.948672
+  434141:  # Dream Surge
+    name: "Dream Surge"
+    effects:
+      - type: direct
+        coefficient: 1.464
+  439530:  # Symbiotic Bloom
+    name: "Symbiotic Bloom"
+    duration_ms: 6000
+    effects:
+      - type: periodic
+        coefficient: 0.732
+        period_ms: 2000
+  440121:  # Bursting Growth
+    name: "Bursting Growth"
+    effects:
+      - type: direct
+        coefficient: 0.4209
