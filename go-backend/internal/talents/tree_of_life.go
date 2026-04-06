@@ -12,15 +12,17 @@ const (
 
 type TreeOfLifeAttributor struct {
 	BaseAttributor
-	tolActive          bool
-	wgBuffer           []*models.HealEvent
-	bufferStart        int
-	deferredWGHealing  float64
+	tolActive         bool
+	wgBuffer          []*models.HealEvent
+	bufferStart       int
+	deferredWGHealing float64
+	reforestation     *ReforestationAttributor
 }
 
-func NewTreeOfLifeAttributor() *TreeOfLifeAttributor {
+func NewTreeOfLifeAttributor(reforestation *ReforestationAttributor) *TreeOfLifeAttributor {
 	return &TreeOfLifeAttributor{
 		BaseAttributor: NewBaseAttributor("Incarnation: Tree of Life", intPtr(82064), intPtr(103120)),
+		reforestation:  reforestation,
 	}
 }
 
@@ -62,8 +64,17 @@ func (a *TreeOfLifeAttributor) ProcessEvent(event models.Event, hot *tracking.Ho
 	}
 }
 
+func (a *TreeOfLifeAttributor) isReforestationActive() bool {
+	return a.reforestation != nil && a.reforestation.IsReforestationActive()
+}
+
 func (a *TreeOfLifeAttributor) ProcessHeal(event *models.HealEvent, hot *tracking.HotTracker, buff *tracking.BuffTracker) float64 {
 	if !a.tolActive {
+		return 0.0
+	}
+
+	// Don't attribute during Reforestation procs — that's handled by Reforestation
+	if a.isReforestationActive() {
 		return 0.0
 	}
 

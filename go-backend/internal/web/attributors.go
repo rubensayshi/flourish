@@ -41,6 +41,7 @@ func BuildAttributors(config *models.Config, damageTaken int) []talents.TalentAt
 	wgCd := talents.NewWgCooldownReductionAttributor([]talents.TalentAttributor{gg}, false)
 
 	potentEnch := talents.NewPotentEnchantmentsAttributor()
+	reforestation := talents.NewReforestationAttributor(potentEnch)
 
 	hb := talents.NewHarmoniousBloomingAttributor(drTable)
 	sb := talents.NewSymbioticBloomMasteryAttributor(drTable)
@@ -81,11 +82,11 @@ func BuildAttributors(config *models.Config, damageTaken int) []talents.TalentAt
 		talents.NewWildstalkersPowerAttributor(),
 		talents.NewPatientCustodianAttributor(),
 		talents.NewLifetreadingAttributor(),
-		talents.NewTreeOfLifeAttributor(),
+		talents.NewTreeOfLifeAttributor(reforestation),
 		talents.NewConvokeAttributor(),
 		talents.NewImprovedWildGrowthAttributor(),
 		potentEnch,
-		talents.NewReforestationAttributor(potentEnch),
+		reforestation,
 		talents.NewVigorousCreepersAttributor(),
 		talents.NewImplantAttributor(),
 		talents.NewTwinSproutsAttributor(),

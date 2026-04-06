@@ -14,6 +14,7 @@ func TestReforestationTriggersAfter4thSwiftmend(t *testing.T) {
 		makeCast(200, swiftmend),
 		makeCast(300, swiftmend),
 		makeCast(400, swiftmend),
+		makeApply(401, tolBuff, withTarget(1)),
 		makeHeal(500, 8936, 11000),
 	}
 	pipeline := analysis.NewPipeline([]talents.TalentAttributor{talents.NewReforestationAttributor(nil)}, nil, nil)
@@ -27,6 +28,7 @@ func TestReforestationRejuvGets50Pct(t *testing.T) {
 		makeCast(200, swiftmend),
 		makeCast(300, swiftmend),
 		makeCast(400, swiftmend),
+		makeApply(401, tolBuff, withTarget(1)),
 		makeHeal(500, 774, 15000),
 	}
 	pipeline := analysis.NewPipeline([]talents.TalentAttributor{talents.NewReforestationAttributor(nil)}, nil, nil)
@@ -52,6 +54,8 @@ func TestReforestationExpiresAfter10Sec(t *testing.T) {
 		makeCast(200, swiftmend),
 		makeCast(300, swiftmend),
 		makeCast(400, swiftmend),
+		makeApply(401, tolBuff, withTarget(1)),
+		makeRemove(10401, tolBuff, withTarget(1)),
 		makeHeal(10500, 774, 10000),
 	}
 	pipeline := analysis.NewPipeline([]talents.TalentAttributor{talents.NewReforestationAttributor(nil)}, nil, nil)
@@ -65,10 +69,13 @@ func TestReforestationTriggersAgainAt8th(t *testing.T) {
 		makeCast(200, swiftmend),
 		makeCast(300, swiftmend),
 		makeCast(400, swiftmend),
+		makeApply(401, tolBuff, withTarget(1)),
+		makeRemove(10401, tolBuff, withTarget(1)),
 		makeCast(20000, swiftmend),
 		makeCast(20100, swiftmend),
 		makeCast(20200, swiftmend),
 		makeCast(20300, swiftmend),
+		makeApply(20301, tolBuff, withTarget(1)),
 		makeHeal(20400, 8936, 11000),
 	}
 	pipeline := analysis.NewPipeline([]talents.TalentAttributor{talents.NewReforestationAttributor(nil)}, nil, nil)
@@ -83,6 +90,7 @@ func TestReforestationNoTriggerDuringRealTol(t *testing.T) {
 		makeCast(200, swiftmend),
 		makeCast(300, swiftmend),
 		makeCast(400, swiftmend),
+		// No Reforestation proc because real ToL is active
 		makeRemove(450, tolBuff, withTarget(1)),
 		makeHeal(500, 8936, 11000),
 	}
@@ -97,19 +105,52 @@ func TestReforestationNoAttributionDuringRealTol(t *testing.T) {
 		makeCast(200, swiftmend),
 		makeCast(300, swiftmend),
 		makeCast(400, swiftmend),
-		makeApply(500, tolBuff, withTarget(1)),
-		makeHeal(600, 8936, 11000),
-		makeRemove(700, tolBuff, withTarget(1)),
+		makeApply(401, tolBuff, withTarget(1)),
+		makeRemove(10401, tolBuff, withTarget(1)),
+		// Now real ToL starts
+		makeApply(10500, tolBuff, withTarget(1)),
+		makeHeal(10600, 8936, 11000),
+		makeRemove(10700, tolBuff, withTarget(1)),
 	}
 	pipeline := analysis.NewPipeline([]talents.TalentAttributor{talents.NewReforestationAttributor(nil)}, nil, nil)
 	results := pipeline.Run(events)
 	require.Equal(t, 0.0, results.TalentHealing["Reforestation"])
 }
 
+func TestReforestationAndTolDontDoubleCount(t *testing.T) {
+	ref := talents.NewReforestationAttributor(nil)
+	tol := talents.NewTreeOfLifeAttributor(ref)
+	events := []map[string]any{
+		makeCast(100, swiftmend),
+		makeCast(200, swiftmend),
+		makeCast(300, swiftmend),
+		makeCast(400, swiftmend),
+		makeApply(401, tolBuff, withTarget(1)),
+		makeHeal(500, 8936, 11000),
+		makeRemove(10401, tolBuff, withTarget(1)),
+	}
+	pipeline := analysis.NewPipeline([]talents.TalentAttributor{ref, tol}, nil, nil)
+	results := pipeline.Run(events)
+	// Reforestation gets the credit, not ToL
+	require.InDelta(t, 1000.0, results.TalentHealing["Reforestation"], 1.0)
+	require.Equal(t, 0.0, results.TalentHealing["Incarnation: Tree of Life"])
+}
+
+func TestTolStillWorksWithoutReforestation(t *testing.T) {
+	tol := talents.NewTreeOfLifeAttributor(nil)
+	events := []map[string]any{
+		makeApply(100, tolBuff, withTarget(1)),
+		makeHeal(200, 8936, 11000),
+		makeRemove(500, tolBuff, withTarget(1)),
+	}
+	pipeline := analysis.NewPipeline([]talents.TalentAttributor{tol}, nil, nil)
+	results := pipeline.Run(events)
+	require.InDelta(t, 1000.0, results.TalentHealing["Incarnation: Tree of Life"], 1.0)
+}
+
 func TestPotentEnchantmentsExtendsAndSplits(t *testing.T) {
 	pe := talents.NewPotentEnchantmentsAttributor()
 	ref := talents.NewReforestationAttributor(pe)
-	// Inject combatant info with Reforestation + Potent Enchantments
 	events := []map[string]any{
 		smCombatantInfo(0,
 			[]int{82069, talents.PotentEnchantmentsNode},
@@ -118,6 +159,7 @@ func TestPotentEnchantmentsExtendsAndSplits(t *testing.T) {
 		makeCast(200, swiftmend),
 		makeCast(300, swiftmend),
 		makeCast(400, swiftmend),
+		makeApply(401, tolBuff, withTarget(1)),
 		// Heal at 5s: within base 10s → Reforestation
 		makeHeal(5400, 8936, 11000),
 		// Heal at 12s: in extended window (10-16s) → Potent Enchantments
@@ -139,6 +181,7 @@ func TestPotentEnchantmentsNotSelectedNoExtension(t *testing.T) {
 		makeCast(200, swiftmend),
 		makeCast(300, swiftmend),
 		makeCast(400, swiftmend),
+		makeApply(401, tolBuff, withTarget(1)),
 		// Heal at 5s: within base 10s → Reforestation
 		makeHeal(5400, 8936, 11000),
 		// Heal at 12s: past 10s without PE → nothing
