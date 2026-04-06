@@ -18,7 +18,7 @@ var HeroTrees = map[string]map[string]bool{
 		"Dream Surge": true, "Harmony of the Grove": true, "Power of Nature": true,
 		"Bounteous Bloom": true, "Grove's Inspiration": true, "Cenarius' Might": true,
 		"Protective Growth": true, "Spirit of the Thicket": true, "Sylvan Beckoning": true,
-		"Early Spring + Dryad's Dance": true, "Early Spring (WG)": true,
+		"Early Spring + Dryad's Dance": true, "Early Spring (WG)": true, "Potent Enchantments": true,
 	},
 }
 
@@ -39,6 +39,8 @@ func BuildAttributors(config *models.Config, damageTaken int) []talents.TalentAt
 	gg := talents.NewGroveGuardiansAttributor()
 	smCd := talents.NewSmCooldownReductionAttributor([]talents.TalentAttributor{sotf, gg})
 	wgCd := talents.NewWgCooldownReductionAttributor([]talents.TalentAttributor{gg}, false)
+
+	potentEnch := talents.NewPotentEnchantmentsAttributor()
 
 	hb := talents.NewHarmoniousBloomingAttributor(drTable)
 	sb := talents.NewSymbioticBloomMasteryAttributor(drTable)
@@ -82,7 +84,8 @@ func BuildAttributors(config *models.Config, damageTaken int) []talents.TalentAt
 		talents.NewTreeOfLifeAttributor(),
 		talents.NewConvokeAttributor(),
 		talents.NewImprovedWildGrowthAttributor(),
-		talents.NewReforestationAttributor(),
+		potentEnch,
+		talents.NewReforestationAttributor(potentEnch),
 		talents.NewVigorousCreepersAttributor(),
 		talents.NewImplantAttributor(),
 		talents.NewTwinSproutsAttributor(),

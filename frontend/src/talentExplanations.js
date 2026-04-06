@@ -17,8 +17,12 @@ export const TALENT_EXPLANATIONS = {
   'Incarnation: Tree of Life': `While Tree of Life is active:
 <br><br><b>Rejuvenation:</b> +50% healing bonus.<br><b>Wild Growth:</b> +10% base bonus, plus extra-target healing calculated as <code>(actual_targets \u2212 base_targets) / actual_targets \u00d7 total_healing</code>.`,
 
-  'Reforestation': `Every 4th Swiftmend triggers a mini Tree of Life (10s, or 16s with Potent Enchantments).
-<br><br>Same multipliers as real ToL (Rejuv +50%, others +10%), but only when real ToL is not already active to avoid double-counting.`,
+  'Reforestation': `Every 4th Swiftmend triggers a mini Tree of Life (10s base).
+<br><br>Same multipliers as real ToL (Rejuv +50%, others +10%), but only when real ToL is not already active to avoid double-counting.
+<br><br>With Potent Enchantments, duration extends to 16s \u2014 healing in the extra 6s is attributed to Potent Enchantments separately.`,
+
+  'Potent Enchantments': `Extends Reforestation\u2019s mini Tree of Life by 6s (10s \u2192 16s).
+<br><br>Healing during the extra 6s window uses the same ToL multipliers (Rejuv +50%, others +10%) and is split out from Reforestation\u2019s base 10s attribution.`,
 
   'Photosynthesis': `Attributes extra Lifebloom blooms caused by Photosynthesis. Every bloom is classified as "explained" or not:
 <br><br><b>Explained</b> (not Photosynthesis): natural expiry, refresh near expiry, manual recast, or Everbloom proc.<br><b>Unexplained</b> blooms \u2192 attributed to Photosynthesis.`,

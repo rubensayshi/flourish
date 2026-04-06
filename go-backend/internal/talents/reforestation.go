@@ -5,19 +5,34 @@ import (
 	"github.com/rdruid-talent-analyzer/go-backend/internal/tracking"
 )
 
-const refTolDurationMS = 10000
+const (
+	refTolBaseDurationMS     = 10000
+	refTolExtendedDurationMS = 16000
+	PotentEnchantmentsNode   = 94595
+	PotentEnchantmentsTalent = 117188
+)
 
 type ReforestationAttributor struct {
 	BaseAttributor
-	smCount           int
-	reforestationEnd  int
-	realTolActive     bool
+	smCount          int
+	reforestationStart int
+	reforestationEnd   int
+	realTolActive    bool
+	potentEnch       *PotentEnchantmentsAttributor
 }
 
-func NewReforestationAttributor() *ReforestationAttributor {
+func NewReforestationAttributor(potentEnch *PotentEnchantmentsAttributor) *ReforestationAttributor {
 	return &ReforestationAttributor{
 		BaseAttributor: NewBaseAttributor("Reforestation", intPtr(82069), nil),
+		potentEnch:     potentEnch,
 	}
+}
+
+func (a *ReforestationAttributor) durationMS() int {
+	if a.HasTalent(PotentEnchantmentsNode) {
+		return refTolExtendedDurationMS
+	}
+	return refTolBaseDurationMS
 }
 
 func (a *ReforestationAttributor) ProcessEvent(event models.Event, hot *tracking.HotTracker, buff *tracking.BuffTracker) {
@@ -30,7 +45,8 @@ func (a *ReforestationAttributor) ProcessEvent(event models.Event, hot *tracking
 	if ce, ok := event.(*models.CastEvent); ok && ce.AbilityID == Swiftmend {
 		a.smCount++
 		if a.smCount%4 == 0 && !a.realTolActive {
-			a.reforestationEnd = ce.Timestamp + refTolDurationMS
+			a.reforestationStart = ce.Timestamp
+			a.reforestationEnd = ce.Timestamp + a.durationMS()
 		}
 	}
 }
@@ -42,8 +58,22 @@ func (a *ReforestationAttributor) ProcessHeal(event *models.HealEvent, hot *trac
 	if event.Timestamp > a.reforestationEnd {
 		return 0.0
 	}
-	if event.AbilityID == Rejuvenation || event.AbilityID == GerminationRejuv {
-		return float64(event.Amount) - float64(event.Amount)/TolRejuvDivisor
+	if event.Timestamp < a.reforestationStart {
+		return 0.0
 	}
-	return float64(event.Amount) - float64(event.Amount)/TolOtherDivisor
+
+	var bonus float64
+	if event.AbilityID == Rejuvenation || event.AbilityID == GerminationRejuv {
+		bonus = float64(event.Amount) - float64(event.Amount)/TolRejuvDivisor
+	} else {
+		bonus = float64(event.Amount) - float64(event.Amount)/TolOtherDivisor
+	}
+
+	// Healing in the extended window (10-16s) goes to Potent Enchantments
+	if a.potentEnch != nil && event.Timestamp >= a.reforestationStart+refTolBaseDurationMS {
+		a.potentEnch.AddHealing(bonus)
+		return 0.0
+	}
+
+	return bonus
 }
