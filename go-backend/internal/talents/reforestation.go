@@ -51,19 +51,6 @@ func (a *ReforestationAttributor) ProcessEvent(event models.Event, hot *tracking
 	}
 }
 
-func (a *ReforestationAttributor) GetMultiplier(event *models.HealEvent, hot *tracking.HotTracker, buff *tracking.BuffTracker) float64 {
-	if a.realTolActive {
-		return 1.0
-	}
-	if event.Timestamp < a.reforestationStart || event.Timestamp > a.reforestationEnd {
-		return 1.0
-	}
-	if event.AbilityID == Rejuvenation || event.AbilityID == GerminationRejuv {
-		return TolRejuvDivisor
-	}
-	return TolOtherDivisor
-}
-
 func (a *ReforestationAttributor) ProcessHeal(event *models.HealEvent, hot *tracking.HotTracker, buff *tracking.BuffTracker) float64 {
 	if a.realTolActive {
 		return 0.0

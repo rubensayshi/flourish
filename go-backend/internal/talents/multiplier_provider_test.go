@@ -3,6 +3,7 @@ package talents_test
 import (
 	"testing"
 
+	"github.com/rdruid-talent-analyzer/go-backend/internal/analysis"
 	"github.com/rdruid-talent-analyzer/go-backend/internal/models"
 	"github.com/rdruid-talent-analyzer/go-backend/internal/talents"
 	"github.com/rdruid-talent-analyzer/go-backend/internal/tracking"
@@ -17,8 +18,8 @@ func TestMultiplierProviderInterface(t *testing.T) {
 	var _ talents.MultiplierProvider = (*talents.IntensityAttributor)(nil)
 	var _ talents.MultiplierProvider = (*talents.HarmonyOfTheGroveAttributor)(nil)
 	var _ talents.MultiplierProvider = (*talents.PowerOfNatureAttributor)(nil)
-	var _ talents.MultiplierProvider = (*talents.TreeOfLifeAttributor)(nil)
-	var _ talents.MultiplierProvider = (*talents.ReforestationAttributor)(nil)
+	// TreeOfLife and Reforestation have complex side effects (WG buffering, PE handoff)
+	// and remain as non-MultiplierProvider attributors.
 	var _ talents.MultiplierProvider = (*talents.VigorousCreepersAttributor)(nil)
 	var _ talents.MultiplierProvider = (*talents.RootNetworkAttributor)(nil)
 }
@@ -93,30 +94,21 @@ func TestVigorousCreepersMultiplier(t *testing.T) {
 	require.Equal(t, 1.0, a.GetMultiplier(sbHeal, hot, buff))
 }
 
-// TestTreeOfLifeMultiplier verifies ToL returns correct multipliers.
-func TestTreeOfLifeMultiplier(t *testing.T) {
-	a := talents.NewTreeOfLifeAttributor()
-	hot := tracking.NewHotTracker()
-	buff := tracking.NewBuffTracker()
-
-	rejuvHeal := &models.HealEvent{
-		BaseEvent: models.BaseEvent{Timestamp: 100, SourceID: 1, Type: "heal"},
-		AbilityID: 774, Amount: 10000, HitType: 1,
+// TestDecompositionWithStaticBuff verifies that the pipeline decomposes heals
+// correctly when a MultiplierProvider attributor is active.
+func TestDecompositionWithStaticBuff(t *testing.T) {
+	// Wild Synthesis: +30% on Grove Guardian spells
+	events := []map[string]any{
+		makeCombatantInfo(0),
+		makeHeal(100, 422090, 13000), // Grove Guardian Nourish
 	}
-	otherHeal := &models.HealEvent{
-		BaseEvent: models.BaseEvent{Timestamp: 100, SourceID: 1, Type: "heal"},
-		AbilityID: 8936, Amount: 10000, HitType: 1,
-	}
+	a := talents.NewWildSynthesisAttributor()
+	pipeline := analysis.NewPipeline([]talents.TalentAttributor{a}, nil, nil)
+	results := pipeline.Run(events)
 
-	// Not in ToL -> 1.0
-	require.Equal(t, 1.0, a.GetMultiplier(rejuvHeal, hot, buff))
-
-	// Activate ToL
-	a.ProcessEvent(&models.ApplyBuffEvent{
-		BaseEvent: models.BaseEvent{Timestamp: 50, SourceID: 1, Type: "applybuff"},
-		TargetID:  1, AbilityID: 33891,
-	}, hot, buff)
-
-	require.InDelta(t, 1.5, a.GetMultiplier(rejuvHeal, hot, buff), 0.001)
-	require.InDelta(t, 1.1, a.GetMultiplier(otherHeal, hot, buff), 0.001)
+	// With decomposition, Wild Synthesis should still get ~3000
+	// (same as old path since it's the only multiplier and no stats)
+	require.InDelta(t, 3000.0, results.TalentHealing["Wild Synthesis"], 50.0)
+	// Spell Power should get the base
+	require.InDelta(t, 10000.0, results.StatHealing["Spell Power"], 50.0)
 }

@@ -9,8 +9,8 @@ import (
 // Increments: 1.0, 0.7, 0.6, 0.5, 0.4, 0.4, 0.4, 0.4, ...  (plateaus at 0.4)
 var defaultDRTable = []float64{0, 1.0, 1.7, 2.3, 2.8, 3.2, 3.6, 4.0, 4.4, 4.8}
 
-// masteryHoTs is the set of HoTs that count as mastery stacks for Mastery: Harmony.
-var masteryHoTs = map[int]bool{
+// MasteryHoTs is the set of HoTs that count as mastery stacks for Mastery: Harmony.
+var MasteryHoTs = map[int]bool{
 	Rejuvenation:     true,
 	GerminationRejuv: true,
 	Regrowth:         true,
@@ -75,7 +75,7 @@ func (a *HarmoniousBloomingAttributor) ProcessHeal(event *models.HealEvent, hot 
 		return 0.0
 	}
 	// Count only mastery-eligible HoTs on this target (LB counted as 1 in tracker)
-	stacks := hot.CountByTarget(event.TargetID, masteryHoTs)
+	stacks := hot.CountByTarget(event.TargetID, MasteryHoTs)
 	// HB makes LB count as 3 instead of 1 → without HB: stacks, with HB: stacks+2
 	fraction := masteryFraction(a.mastery, a.drTable, stacks, stacks+2)
 	return float64(event.Amount) * fraction
@@ -121,7 +121,7 @@ func (a *SymbioticBloomMasteryAttributor) ProcessHeal(event *models.HealEvent, h
 		return 0.0
 	}
 	// Count only mastery-eligible HoTs on target (includes SB itself)
-	stacks := hot.CountByTarget(event.TargetID, masteryHoTs)
+	stacks := hot.CountByTarget(event.TargetID, MasteryHoTs)
 	// If HB is active and LB is on this target, LB counts as 3 instead of 1 (+2 virtual)
 	if a.hbActive && hot.Get(event.TargetID, Lifebloom) != nil {
 		stacks += 2

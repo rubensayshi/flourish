@@ -284,6 +284,7 @@ func NewRouterWithAuth(client wcl.Querier, cacheDir string, authState *AuthState
 
 		attributors := BuildAttributors(config, damageTaken)
 		pipeline := analysis.NewPipeline(attributors, petIDs, playerPetIDs)
+		pipeline.DRTable = config.Mastery.DRTable
 
 		healthThreshold := 1.0
 			if ht := r.URL.Query().Get("healthThreshold"); ht != "" {
