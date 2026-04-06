@@ -5,6 +5,14 @@ import (
 	"github.com/rdruid-talent-analyzer/go-backend/internal/tracking"
 )
 
+// MultiplierProvider is implemented by attributors that apply a multiplicative
+// bonus to healing. GetMultiplier returns the multiplier (e.g. 1.2 for +20%).
+// Returns 1.0 when the talent does not affect this heal event.
+// Used by the decomposition engine for log-proportional allocation.
+type MultiplierProvider interface {
+	GetMultiplier(event *models.HealEvent, hot *tracking.HotTracker, buff *tracking.BuffTracker) float64
+}
+
 // TalentAttributor is the interface all talent attributors implement.
 type TalentAttributor interface {
 	Name() string

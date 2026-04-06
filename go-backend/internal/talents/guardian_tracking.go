@@ -76,6 +76,13 @@ func (a *HarmonyOfTheGroveAttributor) ProcessEvent(event models.Event, hot *trac
 	a.guardianTracker.updateGuardians(event)
 }
 
+func (a *HarmonyOfTheGroveAttributor) GetMultiplier(event *models.HealEvent, hot *tracking.HotTracker, buff *tracking.BuffTracker) float64 {
+	if a.guardianCount <= 0 {
+		return 1.0
+	}
+	return 1.0 + harmonyBonusPerGuardian*float64(a.guardianCount)
+}
+
 func (a *HarmonyOfTheGroveAttributor) ProcessHeal(event *models.HealEvent, hot *tracking.HotTracker, buff *tracking.BuffTracker) float64 {
 	if a.guardianCount <= 0 {
 		return 0.0
@@ -106,6 +113,13 @@ func (a *PowerOfNatureAttributor) SetCombatantInfo(info *models.CombatantInfoEve
 
 func (a *PowerOfNatureAttributor) ProcessEvent(event models.Event, hot *tracking.HotTracker, buff *tracking.BuffTracker) {
 	a.guardianTracker.updateGuardians(event)
+}
+
+func (a *PowerOfNatureAttributor) GetMultiplier(event *models.HealEvent, hot *tracking.HotTracker, buff *tracking.BuffTracker) float64 {
+	if a.guardianCount <= 0 || !powerOfNatureSpells[event.AbilityID] {
+		return 1.0
+	}
+	return 1.0 + powerOfNatureBonus
 }
 
 func (a *PowerOfNatureAttributor) ProcessHeal(event *models.HealEvent, hot *tracking.HotTracker, buff *tracking.BuffTracker) float64 {

@@ -62,6 +62,16 @@ func (a *TreeOfLifeAttributor) ProcessEvent(event models.Event, hot *tracking.Ho
 	}
 }
 
+func (a *TreeOfLifeAttributor) GetMultiplier(event *models.HealEvent, hot *tracking.HotTracker, buff *tracking.BuffTracker) float64 {
+	if !a.tolActive {
+		return 1.0
+	}
+	if event.AbilityID == Rejuvenation || event.AbilityID == GerminationRejuv {
+		return TolRejuvDivisor
+	}
+	return TolOtherDivisor
+}
+
 func (a *TreeOfLifeAttributor) ProcessHeal(event *models.HealEvent, hot *tracking.HotTracker, buff *tracking.BuffTracker) float64 {
 	if !a.tolActive {
 		return 0.0

@@ -25,6 +25,13 @@ func newStaticBuff(name string, nodeID *int, talentID *int, spellIDs []int, mult
 	}
 }
 
+func (a *StaticBuffAttributor) GetMultiplier(event *models.HealEvent, hot *tracking.HotTracker, buff *tracking.BuffTracker) float64 {
+	if a.SpellIDs[event.AbilityID] && a.Multiplier > 0 {
+		return 1.0 + a.Multiplier
+	}
+	return 1.0
+}
+
 func (a *StaticBuffAttributor) ProcessHeal(event *models.HealEvent, hot *tracking.HotTracker, buff *tracking.BuffTracker) float64 {
 	if a.SpellIDs[event.AbilityID] && a.Multiplier > 0 {
 		return float64(event.Amount) - float64(event.Amount)/(1+a.Multiplier)
@@ -95,6 +102,13 @@ func NewIntensityAttributor() *IntensityAttributor {
 
 // intensityCritDivisor: crits are 260% instead of 200%, so bonus = amount - amount/1.3
 const intensityCritDivisor = 1.3
+
+func (a *IntensityAttributor) GetMultiplier(event *models.HealEvent, hot *tracking.HotTracker, buff *tracking.BuffTracker) float64 {
+	if intensitySpells[event.AbilityID] && event.HitType == 2 {
+		return intensityCritDivisor
+	}
+	return 1.0
+}
 
 func (a *IntensityAttributor) ProcessHeal(event *models.HealEvent, hot *tracking.HotTracker, buff *tracking.BuffTracker) float64 {
 	if intensitySpells[event.AbilityID] && event.HitType == 2 {

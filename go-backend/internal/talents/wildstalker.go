@@ -28,6 +28,16 @@ func NewVigorousCreepersAttributor() *VigorousCreepersAttributor {
 	}
 }
 
+func (a *VigorousCreepersAttributor) GetMultiplier(event *models.HealEvent, hot *tracking.HotTracker, buff *tracking.BuffTracker) float64 {
+	if event.AbilityID == SymbioticBloomSpell {
+		return 1.0
+	}
+	if hot.Get(event.TargetID, SymbioticBloomSpell) != nil {
+		return vigorousCreepers
+	}
+	return 1.0
+}
+
 func (a *VigorousCreepersAttributor) ProcessHeal(event *models.HealEvent, hot *tracking.HotTracker, buff *tracking.BuffTracker) float64 {
 	if event.AbilityID == SymbioticBloomSpell {
 		return 0.0
@@ -150,6 +160,14 @@ func NewRootNetworkAttributor() *RootNetworkAttributor {
 	return &RootNetworkAttributor{
 		BaseAttributor: NewBaseAttributor("Root Network", intPtr(94631), intPtr(117233)),
 	}
+}
+
+func (a *RootNetworkAttributor) GetMultiplier(event *models.HealEvent, hot *tracking.HotTracker, buff *tracking.BuffTracker) float64 {
+	bloomCount := len(hot.GetAllBySpell(SymbioticBloomSpell))
+	if bloomCount <= 0 {
+		return 1.0
+	}
+	return 1.0 + rootNetworkPerBloom*float64(bloomCount)
 }
 
 func (a *RootNetworkAttributor) ProcessHeal(event *models.HealEvent, hot *tracking.HotTracker, buff *tracking.BuffTracker) float64 {
