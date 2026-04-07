@@ -223,7 +223,10 @@ func runAnalyze(reportCode string, fightID int, playerName string, healthThresho
 	fmt.Printf("Fetched %d events\n", len(events))
 
 	regrowthFilter := talents.RegrowthDamageTakenFilter
-	damageTaken, _ := client.GetDamageTaken(reportCode, selectedFight.id, selectedPlayer.id, selectedFight.startTime, selectedFight.endTime, regrowthFilter)
+	damageTaken, err := client.GetDamageTaken(reportCode, selectedFight.id, selectedPlayer.id, selectedFight.startTime, selectedFight.endTime, regrowthFilter)
+	if err != nil {
+		damageTaken = 0
+	}
 
 	configPath := "config/talents.yaml"
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
@@ -248,6 +251,7 @@ func runAnalyze(reportCode string, fightID int, playerName string, healthThresho
 	}
 
 	pipeline := analysis.NewPipeline(attributors, petIDs, playerPetIDs)
+	pipeline.DRTable = config.Mastery.DRTable
 
 	if healthThreshold < 1.0 {
 		fmt.Printf("Fetching all fight events for health tracking (threshold: %.0f%%)...\n", healthThreshold*100)

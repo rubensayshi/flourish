@@ -81,7 +81,11 @@ func (c *Client) authenticate() error {
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		return err
 	}
-	c.token = result["access_token"].(string)
+	tok, ok := result["access_token"].(string)
+	if !ok || tok == "" {
+		return fmt.Errorf("authentication failed: no access_token in response")
+	}
+	c.token = tok
 	return nil
 }
 
