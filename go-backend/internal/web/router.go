@@ -387,7 +387,7 @@ func NewRouterWithAuth(client wcl.Querier, cacheDir string, authState *AuthState
 		}
 
 		// Build stats list
-		statOrder := []string{"Spell Power", "Versatility", "Mastery: Harmony", "Critical Strike"}
+		statOrder := []string{"Versatility", "Mastery: Harmony", "Critical Strike"}
 		statsList := make([]map[string]any, 0)
 		statTotalHealing := 0.0
 		for _, name := range statOrder {
@@ -406,7 +406,7 @@ func NewRouterWithAuth(client wcl.Querier, cacheDir string, authState *AuthState
 				allAttributed += e.amount
 			}
 		}
-		unattributed := total - math.Round(allAttributed) - statTotalHealing - float64(results.Wasted) - float64(results.HighHealthHealing)
+		unattributed := total - math.Round(allAttributed) - float64(results.Wasted) - float64(results.HighHealthHealing)
 		if unattributed < 0 {
 			unattributed = 0
 		}

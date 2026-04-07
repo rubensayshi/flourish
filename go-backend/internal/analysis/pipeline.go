@@ -13,7 +13,7 @@ type AnalysisResults struct {
 	HighHealthThreshold float64 // the threshold used (0 = not tracked)
 	TalentHealing       map[string]float64
 	TalentRanks         map[string]int
-	StatHealing         map[string]float64 // Spell Power, Versatility, Mastery, Crit
+	StatHealing         map[string]float64 // Versatility, Mastery: Harmony, Critical Strike
 	BaseSpellHealing    map[string]float64 // per-spell unattributed (base) healing
 	FightDurationMs     int
 	CombatantInfo       *models.CombatantInfoEvent
@@ -29,11 +29,8 @@ type Pipeline struct {
 	PlayerPetIDs        map[int]bool
 	DRTable             []float64
 
-	// Separated after combatant info filtering
-	mpAttributors    []talents.TalentAttributor // also implement MultiplierProvider
-	nonMPAttributors []talents.TalentAttributor
-	versPercent      float64
-	masteryBase      float64
+	versPercent float64
+	masteryBase float64
 }
 
 func NewPipeline(attributors []talents.TalentAttributor, petIDs, playerPetIDs map[int]bool) *Pipeline {
@@ -52,19 +49,6 @@ func NewPipeline(attributors []talents.TalentAttributor, petIDs, playerPetIDs ma
 		BuffTracker:  tracking.NewBuffTracker(),
 		PetIDs:       petIDs,
 		PlayerPetIDs: playerPetIDs,
-	}
-}
-
-// separateAttributors splits attributors into MultiplierProvider and non-MultiplierProvider groups.
-func (p *Pipeline) separateAttributors() {
-	p.mpAttributors = nil
-	p.nonMPAttributors = nil
-	for _, attr := range p.Attributors {
-		if _, ok := attr.(talents.MultiplierProvider); ok {
-			p.mpAttributors = append(p.mpAttributors, attr)
-		} else {
-			p.nonMPAttributors = append(p.nonMPAttributors, attr)
-		}
 	}
 }
 
@@ -100,7 +84,6 @@ func (p *Pipeline) Run(rawEvents []map[string]any) *AnalysisResults {
 				for _, attr := range p.Attributors {
 					attr.SetCombatantInfo(ci)
 				}
-				// Compute stat percentages
 				p.versPercent = ci.Versatility / VersRatingPerPercent / 100.0
 				p.masteryBase = ci.Mastery / 100.0 / 100.0
 
@@ -120,7 +103,6 @@ func (p *Pipeline) Run(rawEvents []map[string]any) *AnalysisResults {
 						}
 					}
 				}
-				p.separateAttributors()
 			}
 			continue
 		}
@@ -158,86 +140,32 @@ func (p *Pipeline) Run(rawEvents []map[string]any) *AnalysisResults {
 				}
 			}
 
-			// If attributors haven't been separated yet (no combatant info), fall back to old path
-			if p.mpAttributors == nil && p.nonMPAttributors == nil {
-				totalAttrForHeal := 0.0
-				for _, attr := range p.Attributors {
-					attributed := attr.ProcessHeal(he, p.HotTracker, p.BuffTracker)
-					results.TalentHealing[attr.Name()] += attributed
-					attr.AddTotalAttributed(attributed)
-					totalAttrForHeal += attributed
-				}
-				base := float64(he.Amount) - totalAttrForHeal
-				if base > 0 {
-					results.BaseSpellHealing[talents.SpellName(he.AbilityID)] += base
-				}
-				continue
-			}
+			amount := float64(he.Amount)
 
-			// --- Decomposition path ---
-
-			// Step 1: Non-MultiplierProvider attributors claim first
-			nonMPClaimed := 0.0
-			for _, attr := range p.nonMPAttributors {
+			// Talent attribution (counterfactual: "what would I lose")
+			for _, attr := range p.Attributors {
 				attributed := attr.ProcessHeal(he, p.HotTracker, p.BuffTracker)
 				results.TalentHealing[attr.Name()] += attributed
 				attr.AddTotalAttributed(attributed)
-				nonMPClaimed += attributed
 			}
 
-			remainder := float64(he.Amount) - nonMPClaimed
-			if remainder <= 0 {
-				continue
-			}
-
-			// Step 2: Collect multipliers from stats + MultiplierProvider attributors
-			multipliers := make(map[string]float64)
-
+			// Stat attribution (counterfactual on full heal amount)
 			if p.versPercent > 0 {
-				multipliers["Versatility"] = 1.0 + p.versPercent
+				results.StatHealing["Versatility"] += amount - amount/(1.0+p.versPercent)
 			}
 
-			// Mastery: use raw HoT count (without HB/SBM virtual stacks)
 			hotCount := p.HotTracker.CountByTarget(he.TargetID, talents.MasteryHoTs)
 			if hotCount > 0 && p.masteryBase > 0 && len(p.DRTable) > 0 {
 				idx := hotCount
 				if idx >= len(p.DRTable) {
 					idx = len(p.DRTable) - 1
 				}
-				multipliers["Mastery: Harmony"] = 1.0 + p.masteryBase*p.DRTable[idx]
+				masteryMult := 1.0 + p.masteryBase*p.DRTable[idx]
+				results.StatHealing["Mastery: Harmony"] += amount - amount/masteryMult
 			}
 
 			if he.HitType == 2 {
-				multipliers["Critical Strike"] = 2.0
-			}
-
-			for _, attr := range p.mpAttributors {
-				mp := attr.(talents.MultiplierProvider)
-				m := mp.GetMultiplier(he, p.HotTracker, p.BuffTracker)
-				if m > 1.0 {
-					multipliers[attr.Name()] = m
-				}
-			}
-
-			// Step 3: Decompose remainder proportionally
-			shares := DecomposeHeal(remainder, multipliers)
-
-			for name, amount := range shares {
-				switch name {
-				case "Spell Power":
-					results.StatHealing["Spell Power"] += amount
-				case "Versatility", "Mastery: Harmony", "Critical Strike":
-					results.StatHealing[name] += amount
-				default:
-					results.TalentHealing[name] += amount
-					// Find the attributor and update its total
-					for _, attr := range p.mpAttributors {
-						if attr.Name() == name {
-							attr.AddTotalAttributed(amount)
-							break
-						}
-					}
-				}
+				results.StatHealing["Critical Strike"] += amount / 2.0
 			}
 		}
 	}

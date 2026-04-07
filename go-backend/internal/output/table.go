@@ -198,7 +198,7 @@ func RenderResults(results *analysis.AnalysisResults, fightName, playerName stri
 			amount float64
 		}
 		// Fixed order for stats
-		statOrder := []string{"Spell Power", "Versatility", "Mastery: Harmony", "Critical Strike"}
+		statOrder := []string{"Versatility", "Mastery: Harmony", "Critical Strike"}
 		var statEntries []statEntry
 		statTotal := 0.0
 		for _, name := range statOrder {
@@ -292,15 +292,7 @@ func RenderResults(results *analysis.AnalysisResults, fightName, playerName stri
 		label := fmt.Sprintf("High Health (>%.0f%% HP)", results.HighHealthThreshold*100)
 		tableRows = append(tableRows, tableRow{kind: rowSummary, cols: []string{label, formatNum(float64(results.HighHealthHealing)), "", "", ""}})
 	}
-	baseTotal := 0.0
-	for _, amount := range results.BaseSpellHealing {
-		baseTotal += amount
-	}
-	statTotal := 0.0
-	for _, amount := range results.StatHealing {
-		statTotal += amount
-	}
-	unattributed := total - allAttributed - baseTotal - statTotal - float64(results.Wasted) - float64(results.HighHealthHealing)
+	unattributed := total - allAttributed - float64(results.Wasted) - float64(results.HighHealthHealing)
 	if unattributed < 0 {
 		tableRows = append(tableRows, tableRow{kind: rowSummary, cols: []string{"Unattributed", "—", "", "", ""}})
 	} else {

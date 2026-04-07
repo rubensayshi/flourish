@@ -94,9 +94,8 @@ func TestVigorousCreepersMultiplier(t *testing.T) {
 	require.Equal(t, 1.0, a.GetMultiplier(sbHeal, hot, buff))
 }
 
-// TestDecompositionWithStaticBuff verifies that the pipeline decomposes heals
-// correctly when a MultiplierProvider attributor is active.
-func TestDecompositionWithStaticBuff(t *testing.T) {
+// TestCounterfactualWithStaticBuff verifies talent uses counterfactual on full amount.
+func TestCounterfactualWithStaticBuff(t *testing.T) {
 	// Wild Synthesis: +30% on Grove Guardian spells
 	events := []map[string]any{
 		makeCombatantInfo(0),
@@ -106,9 +105,6 @@ func TestDecompositionWithStaticBuff(t *testing.T) {
 	pipeline := analysis.NewPipeline([]talents.TalentAttributor{a}, nil, nil)
 	results := pipeline.Run(events)
 
-	// With decomposition, Wild Synthesis should still get ~3000
-	// (same as old path since it's the only multiplier and no stats)
+	// Counterfactual: 13000 - 13000/1.3 = 3000
 	require.InDelta(t, 3000.0, results.TalentHealing["Wild Synthesis"], 50.0)
-	// Spell Power should get the base
-	require.InDelta(t, 10000.0, results.StatHealing["Spell Power"], 50.0)
 }
